@@ -1,0 +1,429 @@
+<project basedir=".">
+    <!-- load test properties -->
+    <property file="${basedir}/test.properties"/>
+
+    <!-- load build properties -->
+    <property file="${basedir}/build.local.properties"/>
+    <property file="${basedir}/build.properties"/>
+
+    <!-- import default framework build - it contains macros for testng running -->
+    <import file="build.xml"/>
+	
+	<target description="Execution of offline charging tests on Telia Tarnybinis subscriber" name="telia-tarny">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_Test_Group_01" id="suitesToRun">
+            <include name="suite-testng.xml"/>
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun">
+ 
+    
+    </runMultipleSuites>
+    </target>
+	
+	<target description="Execution of offline charging tests on Telia Family subscriber" name="telia-family">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_Test_Group_02" id="suitesToRun">
+            <include name="suite-testng.xml"/>
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun"/>
+    </target>
+	
+	<target description="Offline charging tests on MHS rate plan with unlimited voice/SMS" name="telia-MHS1">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_MHS_UNL" id="suitesToRun">
+            <include name="suite-testng.xml"/>
+			<!--<include name="suite-testng-emergency-sdr.xml"/>-->
+		
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun"/>
+    </target>
+
+	<target description="Offline charging tests on MHS rate plan with limited voice package" name="telia-MHS2">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_MHS_LIM_VOICE" id="suitesToRun">
+            <include name="suite-testng.xml"/>
+        </fileset>
+
+		<runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun">
+		<!--		
+		<config>
+				<sysproperty key="ccLandscape" value="RQAS"/>
+		</config>
+		-->
+	
+		</runMultipleSuites>
+    </target>
+	
+	<target description="Offline charging tests on MHS rate plan with limited voice package and blocked roaming" name="telia-MHS3">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_MHS_LIM_NOROAM" id="suitesToRun">
+            <include name="suite-testng.xml"/>
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun"/>
+    </target>
+	
+		<target description="Offline charging tests on M2M rate plan with limited voice and SMS package and blocked roaming" name="telia-M2M1">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_M2M_LIM_VOICESMS" id="suitesToRun">
+            <include name="suite-testng.xml"/>
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun"/>
+    </target>
+	
+	<target description="Offline charging tests on MBB rate plan with enabled roaming" name="telia-MBB1">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_MBB_ROAM" id="suitesToRun">
+            <include name="suite-testng.xml"/>
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun"/>
+    </target>
+
+	<target description="Offline charging tests on MBB rate plan with blocked roaming" name="telia-MBB2">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_MBB_NOROAM" id="suitesToRun">
+            <include name="suite-testng.xml"/>
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun"/>
+    </target>
+	
+	<target description="Usage for different rate plans" name="usage-all">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST" id="suitesToRun">
+            <include name="Telia_Session_Tests_RCC/suite-testng.xml"/>
+			<include name="Telia_Test_Group_01/suite-testng.xml"/>
+			<include name="Telia_Test_Group_02/suite-testng.xml"/>
+			<include name="Telia_MHS_UNL/suite-testng.xml"/>
+			<include name="Telia_MHS_LIM_VOICE/suite-testng.xml"/>
+			<include name="Telia_MHS_LIM_NOROAM/suite-testng.xml"/>
+			<include name="Telia_M2M_LIM_VOICESMS/suite-testng.xml"/>
+			<include name="Telia_MBB_ROAM/suite-testng.xml"/>
+			<include name="Telia_MBB_NOROAM/suite-testng.xml"/>
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun">
+				
+		
+		
+	
+		<config>
+        <sysproperty key="ccLandscape" value="QAS"/>
+      </config>
+    </runMultipleSuites>
+    </target>
+	
+	<target description="Execution of Telia session-based tests" name="rcc">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_Session_Tests_RCC" id="suitesToRun">
+            <include name="suite-testng.xml"/>
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun"/>
+    </target>
+	
+	<target description="Execution of RCC multisession session-based tests" name="rcc_multisession">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_Session_Tests_RCC_Parallel" id="suitesToRun">
+            <include name="suite-testng.xml"/>
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun"/>
+    </target>
+	
+	<target description="Execution of Charging Limit multisession session-based tests" name="chlim_multisession">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_Session_Tests_ChLim_Parallel" id="suitesToRun">
+            <include name="suite-testng.xml"/>
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun">
+				
+		<config>
+				<sysproperty key="ccLandscape" value="QAS"/>
+		</config>
+		
+	
+		</runMultipleSuites>
+    </target>
+	
+	<target description="Execution of Overspending tests" name="overspending">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_Session_Tests_Overspending" id="suitesToRun">
+            <include name="suite-testng.xml"/>
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun"/>
+    </target>
+	
+	<target description="Person Change PoC tests" name="person-change">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_Session_Tests_Person_Change" id="suitesToRun">
+            <include name="suite-testng.xml"/>
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun"/>
+    </target>
+	
+	<target description="Execution of Charging Limit tests" name="charging-limit">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_Session_Tests_Charging_Limit" id="suitesToRun">
+            <include name="suite-testng.xml"/>
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun"/>
+    </target>
+	
+	<target description="Execution of Charging Limit tests" name="charging-limit-recfee">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_RecFee_Charging_Limit" id="suitesToRun">
+            <include name="suite-testng-b2b.xml"/>
+			<include name="suite-testng-b2c.xml"/>
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun"/>
+    </target>
+	
+	<target description="Execution of tests for multiple usage tracking components" name="utr">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_Session_Tests_UTR" id="suitesToRun">
+            <!--<include name="suite-testng-b2b.xml"/>-->
+			<include name="suite-testng-b2c.xml"/>
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun"/>
+    </target>
+	
+	<target description="Execution of FUP tests for multiple usage tracking components" name="fup">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_Session_Tests_UTR" id="suitesToRun">
+            <include name="suite-testng-b2cfup.xml"/>
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun">
+				
+		<!--
+		<config>
+				<sysproperty key="ccLandscape" value="RDEV"/>
+		</config>
+		-->
+			
+		</runMultipleSuites>
+    </target>
+	
+	<target description="Execute all tests" name="run-all">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST" id="suitesToRun">
+            <include name="Telia_Session_Tests_RCC/suite-testng.xml"/>
+			<include name="Telia_Test_Group_01/suite-testng.xml"/>
+			<include name="Telia_Test_Group_02/suite-testng.xml"/>
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun"/>
+    </target>
+	
+	<target description="Execute all tests" name="run-all-QAS">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST" id="suitesToRun">
+            <include name="Telia_Tarnybinis/suite-testng.xml"/>
+	    </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun">
+				
+		<config>
+				<sysproperty key="ccLandscape" value="RQAS"/>
+		</config>
+
+		</runMultipleSuites>
+    </target>
+	
+	<target description="Development tests" name="recurring">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_Recurring_Tests" id="suitesToRun">
+            <include name="suite-recurring.xml"/>			
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun">
+		<!--		
+		<config>
+				<sysproperty key="ccLandscape" value="RQAS"/>
+		</config>
+		-->
+		</runMultipleSuites>
+    </target>
+	
+	<target description="Development tests" name="tvrmcn">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Tvrtko_DEV_TEST" id="suitesToRun">
+            <include name="suite-tvrmcn.xml"/>			
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun">
+		<!--		
+		<config>
+				<sysproperty key="ccLandscape" value="RQAS"/>
+		</config> 
+		-->
+		</runMultipleSuites>
+    </target>
+	
+	<target description="Data generation" name="telia-generate-data">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_Data_Generation" id="suitesToRun">
+            <include name="suite-testng.xml"/>
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun"/>
+    </target>
+	
+	<target description="Execution of Premium SMS corner case tests" name="premium_sms">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_Session_Tests_Premium_SMS" id="suitesToRun">
+            <include name="suite-testng.xml"/>
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun"/>
+    </target>
+	
+	<target description="Execution of Telia Service Limit" name="service_limit">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_Service_Limit" id="suitesToRun">
+            <include name="suite-testng.xml"/>
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun"/>
+    </target>
+	
+	<target description="Acquisition of CITs" name="acquire">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_Acquire_CITs" id="suitesToRun">
+            <include name="suite-testng.xml"/>
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun"/>
+		
+    </target>
+	
+	<target description="Recurring fees in case of Change processes" name="recurring-cp">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_Recurring_Tests_Change_Processes" id="suitesToRun">
+            <include name="suite-recurring.xml"/>			
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun">
+		<!--		
+		<config>
+				<sysproperty key="ccLandscape" value="RQAS"/>
+		</config>
+		-->
+		</runMultipleSuites>
+    </target>
+	<target description="Fixed voice charging tests " name="fix-voice">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_Test_Fix_Network" id="suitesToRun">
+            <include name="suite-fix.xml"/>
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun"/>
+    </target>
+	
+	<target description="Concurrent discounts for promo discount functionality" name="concurrent-disc">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_Concurrent_Discounts" id="suitesToRun">
+			<include name="suite-testng-scenario2.xml"/>
+			<include name="suite-testng-scenario3.xml"/>
+			<include name="suite-testng-scenario4.xml"/>
+			<include name="suite-testng-scenario5.xml"/>
+			<include name="suite-testng-scenario6.xml"/>
+			<include name="suite-testng-scenario7.xml"/> 
+			<include name="suite-testng-scenario8.xml"/>
+			<include name="suite-testng-scenario9.xml"/>
+			<include name="suite-testng-scenario10.xml"/>
+			<include name="suite-testng-scenario11.xml"/>
+			<include name="suite-testng-scenario12.xml"/>
+			<include name="suite-testng-scenario13.xml"/> 
+            <include name="suite-testng-uni-scenario1.xml"/>
+            <!--<include name="suite-testng-uni-scenario2.xml"/>
+            <include name="suite-testng-uni-scenario3.xml"/>
+            <include name="suite-testng-uni-scenario4.xml"/>
+            <include name="suite-testng-uni-scenario5.xml"/>
+            <include name="suite-testng-uni-scenario6.xml"/>
+            <include name="suite-testng-uni-scenario7.xml"/>
+            <include name="suite-testng-uni-scenario8.xml"/>
+            <include name="suite-testng-uni-scenario9.xml"/>
+            <include name="suite-testng-uni-scenario10.xml"/>
+            <include name="suite-testng-uni-scenario11.xml"/>
+			<include name="suite-testng-uni-scenario12.xml"/>
+			<include name="suite-testng-uni-scenario13.xml"/>	-->		
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun">
+				
+		<config>
+				<sysproperty key="ccLandscape" value="RDEV"/>
+		</config> 
+		
+		</runMultipleSuites>
+    </target>
+	
+	<target description="Test of allowance and one time fee BITs" name="alw-otf">
+        <delete dir="${testng.report.dir}"/>
+
+        <fileset dir="${basedir}/TEST/Telia_Allowances" id="suitesToRun">
+            <include name="suite-testng-old.xml"/>
+            <include name="suite-testng-new.xml"/>
+        </fileset>
+
+        <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun"/>
+    </target>
+
+    <target description="Apply the current report theme to existing generated reports" name="refresh-report-ui">
+        <copy failonerror="true" file="${test.report.templates.dir}/test-log.css" overwrite="true" tofile="${testng.report.dir}/test-log.css"/>
+        <copy failonerror="true" file="${test.report.templates.dir}/verso-altima.css" overwrite="true" tofile="${testng.report.dir}/verso-altima.css"/>
+        <echo message="Report UI refreshed in ${testng.report.dir}"/>
+    </target>
+	
+
+<target description="Test target" name="new-test-target">
+    <delete dir="${testng.report.dir}"/>
+    <fileset dir="${basedir}/TEST" id="suitesToRun">
+      <include name="Telia_Test_Group_01/suite-testng.xml"/>
+      <include name="Telia_Test_Group_02/suite-testng.xml"/>
+    </fileset>
+    <runMultipleSuites pCreateClassSubDirForLogs="true" pTestColsoleLoggerLevel="SEVERE" pXmlFilesetRef="suitesToRun"/>
+  </target>
+</project>

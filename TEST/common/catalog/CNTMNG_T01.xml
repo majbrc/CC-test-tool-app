@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objectSet version="5.0.6.10">
+  <pnrObjectSet>
+    <chargeableItemClass id="CNTMNG_T01" serviceProvider="O2C" description="Counter management event">
+      <prop name="ZZ_EVTTYPE" description="Event type" type="number"/>
+      <prop name="ZZ_CNTVAL" description="Counter value" type="number"/>
+      <prop name="ZZ_CMPACTIONDATE" description="Component action date" type="date"/>
+      <prop name="ZZ_EXT_ALW_ID" description="External Allowance Unique Identifier" type="string"/>
+    </chargeableItemClass>
+  </pnrObjectSet>
+</objectSet>

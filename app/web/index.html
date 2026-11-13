@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Charging Test Console</title>
+  <link rel="stylesheet" href="/styles.css?v=20261112-stacked-targets">
+</head>
+<body>
+  <header class="shell">
+    <div class="shell__brand">
+      <span class="shell__mark" aria-hidden="true">CC</span>
+      <div>
+        <strong>Charging Test Console</strong>
+        <span>Test operations and configuration</span>
+      </div>
+    </div>
+    <div class="shell__status">
+      <span class="status-dot" aria-hidden="true"></span>
+      <span id="shell-environment">Loading environment...</span>
+    </div>
+  </header>
+
+  <main>
+    <div id="message" class="message" role="status" aria-live="polite" hidden></div>
+
+    <div id="home-screen">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">SAP Convergent Charging</p>
+          <h1>Test workspace</h1>
+          <p>Choose the target landscape, execute Ant targets, and review the latest results.</p>
+        </div>
+        <div class="hero__actions">
+          <button id="open-tests-configuration" class="configuration-button" type="button">
+            <span class="configuration-button__icon" aria-hidden="true">⚙</span>
+            <span>Tests Configuration</span>
+          </button>
+          <button id="open-report" class="report-button" type="button" disabled>
+            <span class="report-button__icon" aria-hidden="true">↗</span>
+            <span><strong>Open current test report</strong><small id="report-hint">Checking availability...</small></span>
+          </button>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="environment-heading">
+        <div class="section__header">
+          <div>
+            <p class="eyebrow">Execution target</p>
+            <h2 id="environment-heading">Environments</h2>
+          </div>
+          <label class="field environment-picker">
+            <span>Active environment</span>
+            <select id="environment-select" aria-label="Active test environment"></select>
+          </label>
+        </div>
+        <div class="environment-browser">
+          <nav id="environment-list" class="environment-list" aria-label="Configured environments"></nav>
+          <section id="environment-detail" class="environment-detail" aria-live="polite" hidden></section>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="suites-heading">
+        <div class="section__header">
+          <div>
+            <p class="eyebrow">Execution catalog</p>
+            <h2 id="suites-heading">Ant test targets</h2>
+          </div>
+          <div class="section__actions">
+            <label class="search">
+              <span class="sr-only">Search test targets</span>
+              <input id="suite-search" type="search" placeholder="Search test targets">
+            </label>
+            <button id="create-target" class="button button--emphasized" type="button">Create target</button>
+          </div>
+        </div>
+        <div id="run-banner" class="run-banner" hidden>
+          <div>
+            <span class="spinner" aria-hidden="true"></span>
+            <strong id="run-title">Test execution in progress</strong>
+            <p id="run-subtitle"></p>
+          </div>
+          <button id="show-run-log" class="button button--ghost" type="button">View log</button>
+        </div>
+        <div id="suite-list" class="suite-list" aria-live="polite"></div>
+      </section>
+    </div>
+
+    <div id="tests-configuration-screen" class="tests-configuration-screen" hidden>
+      <header class="screen-header">
+        <button id="back-to-home" class="button screen-header__back" type="button">← Back to home</button>
+        <div>
+          <p class="eyebrow">Configuration workspace</p>
+          <h1>Tests Configuration</h1>
+          <p>Manage suite definitions, users, test cases, and result validations.</p>
+        </div>
+      </header>
+      <details class="section year-panel">
+        <summary class="eyebrow">Shared configuration</summary>
+        <div class="year-panel__body">
+          <div class="section__header"><h2 id="year-heading">CURRENT_YEAR</h2></div>
+          <p class="section__description">One year setting applies to this console and direct Ant runs. Opening this screen does not change any files.</p>
+          <div id="year-settings" aria-live="polite">Loading year configuration...</div>
+        </div>
+      </details>
+      <section class="section" aria-labelledby="suite-config-heading">
+        <div class="section__header">
+          <div>
+            <p class="eyebrow">Configuration catalog</p>
+            <h2 id="suite-config-heading">Test suites</h2>
+          </div>
+          <label class="search">
+            <span class="sr-only">Search test suites</span>
+            <input id="suite-config-search" type="search" placeholder="Search test suites">
+          </label>
+        </div>
+        <p class="section__description">Browse the existing folder structure and edit suite definitions, users, test cases, and validations.</p>
+        <div id="suite-config-list" class="suite-list" aria-live="polite"></div>
+      </section>
+    </div>
+  </main>
+
+  <dialog id="suite-dialog" class="dialog">
+    <div class="dialog__header">
+      <div>
+        <p class="eyebrow">Test suite</p>
+        <h2 id="suite-dialog-title">Suite details</h2>
+      </div>
+      <button class="icon-button" data-close-dialog="suite-dialog" type="button" aria-label="Close">×</button>
+    </div>
+    <div class="dialog__body">
+      <div id="suite-model" class="suite-model" aria-live="polite"></div>
+      <details class="raw-files">
+        <summary>Advanced: source XML files</summary>
+        <p>Use the structured forms above for normal configuration. Direct XML editing is available for advanced changes.</p>
+        <div id="suite-file-groups" class="file-groups"></div>
+      </details>
+    </div>
+    <div class="dialog__footer">
+      <span><span class="status-dot status-dot--inline" aria-hidden="true"></span><span id="suite-dialog-environment"></span></span>
+    </div>
+  </dialog>
+
+  <dialog id="test-builder-dialog" class="dialog">
+    <div class="dialog__header"><div><p class="eyebrow">Suite definition</p><h2 id="test-builder-title">Add test</h2></div>
+      <button class="icon-button" data-close-dialog="test-builder-dialog" type="button" aria-label="Close">×</button></div>
+    <form id="test-builder-form">
+      <div class="dialog__body">
+        <p id="test-builder-intro" class="section__description"></p>
+        <div class="wizard-fields">
+          <label class="model-field"><span>Destination suite definition</span><select id="test-builder-destination" required></select></label>
+          <label class="model-field"><span>Compatible example / source test</span><select id="test-builder-source" required></select></label>
+          <label class="model-field"><span>Method (from example)</span><input id="test-builder-method" type="text" readonly></label>
+          <label class="model-field"><span>Request template (from example)</span><input id="test-builder-template" type="text" readonly></label>
+          <label class="model-field"><span>Test name</span><input id="test-builder-name" required type="text"></label>
+          <label class="model-field"><span>Insertion position</span><select id="test-builder-position"><option value="beforeCleanup">Before final cleanup</option><option value="after">After selected example</option></select></label>
+          <label class="model-field model-field--wide"><span>Scenario labels (inherited; edit via selection after creation)</span><input id="test-builder-labels" type="text" readonly></label>
+        </div>
+        <div id="test-builder-details" class="wizard-details" aria-live="polite"></div>
+        <p class="field-help">Preview checks dependencies and unique files before anything is written. Edit the new test's independent values after creation.</p>
+      </div>
+      <div class="dialog__footer"><span id="test-builder-state" role="status"></span>
+        <button id="test-builder-preview" class="button button--emphasized" type="submit">Review changes</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="review-dialog" class="dialog dialog--review">
+    <div class="dialog__header"><div><p class="eyebrow">Review before saving</p><h2 id="review-title">Review changes</h2></div>
+      <button class="icon-button" data-close-dialog="review-dialog" type="button" aria-label="Close">×</button></div>
+    <div class="dialog__body"><div id="review-content"></div>
+      <label id="review-confirm-wrap" class="review-confirm"><input id="review-confirm" type="checkbox">
+        <span>I understand the shared impact and want to apply these changes.</span></label>
+      <p id="review-error" class="inline-error" role="alert" hidden></p>
+    </div>
+    <div class="dialog__footer"><span id="review-status" role="status">No changes saved</span>
+      <div class="dialog__footer-actions"><button class="button" data-close-dialog="review-dialog" type="button">Cancel</button>
+        <button id="review-commit" class="button button--emphasized" type="button">Apply changes</button></div></div>
+  </dialog>
+
+  <dialog id="target-dialog" class="dialog">
+    <div class="dialog__header">
+      <div>
+        <p class="eyebrow">Ant execution target</p>
+        <h2>Create test target</h2>
+      </div>
+      <button class="icon-button" data-close-dialog="target-dialog" type="button" aria-label="Close">×</button>
+    </div>
+    <form id="target-form">
+      <div class="dialog__body target-builder">
+        <div class="target-builder__settings">
+          <label class="model-field">
+            <span>Target name</span>
+            <input id="target-name" type="text" required pattern="[A-Za-z0-9_.-]+" placeholder="my-test-target">
+          </label>
+          <label class="model-field">
+            <span>Description</span>
+            <input id="target-description" type="text" required placeholder="Purpose of this test target">
+          </label>
+          <label class="model-field">
+            <span>Environment</span>
+            <select id="target-environment"></select>
+          </label>
+        </div>
+        <div>
+          <div class="object-panel__header">
+            <div>
+              <h4>Suite definitions</h4>
+              <p>Select one or more suite XML files to include in this target.</p>
+            </div>
+            <span id="target-suite-count" class="badge">0 selected</span>
+          </div>
+          <label class="search target-suite-search">
+            <span class="sr-only">Filter suite files</span>
+            <input id="target-suite-search" type="search" placeholder="Filter suite XML files">
+          </label>
+          <div id="target-suite-files" class="target-suite-files"></div>
+        </div>
+      </div>
+      <div class="dialog__footer">
+        <span>Creates a new runnable target in <code>test.xml</code>.</span>
+        <button id="save-target" class="button button--emphasized" type="submit">Create target</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="editor-dialog" class="dialog dialog--editor">
+    <div class="dialog__header">
+      <div>
+        <p class="eyebrow" id="editor-category">Configuration</p>
+        <h2 id="editor-title">Edit file</h2>
+      </div>
+      <button class="icon-button" data-close-dialog="editor-dialog" type="button" aria-label="Close">×</button>
+    </div>
+    <div class="dialog__body editor-layout">
+      <div class="editor-help">
+        <strong>XML configuration</strong>
+        <p>Edit the suite, input parameters, template data, or validation rules. The file is checked as well-formed XML before it is saved.</p>
+        <code id="editor-path"></code>
+      </div>
+      <textarea id="file-editor" spellcheck="false" aria-label="XML file content"></textarea>
+    </div>
+    <div class="dialog__footer">
+      <span id="editor-state">No unsaved changes</span>
+      <button id="save-file" class="button button--emphasized" type="button">Save changes</button>
+    </div>
+  </dialog>
+
+  <dialog id="log-dialog" class="dialog dialog--editor">
+    <div class="dialog__header">
+      <div>
+        <p class="eyebrow">Execution output</p>
+        <h2>Latest run log</h2>
+      </div>
+      <button class="icon-button" data-close-dialog="log-dialog" type="button" aria-label="Close">×</button>
+    </div>
+    <pre id="run-log" class="run-log">No execution log available.</pre>
+  </dialog>
+
+  <script src="/app.js?v=20261112-1400"></script>
+</body>
+</html>

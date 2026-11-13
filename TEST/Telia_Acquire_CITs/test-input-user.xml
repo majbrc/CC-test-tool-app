@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $genInfo -->
+<tns:testTemplate xmlns:tns="https://www.w3schools.com"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.w3schools.com ../common/xsd/test-inputs.xsd">
+    <tns:header>
+        <tns:constants>
+            <tns:constant name="__META_TITLE__" constValue="User setup"/>
+            <tns:constant name="__META_DESCRIPTION__" constValue="User setup"/>
+            <tns:constant name="_TEST_COMMON_DIR" constValue="TEST"/>
+            <tns:constant name="_TEST_DIR" constValue="TEST/Telia_Acquire_CITs"/>
+            <tns:constant name="USER_SERVICE_ID" constValue="9000000024"/>
+			
+			<tns:constant name="SUBSCRIBER_ACCOUNT_ID" constValue="900000000000000000000000000008"/>
+            <tns:constant name="PROVIDER_CONTRACT_ID" constValue="90000000000000000016"/>
+			
+			<!-- parameters for subscriber creation -->
+			<tns:constant name="CURRENT_YEAR" constValue="$DATE_TIME_NOW_items.Year"/> 
+			<tns:constant name="SUBSCRIBER_CODE" constValue="9000000018"/>
+			<tns:constant name="OFFER_ID" constValue="OF000013"/>
+			<tns:constant name="RATE_PLAN" constValue="MOB_1GB_MHS_C"/>
+			<tns:constant name="UO_ID" constValue="MHS_P_MOB_1GB"/>
+			<tns:constant name="EVENT_DATE" constValue="${CURRENT_YEAR}-10-01T00:00:00"/>
+			<tns:constant name="PRODUCT_ID" constValue="OF000013"/>
+			<tns:constant name="PRICE_KEY" constValue="69D13FEDB5F61711F091025CE470021E"/> 
+			<tns:constant name="PRICE_TABLE_ID" constValue="001DD8B71CFE1EDBA5EF17B39D0E8120"/>
+			<tns:constant name="DFL_ACC" constValue="900000000029"/>	
+			<tns:constant name="CUSTOMER_TYPE" constValue="B2C"/>
+
+        </tns:constants>
+		
+        <tns:parameters>
+            <tns:parameter name="sessionDefinitionFileList" type="string"/>
+			<tns:parameter name="generateCit" type="string"/>
+            <tns:parameter name="validateCitEnabled" type="string" defaultValue="false"/>
+			<tns:parameter name="wsEndpointPropertyRef" type="string"/>
+			<tns:parameter name="wsRequestTemplate" type="string"/>
+			<tns:parameter name="pcId" type="string"/>
+			<tns:parameter name="subscriberAccountId" type="string"/>
+			
+			<tns:parameter name="ciPropertiesFile" type="string"/>
+			<tns:parameter name="consumptionDate" type="date"/>
+			<tns:parameter name="sapCcApi" type="string"/>
+			<tns:parameter name="testExtension" type="string"/>
+
+		</tns:parameters>
+    </tns:header>
+	
+	<tns:testData>
+	<tns:test>
+            <tns:id>1</tns:id>
+            <tns:labels>SUAC_IMPORT</tns:labels>
+            <tns:parameter name="wsEndpointPropertyRef" paramValue="cc.ws.url.pcexim"/>
+            <tns:parameter name="wsRequestTemplate" paramValue="$_TEST_DIR/templates/suac-template.xml"/>
+        </tns:test>
+			
+		<tns:test>
+            <tns:id>999</tns:id>
+            <tns:labels>SUAC_DELETE</tns:labels>
+			<tns:parameter name="pcId" paramValue="${PROVIDER_CONTRACT_ID}"/>
+			<tns:parameter name="subscriberAccountId" paramValue="${SUBSCRIBER_ACCOUNT_ID}"/>
+        </tns:test>
+		
+		
+    </tns:testData>
+</tns:testTemplate>

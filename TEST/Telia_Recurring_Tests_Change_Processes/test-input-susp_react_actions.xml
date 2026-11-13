@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $genInfo -->
+<tns:testTemplate xmlns:tns="https://www.w3schools.com"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.w3schools.com ../common/xsd/test-inputs.xsd">
+    <tns:header>
+        <tns:constants>
+            <tns:constant name="__META_TITLE__" constValue="Lock and unlock calls"/>
+            <tns:constant name="__META_DESCRIPTION__" constValue="Simulation calls, usually originating from CRM"/>
+            <tns:constant name="_TEST_COMMON_DIR" constValue="TEST"/>
+            <tns:constant name="_TEST_DIR" constValue="TEST/Telia_Recurring_Tests_Change_Processes"/>
+			<!-- extract current year -->
+			<tns:constant name="CURRENT_YEAR" constValue="$DATE_TIME_NOW_items.Year"/>		
+
+        </tns:constants>
+		
+        <tns:parameters>
+            <tns:parameter name="sessionDefinitionFileList" type="string"/>
+			<tns:parameter name="generateCit" type="string"/>
+            <tns:parameter name="validateCitEnabled" type="string" defaultValue="false"/>
+			<tns:parameter name="wsEndpointPropertyRef" type="string"/>
+			<tns:parameter name="wsRequestTemplate" type="string"/>
+
+			
+			<tns:parameter name="ciPropertiesFile" type="string"/>
+			<tns:parameter name="consumptionDate" type="date"/>
+			<tns:parameter name="sapCcApi" type="string"/>
+			<tns:parameter name="testExtension" type="string"/>
+			<tns:parameter name="suspensionStartDate" type="date"/>
+			<tns:parameter name="suspensionEndDate" type="date"/>
+			
+			<tns:parameter name="EVENT_DATE" type="date"/>
+			<tns:parameter name="USER_SERVICE_ID" type="string"/>
+			<tns:parameter name="SUBSCRIBER_ACCOUNT_ID" type="string"/>
+			<tns:parameter name="PROVIDER_CONTRACT_ID" type="string"/>
+
+			<tns:parameter name="validateNotificationEnabled" type="string" defaultValue="false"/>
+		</tns:parameters>
+    </tns:header>
+	
+	<tns:testData>		
+		<tns:test>
+            <tns:id>1</tns:id>
+            <tns:labels>TRIGGER_LOCK_B2B</tns:labels>
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-trigger-lock.properties"/>
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-lock.xml"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<!-- customer data -->
+			<tns:parameter name="USER_SERVICE_ID" paramValue="9000000031"/>
+			<tns:parameter name="SUBSCRIBER_ACCOUNT_ID" paramValue="900000000000000000000000000019"/>
+            <tns:parameter name="PROVIDER_CONTRACT_ID" paramValue="90000000000000000025"/>	
+            <!-- consumption date for charge/blankCharge request and validation -->
+            <tns:parameter name="consumptionDate" paramValue="${CURRENT_YEAR}-04-05T11:32:12"/>
+			<tns:parameter name="suspensionStartDate" paramValue="${CURRENT_YEAR}-04-05T00:00:00"/>
+        </tns:test>
+			
+		<tns:test>
+            <tns:id>2</tns:id>
+            <tns:labels>TRIGGER_UNLOCK_B2B</tns:labels>
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-trigger-unlock.properties"/>
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-lock.xml"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<!-- customer data -->
+			<tns:parameter name="USER_SERVICE_ID" paramValue="9000000031"/>
+			<tns:parameter name="SUBSCRIBER_ACCOUNT_ID" paramValue="900000000000000000000000000019"/>
+            <tns:parameter name="PROVIDER_CONTRACT_ID" paramValue="90000000000000000025"/>	
+            <!-- consumption date for charge/blankCharge request and validation -->
+            <tns:parameter name="consumptionDate" paramValue="${CURRENT_YEAR}-04-27T08:03:14"/>
+			<tns:parameter name="suspensionStartDate" paramValue="${CURRENT_YEAR}-04-05T00:00:00"/>
+			<tns:parameter name="suspensionEndDate" paramValue="${CURRENT_YEAR}-04-27T08:03:14"/>
+        </tns:test>
+
+    </tns:testData>
+</tns:testTemplate>

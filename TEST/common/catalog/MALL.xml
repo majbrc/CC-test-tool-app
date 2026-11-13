@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objectSet version="5.0.6.10">
+  <pnrObjectSet>
+    <chargeableItemClass id="MALL" serviceProvider="O2C" description="Allowance BIT creation">
+      <prop name="ALW_QTY" description="Allowance quantity" type="number"/>
+      <prop name="ALW_UNIT" description="Unit of measure" type="string"/>
+      <prop name="RATE_PLAN" description="Rate plan" type="string"/>
+      <prop name="PRODUCT_CODE" description="Product code" type="string"/>
+      <prop name="PRODUCT_TYPE" description="Product type" type="string"/>
+      <prop name="EXTERNAL_ID" description="External ID" type="string"/>
+      <prop name="COUNTER_ID" description="Internal counter ID" type="string"/>
+      <prop name="TRAFFIC_TYPE" description="Traffic type" type="string"/>
+      <prop name="ZONE" description="Zone" type="string"/>
+      <prop name="ALW_VLD_END" description="Allowance validity end" type="date"/>
+    </chargeableItemClass>
+  </pnrObjectSet>
+</objectSet>

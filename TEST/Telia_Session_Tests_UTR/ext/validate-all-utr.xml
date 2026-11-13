@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+      <!-- $genInfo -->
+      <tns:extension xmlns:tns="https://www.w3schools.com"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="https://www.w3schools.com ../templates/test-inputs/test-extension.xsd">
+          <!-- this execution point is executed before session starts -->
+          <tns:executionPoint id="AFTER">
+		  <tns:actions>
+         <tns:action id="chargingContractAllowanceFind" name="Find allowances on provider contract">
+         <tns:property name="subscriberAccountId">${SUBSCRIBER_ACCOUNT_ID}</tns:property>
+         <tns:property name="providerContractId">${PROVIDER_CONTRACT_ID}</tns:property>
+         <tns:validations id="Verify allowance find response">
+             <tns:validate id="allowanceFindResponse" name="Validation of allowance find response" enabled="true">
+                 <tns:allowances>
+                     <tns:allowance expectedNumber="1" name="Find allowances in state active - there should be 1 of them">
+						<tns:alwPlanId expectedValue="AP_UTR_T03"/>
+                        <tns:alwStatus expectedValue="active"/>
+						<tns:alwParameters>
+                             <!-- parameter type can be: string | date | number -->
+                             <tns:alwParameter name="PACK_SEL01" type="string" expectedValue="CHLIM"/>
+                         </tns:alwParameters>
+						 <tns:alwCounters>
+                             <tns:alwCounter name="BUCKET_VALUE" expectedValue="${bucketValueChargingLimit}" enabled="true"/>
+							 <tns:alwCounter name="BILLING_PERIOD_USAGE" expectedValue="${billingPeriodUsageChargingLimit}" enabled="true"/>
+                         </tns:alwCounters>
+                     </tns:allowance>
+					 <tns:allowance expectedNumber="1" name="Find allowances in state active - there should be 1 of them">
+						<tns:alwPlanId expectedValue="AP_UTR_T03"/>
+                        <tns:alwStatus expectedValue="active"/>
+						<tns:alwParameters>
+                             <!-- parameter type can be: string | date | number -->
+                             <tns:alwParameter name="PACK_SEL01" type="string" expectedValue="RCC"/>
+                         </tns:alwParameters>
+						 <tns:alwCounters>
+                             <tns:alwCounter name="BUCKET_VALUE" expectedValue="${bucketValueRCC}" enabled="true"/>
+							 <tns:alwCounter name="BILLING_PERIOD_USAGE" expectedValue="${billingPeriodUsageRCC}" enabled="true"/>
+                         </tns:alwCounters>
+                     </tns:allowance>
+                 </tns:allowances>
+             </tns:validate>
+         </tns:validations>
+		 
+		 </tns:action>
+	 </tns:actions>
+		 
+		 <tns:validations>
+		 <tns:validate id="notifications" name="Validate received notifications from test notification listener" enabled="${validateNotificationEnabled}">
+                 <tns:notifications>
+                     <tns:notification>
+                         <tns:notificationCode expectedValue="CHLIM_NOTIFICATION" numberOfOccurances="1"/>
+                         <tns:notificationMessage expectedValue="CHARGING_LIMIT_THRESHOLD"/>
+                         <tns:notificationParameter name="computed.THRESHOLD" expectedValue="${threshold}"/>
+                     </tns:notification>
+                 </tns:notifications>
+             </tns:validate>
+         </tns:validations>
+     </tns:executionPoint>
+	 
+         
+</tns:extension>

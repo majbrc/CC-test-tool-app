@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objectSet version="5.0.6.13">
+  <pnrObjectSet>
+    <chargeableItemClass id="TUSF" serviceProvider="O2C" description="Telia Usage Fixed Voice">
+      <prop name="VTPOS" description="Contract: Item Number in Character Format" type="string"/>
+      <prop name="VKONT" description="Contract Account Number" type="string"/>
+      <prop name="CIT_QUANTITY" description="Quantity Consumed for the Consumption Item" type="number"/>
+      <prop name="CIT_QTY_UNIT" description="Unit of Measure for Quantity Consumed" type="string"/>
+      <prop name="RATE_BASEDATE" description="Baseline Date for Period Assignment in Rating" type="date"/>
+      <prop name="RATE_FIRST" description="Target Date for Rating" type="date"/>
+      <prop name="CITTYPE" description="Consumption Item Type" type="string"/>
+      <prop name="CITDATE" description="Date of Origin of Consumption Item" type="date"/>
+      <prop name="CITTIME" description="Time of Origin of Consumption Item in CHAR format" type="string"/>
+      <prop name="SIMULATED" description="Consumption Item Is Simulated" type="string"/>
+      <prop name="CITDATE_FROM" description="Start of Consumption Period (Date)" type="date"/>
+      <prop name="CITDATE_TO" description="End of Consumption Period (Date)" type="date"/>
+      <prop name="CIT_AMOUNT" description="Amount of Consumption Item" type="number"/>
+      <prop name="CIT_CURR" description="Currency for Amounts of the Consumption Item" type="string"/>
+      <prop name="ZZCRM_CALL_DEST" description="Call destination" type="string"/>
+      <prop name="ZZCRM_CALL_TYPE" description="Call type" type="string"/>
+      <prop name="ZZCRM_OFFER" description="Offer" type="string"/>
+      <prop name="ZZCRM_PROD_CHAR" description="Product characteristic" type="string"/>
+      <prop name="ZZCRM_PROD_LONG" description="Product Number" type="string"/>
+      <prop name="ZZCRM_REF1" description="Reference 1" type="string"/>
+      <prop name="ZZCRM_REF10" description="Reference 10" type="string"/>
+      <prop name="ZZCRM_REF2" description="Reference 2" type="string"/>
+      <prop name="ZZCRM_REF3" description="Reference 3" type="string"/>
+      <prop name="ZZCRM_REF4" description="Reference 4" type="string"/>
+      <prop name="ZZCRM_REF5" description="Reference 5" type="string"/>
+      <prop name="ZZCRM_REF6" description="Reference 6" type="string"/>
+      <prop name="ZZCRM_REF7" description="Reference 7" type="string"/>
+      <prop name="ZZCRM_REF8" description="Reference 8" type="string"/>
+      <prop name="ZZCRM_REF9" description="Reference 9" type="string"/>
+      <prop name="ZZMEDIATION_ID" description="Mediation ID" type="string"/>
+      <prop name="ZZUSAGE_TEXT" description="Text" type="string"/>
+      <prop name="ZZWWFIM" description="Financial material" type="string"/>
+      <prop name="Billing_Class" description="Billing Class" type="string"/>
+      <prop name="Called_Party_Address" description="Called party" type="string"/>
+      <prop name="Calling_Party_Address" description="Calling party" type="string"/>
+      <prop name="Completion_code" description="Completion code" type="string"/>
+      <prop name="Duration" description="Duration" type="number"/>
+      <prop name="Usage_Type" description="Usage type" type="string"/>
+      <prop name="GPART" description="Business Partner Number" type="string"/>
+      <prop name="BILLING_PARTY" description="Billing party to be charged" type="string"/>
+      <prop name="LT_OPERATOR_ID" description="Operator ID in case of number portability" type="string"/>
+      <prop name="ACCESS_USERID_TYPE" description="Consumer ID Type" type="string"/>
+      <prop name="CITTIME_FROM" description="Time of Origin of Consumption Item in CHAR format" type="string"/>
+      <prop name="CITTIME_TO" description="Time of Origin of Consumption Item in CHAR format" type="string"/>
+    </chargeableItemClass>
+  </pnrObjectSet>
+</objectSet>

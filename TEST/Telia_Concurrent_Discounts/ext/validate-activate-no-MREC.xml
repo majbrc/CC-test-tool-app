@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+      <!-- $genInfo -->
+<tns:extension xmlns:tns="https://www.w3schools.com"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="https://www.w3schools.com ../templates/test-inputs/test-extension.xsd">
+          <!-- this execution point is executed AFTER the test  -->
+          
+		<tns:executionPoint id="BEFORE">  
+		   <tns:actions>
+			<tns:action id="activateProviderContract" name="Activates provider contract">			
+			<tns:property name="serviceProvider">O2C</tns:property>
+			<tns:property name="subscriberAccountId">${subscriberAccountId}</tns:property>
+			<tns:property name="activateToDate">${activationDate}</tns:property>
+			</tns:action>
+		  </tns:actions>
+	    </tns:executionPoint>	
+		<tns:executionPoint id="AFTER">	 
+		 <tns:validations>
+			<tns:validate id="notifications" name="Validate received notifications from test notification listener" enabled="true">
+                 <tns:notifications>
+                     <tns:notification>
+                         <tns:notificationCode expectedValue="RECURRING_VALIDATION" numberOfOccurances="0"/>			 						 						 
+                     </tns:notification>
+				</tns:notifications>
+             </tns:validate>
+         </tns:validations> 
+		</tns:executionPoint>
+         
+</tns:extension>

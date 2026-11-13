@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Usage Scenarios on MHS User with Unlimited Allowances" parallel="false" preserve-order="true">
+
+	<test name="Remove test user" parallel="false" preserve-order="true" enabled="false">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_MHS_UNL/test-input-01.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+    <test name="Create test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_MHS_UNL/test-input-01.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_IMPORT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t920_execute_soap_request"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Activate UTR" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_MHS_UNL/test-input-01.xml"/>
+        <parameter name="testFilterLabel" value="UTR_ACTIVATE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Activate Voice and SMS allowances" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_MHS_UNL/test-input-01.xml"/>
+        <parameter name="testFilterLabel" value="ALW_ACTIVATE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Mobile voice calls" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_MHS_UNL/test-input-01-voi.xml"/>
+        <parameter name="testFilterLabel" value="VOI"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Mobile messaging" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_MHS_UNL/test-input-01-msg.xml"/>
+        <parameter name="testFilterLabel" value="MSG"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Mobile data" parallel="false" preserve-order="true" enabled="false">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_MHS_UNL/test-input-01-data.xml"/>
+        <parameter name="testFilterLabel" value="DATA"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="PGW" parallel="false" preserve-order="true" enabled="false">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_MHS_UNL/test-input-01-pgw.xml"/>
+        <parameter name="testFilterLabel" value="PGW"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+	
+	<test name="Remove test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_MHS_UNL/test-input-01.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+</suite>

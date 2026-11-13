@@ -1,0 +1,7 @@
+.w3-code-error,.w3-codespan{font-family:Consolas,"courier new";font-size:16px}
+.w3-code-error{width:auto;background-color:#fff;padding:8px 12px;border-left:4px solid #FF0000;word-wrap:break-word}
+.w3-code-warning,.w3-codespan{font-family:Consolas,"courier new";font-size:16px}
+.w3-code-warning{width:auto;background-color:#fff;padding:8px 12px;border-left:4px solid #FFeb3b;word-wrap:break-word}
+.w3-btn-description,{border:none;display:inline-block;outline:0;padding:8px 16px;vertical-align:middle;overflow:hidden;text-decoration:none;color:inherit;background-color:inherit;text-align:right;cursor:pointer;word-wrap:break-word}
+.w3-button-log{border:none;display:inline-block;padding:1px 16px;vertical-align:middle;overflow:hidden;text-decoration:none;color:inherit;background-color:inherit;text-align:center;cursor:pointer;white-space:nowrap}
+xmp{ white-space:pre-wrap; word-wrap:break-word; }

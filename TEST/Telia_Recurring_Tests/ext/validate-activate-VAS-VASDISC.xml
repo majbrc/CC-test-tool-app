@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+      <!-- $genInfo -->
+<tns:extension xmlns:tns="https://www.w3schools.com"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="https://www.w3schools.com ../templates/test-inputs/test-extension.xsd">
+          <!-- this execution point is executed AFTER the test  -->
+          
+		<tns:executionPoint id="BEFORE">  
+		   <tns:actions>
+			<tns:action id="activateProviderContract" name="Activates provider contract">			
+			<tns:property name="serviceProvider">O2C</tns:property>
+			<tns:property name="subscriberAccountId">${subscriberAccountId}</tns:property>
+			<tns:property name="activateToDate">${activationDate}</tns:property>
+			</tns:action>
+		  </tns:actions>
+	    </tns:executionPoint>
+		
+		<tns:executionPoint id="AFTER">	 
+		 <tns:validations>
+			<tns:validate id="notifications" name="Validate received notifications from test notification listener" enabled="true">
+                 <tns:notifications>
+					 <tns:notification>
+                         <tns:notificationCode expectedValue="RECURRING_VALIDATION" numberOfOccurances="1"/>
+                         <tns:notificationMessage expectedValue="REC_DEBIT"/>
+                         <tns:notificationParameter name="parameter.AMOUNT" expectedValue="${amount2}"/>
+						 <tns:notificationParameter name="parameter.PRODUCT" expectedValue="${product2}"/>
+						 <tns:notificationParameter name="parameter.BITTYPE" expectedValue="${bittypedeb}"/>
+						 <tns:notificationParameter name="parameter.SUBPROCESS" expectedValue="${subprocess}"/>
+						 <tns:notificationParameter name="parameter.DATE_FROM" expectedValue="${fromDate}"/>
+						 <tns:notificationParameter name="parameter.DATE_TO" expectedValue="${toDate}"/>	
+                     </tns:notification>
+					 <tns:notification>
+                         <tns:notificationCode expectedValue="RECURRING_VALIDATION" numberOfOccurances="1"/>
+                         <tns:notificationMessage expectedValue="REC_CREDIT"/>
+                         <tns:notificationParameter name="parameter.AMOUNT" expectedValue="${amount3}"/>
+					     <tns:notificationParameter name="parameter.PRODUCT" expectedValue="${product2}"/>
+						 <tns:notificationParameter name="parameter.BITTYPE" expectedValue="${bittypecre}"/>
+						 <tns:notificationParameter name="parameter.SUBPROCESS" expectedValue="${subprocess}"/>
+						 <tns:notificationParameter name="parameter.DATE_FROM" expectedValue="${fromDate}"/>
+						 <tns:notificationParameter name="parameter.DATE_TO" expectedValue="${toDate}"/>	
+                     </tns:notification>
+                 </tns:notifications>
+             </tns:validate>
+         </tns:validations> 
+		</tns:executionPoint>
+	
+         
+</tns:extension>

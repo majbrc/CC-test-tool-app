@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $genInfo -->
+<tns:testTemplate xmlns:tns="https://www.w3schools.com"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.w3schools.com ../common/xsd/test-inputs.xsd">
+    <tns:header>
+        <tns:constants>
+            <tns:constant name="__META_TITLE__" constValue="Initial contract and discount activation"/>
+            <tns:constant name="__META_DESCRIPTION__" constValue="Concurrent discounts"/>
+            <tns:constant name="_TEST_COMMON_DIR" constValue="TEST"/>
+            <tns:constant name="_TEST_DIR" constValue="TEST/Telia_Concurrent_Discounts"/>			
+        </tns:constants>
+		
+        <tns:parameters>
+           <!--framework-->
+			<tns:parameter name="testExtension" type="string"/>
+			<tns:parameter name="startNotifListener" type="string"/>
+			<tns:parameter name="startNotifListenerDelayMills" type="number"/>
+			<tns:parameter name="stopNotifListenerDelayMills" type="number"/>
+			<!--activation-->
+			<tns:parameter name="activationDate" type="date"/>
+			<tns:parameter name="subscriberAccountId" type="string"/>
+			<!--validations-->
+			<tns:parameter name="utrId" type="string"/>
+			<tns:parameter name="bucketValue" type="number"/>
+			<tns:parameter name="billingPeriodUsage" type="number"/>
+			<tns:parameter name="providerContractid" type="string"/>
+			<tns:parameter name="discType1" type="string"/>
+			<tns:parameter name="discPriority1" type="number"/>
+			<tns:parameter name="discEndDate1" type="date"/>
+			<tns:parameter name="discType2" type="string"/>
+			<tns:parameter name="discPriority2" type="number"/>
+			<tns:parameter name="discEndDate2" type="date"/>
+			<tns:parameter name="discType3" type="string"/>
+			<tns:parameter name="discPriority3" type="number"/>
+			<tns:parameter name="discEndDate3" type="date"/>
+			
+			<tns:parameter name="amount1" type="number"/>
+			<tns:parameter name="amount2" type="number"/>
+			<tns:parameter name="amount3" type="number"/>
+			<tns:parameter name="amount4" type="number"/>
+			<tns:parameter name="product1" type="string"/>
+			<tns:parameter name="product2" type="string"/>
+			<tns:parameter name="product3" type="string"/>
+			<tns:parameter name="product4" type="string"/>
+			<tns:parameter name="fromDate1" type="date"/>
+			<tns:parameter name="fromDate2" type="date"/>
+			<tns:parameter name="fromDate3" type="date"/>
+			<tns:parameter name="fromDate4" type="date"/>
+			<tns:parameter name="toDate1" type="date"/>
+			<tns:parameter name="toDate2" type="date"/>
+			<tns:parameter name="toDate3" type="date"/>
+			<tns:parameter name="toDate4" type="date"/>
+		</tns:parameters>
+    </tns:header>
+	
+	<!-- First prorated fee after activation --> 
+	<tns:testData>
+		<tns:test>		    
+            <tns:id>100</tns:id>
+            <tns:labels>ACTIVATE_INIT</tns:labels>
+			<!--setup-->
+			<tns:parameter name="startNotifListener" paramValue="false"/> 
+			<tns:parameter name="startNotifListenerDelayMills" paramValue="100"/>
+			<tns:parameter name="stopNotifListenerDelayMills" paramValue="100"/>			
+            <tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-alw-FEE-FT.xml"/>
+			<!--test-specific parameters-->
+			<tns:parameter name="activationDate" paramValue="2026-04-10T08:25:00"/>
+			<tns:parameter name="subscriberAccountId" paramValue="900000000000000000000000000022"/>
+			<tns:parameter name="providerContractid" paramValue="90000000000000000028"/>
+			
+			<tns:parameter name="discType1" paramValue="FTDSC"/>	
+			<tns:parameter name="discPriority1" paramValue="10"/>	
+			<tns:parameter name="discEndDate1" paramValue="2026-07-01T00:00:01"/>		
+        </tns:test>	
+
+		<tns:test>		    
+            <tns:id>101</tns:id>
+            <tns:labels>ACTIVATE_INIT_CHLIM_CHECK</tns:labels>
+			<!--setup-->
+			<tns:parameter name="startNotifListener" paramValue="false"/> 		
+            <tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-utr.xml"/>
+			<!--test-specific parameters-->
+			<tns:parameter name="activationDate" paramValue="2026-04-11T00:00:00"/>
+			<tns:parameter name="subscriberAccountId" paramValue="900000000000000000000000000022"/>
+			<tns:parameter name="providerContractid" paramValue="90000000000000000028"/>
+			<tns:parameter name="utrId" paramValue="CHLIM"/>
+			<tns:parameter name="bucketValue" paramValue="100"/>		
+			<tns:parameter name="billingPeriodUsage" paramValue="0"/>	
+        </tns:test>	
+
+		<tns:test>		     
+            <tns:id>102</tns:id>
+            <tns:labels>ACTIVATE_APRIL</tns:labels>
+			<!--setup-->
+			<tns:parameter name="startNotifListener" paramValue="true"/> 
+			<tns:parameter name="startNotifListenerDelayMills" paramValue="100"/>
+			<tns:parameter name="stopNotifListenerDelayMills" paramValue="100"/>	 
+            <tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-activate-FEE-FT.xml"/>
+			<!--test-specific parameters-->
+			<tns:parameter name="activationDate" paramValue="2026-05-01T00:00:00"/>  
+			<tns:parameter name="subscriberAccountId" paramValue="900000000000000000000000000022"/>
+			<tns:parameter name="providerContractid" paramValue="90000000000000000028"/>
+			
+			<tns:parameter name="amount1" paramValue="10.5"/>
+			<tns:parameter name="amount2" paramValue="-10.5"/>	
+			<tns:parameter name="product1" paramValue="PR000015"/>
+			<tns:parameter name="product2" paramValue="PR000015"/>			
+			<tns:parameter name="fromDate1" paramValue="2026-04-10T00:00:00"/>
+			<tns:parameter name="toDate1" paramValue="2026-04-30T23:59:59"/>	
+			<tns:parameter name="fromDate2" paramValue="2026-04-10T00:00:00"/>
+			<tns:parameter name="toDate2" paramValue="2026-04-30T23:59:59"/>				
+        </tns:test>			
+		
+		<tns:test>		     
+            <tns:id>102</tns:id>
+            <tns:labels>ACTIVATE_MAY</tns:labels>
+			<!--setup-->
+			<tns:parameter name="startNotifListener" paramValue="true"/> 
+			<tns:parameter name="startNotifListenerDelayMills" paramValue="100"/>
+			<tns:parameter name="stopNotifListenerDelayMills" paramValue="100"/>	 
+            <tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-activate-FEE-FT.xml"/>
+			<!--test-specific parameters-->
+			<tns:parameter name="activationDate" paramValue="2026-06-01T00:00:00"/>  
+			<tns:parameter name="subscriberAccountId" paramValue="900000000000000000000000000022"/>
+			<tns:parameter name="providerContractid" paramValue="90000000000000000028"/>
+			
+			<tns:parameter name="amount1" paramValue="15"/>
+			<tns:parameter name="amount2" paramValue="-15"/>	
+			<tns:parameter name="product1" paramValue="PR000015"/>
+			<tns:parameter name="product2" paramValue="PR000015"/>			
+			<tns:parameter name="fromDate1" paramValue="2026-05-01T00:00:00"/>
+			<tns:parameter name="toDate1" paramValue="2026-05-31T23:59:59"/>	
+			<tns:parameter name="fromDate2" paramValue="2026-05-01T00:00:00"/>
+			<tns:parameter name="toDate2" paramValue="2026-05-31T23:59:59"/>				
+        </tns:test>	
+
+		<tns:test>		    
+            <tns:id>103</tns:id>
+            <tns:labels>ACTIVATE_UO_PROMO</tns:labels>
+			<!--setup-->
+			<tns:parameter name="startNotifListener" paramValue="false"/> 
+			<tns:parameter name="startNotifListenerDelayMills" paramValue="100"/>
+			<tns:parameter name="stopNotifListenerDelayMills" paramValue="100"/>			
+            <tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-alw-FEE-UO-PROMO.xml"/>
+			<!--test-specific parameters-->
+			<tns:parameter name="activationDate" paramValue="2026-06-10T00:00:00"/>
+			<tns:parameter name="subscriberAccountId" paramValue="900000000000000000000000000022"/>
+			<tns:parameter name="providerContractid" paramValue="90000000000000000028"/>
+			<tns:parameter name="discType1" paramValue="UODSC"/>	
+			<tns:parameter name="discPriority1" paramValue="20"/>	
+			<tns:parameter name="discEndDate1" paramValue="2026-11-01T00:00:01"/>	
+			<tns:parameter name="discType2" paramValue="PROMO"/>	
+			<tns:parameter name="discPriority2" paramValue="40"/>	
+			<tns:parameter name="discEndDate2" paramValue="2026-09-01T00:00:01"/>		
+        </tns:test>		
+
+		<tns:test>		     
+            <tns:id>104</tns:id>
+            <tns:labels>ACTIVATE_JUNE</tns:labels>
+			<!--setup-->
+			<tns:parameter name="startNotifListener" paramValue="true"/> 
+			<tns:parameter name="startNotifListenerDelayMills" paramValue="100"/>
+			<tns:parameter name="stopNotifListenerDelayMills" paramValue="100"/>	 
+            <tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-activate-FEE-UO-PROMO.xml"/>
+			<!--test-specific parameters-->
+			<tns:parameter name="activationDate" paramValue="2026-07-01T00:00:00"/>  
+			<tns:parameter name="subscriberAccountId" paramValue="900000000000000000000000000022"/>
+			<tns:parameter name="providerContractid" paramValue="90000000000000000028"/>
+			
+			<tns:parameter name="amount1" paramValue="15"/>
+			<tns:parameter name="amount2" paramValue="-1.74"/>	
+			<tns:parameter name="amount3" paramValue="-1.16"/>	
+			<tns:parameter name="product1" paramValue="PR000015"/>
+			<tns:parameter name="product2" paramValue="PR000015"/>
+			<tns:parameter name="product3" paramValue="PR000015"/>					
+			<tns:parameter name="fromDate1" paramValue="2026-06-01T00:00:00"/>
+			<tns:parameter name="toDate1" paramValue="2026-06-30T23:59:59"/>	
+			<tns:parameter name="fromDate2" paramValue="2026-06-10T00:00:00"/>
+			<tns:parameter name="toDate2" paramValue="2026-06-30T23:59:59"/>	
+			<tns:parameter name="fromDate3" paramValue="2026-06-10T00:00:00"/>
+			<tns:parameter name="toDate3" paramValue="2026-06-30T23:59:59"/>				
+        </tns:test>	
+
+		<tns:test>		     
+            <tns:id>105</tns:id>
+            <tns:labels>ACTIVATE_JULY</tns:labels>
+			<!--setup-->
+			<tns:parameter name="startNotifListener" paramValue="true"/> 
+			<tns:parameter name="startNotifListenerDelayMills" paramValue="100"/>
+			<tns:parameter name="stopNotifListenerDelayMills" paramValue="100"/>	 
+            <tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-activate-FEE-UO-PROMO.xml"/>
+			<!--test-specific parameters-->
+			<tns:parameter name="activationDate" paramValue="2026-08-01T00:00:00"/>  
+			<tns:parameter name="subscriberAccountId" paramValue="900000000000000000000000000022"/>
+			<tns:parameter name="providerContractid" paramValue="90000000000000000028"/>
+			
+			<tns:parameter name="amount1" paramValue="15"/>
+			<tns:parameter name="amount2" paramValue="-2.48"/>	
+			<tns:parameter name="amount3" paramValue="-1.65"/>	
+			<tns:parameter name="product1" paramValue="PR000015"/>
+			<tns:parameter name="product2" paramValue="PR000015"/>
+			<tns:parameter name="product3" paramValue="PR000015"/>				
+			<tns:parameter name="fromDate1" paramValue="2026-07-01T00:00:00"/>
+			<tns:parameter name="toDate1" paramValue="2026-07-31T23:59:59"/>	
+			<tns:parameter name="fromDate2" paramValue="2026-07-01T00:00:00"/>
+			<tns:parameter name="toDate2" paramValue="2026-07-31T23:59:59"/>	
+			<tns:parameter name="fromDate3" paramValue="2026-07-01T00:00:00"/>
+			<tns:parameter name="toDate3" paramValue="2026-07-31T23:59:59"/>				
+        </tns:test>	
+
+		<tns:test>		     
+            <tns:id>106</tns:id>
+            <tns:labels>ACTIVATE_T1</tns:labels>
+			<!--setup-->
+			<tns:parameter name="startNotifListener" paramValue="false"/>  
+            <tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-alw-FEE-UO-T1-PROMO.xml"/>
+			<!--test-specific parameters-->
+			<tns:parameter name="activationDate" paramValue="2026-08-07T00:00:00"/>  
+			<tns:parameter name="subscriberAccountId" paramValue="900000000000000000000000000022"/>
+			<tns:parameter name="providerContractid" paramValue="90000000000000000028"/>
+			<tns:parameter name="utrId" paramValue="CHLIM"/>
+			<tns:parameter name="bucketValue" paramValue="100"/>		
+			<tns:parameter name="billingPeriodUsage" paramValue="9.41"/>
+			
+			<tns:parameter name="discType1" paramValue="UODSC"/>	
+			<tns:parameter name="discPriority1" paramValue="20"/>	
+			<tns:parameter name="discEndDate1" paramValue="2026-11-01T00:00:01"/>	
+			<tns:parameter name="discType2" paramValue="T1DSC"/>	
+			<tns:parameter name="discPriority2" paramValue="30"/>	
+			<tns:parameter name="discEndDate2" paramValue="2026-11-01T00:00:01"/>			
+			<tns:parameter name="discType3" paramValue="PROMO"/>	
+			<tns:parameter name="discPriority3" paramValue="40"/>	
+			<tns:parameter name="discEndDate3" paramValue="2026-09-01T00:00:01"/>			
+        </tns:test>	
+
+		<tns:test>		     
+            <tns:id>107</tns:id>
+            <tns:labels>ACTIVATE_AUGUST</tns:labels>
+			<!--setup-->
+			<tns:parameter name="startNotifListener" paramValue="true"/> 
+			<tns:parameter name="startNotifListenerDelayMills" paramValue="100"/>
+			<tns:parameter name="stopNotifListenerDelayMills" paramValue="100"/>	 
+            <tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-activate-FEE-UO-T1-PROMO.xml"/>
+			<!--test-specific parameters-->
+			<tns:parameter name="activationDate" paramValue="2026-09-01T00:00:00"/>  
+			<tns:parameter name="subscriberAccountId" paramValue="900000000000000000000000000022"/>
+			<tns:parameter name="providerContractid" paramValue="90000000000000000028"/>
+			<tns:parameter name="utrId" paramValue="CHLIM"/>
+			<tns:parameter name="bucketValue" paramValue="100"/>		
+			<tns:parameter name="billingPeriodUsage" paramValue="9.39"/>
+			
+			<tns:parameter name="amount1" paramValue="15"/>
+			<tns:parameter name="amount2" paramValue="-2.48"/>	
+			<tns:parameter name="amount3" paramValue="-2.63"/>	
+			<tns:parameter name="amount4" paramValue="-0.48"/>	
+			<tns:parameter name="product1" paramValue="PR000015"/>
+			<tns:parameter name="product2" paramValue="PR000015"/>
+			<tns:parameter name="product3" paramValue="PR000015"/>	
+			<tns:parameter name="product4" paramValue="PR000015"/>				
+			<tns:parameter name="fromDate1" paramValue="2026-08-01T00:00:00"/>
+			<tns:parameter name="toDate1" paramValue="2026-08-31T23:59:59"/>	
+			<tns:parameter name="fromDate2" paramValue="2026-08-01T00:00:00"/>
+			<tns:parameter name="toDate2" paramValue="2026-08-31T23:59:59"/>	
+			<tns:parameter name="fromDate3" paramValue="2026-08-06T00:00:00"/>
+			<tns:parameter name="toDate3" paramValue="2026-08-31T23:59:59"/>	
+			<tns:parameter name="fromDate4" paramValue="2026-08-01T00:00:00"/>
+			<tns:parameter name="toDate4" paramValue="2026-08-09T23:59:59"/>				
+        </tns:test>			
+
+		<tns:test>		     
+            <tns:id>108</tns:id>
+            <tns:labels>ACTIVATE_SEPTEMBER</tns:labels>
+			<!--setup-->
+			<tns:parameter name="startNotifListener" paramValue="true"/> 
+			<tns:parameter name="startNotifListenerDelayMills" paramValue="100"/>
+			<tns:parameter name="stopNotifListenerDelayMills" paramValue="100"/>	 
+            <tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-activate-FEE-UO-PROMO.xml"/>
+			<!--test-specific parameters-->
+			<tns:parameter name="activationDate" paramValue="2026-10-01T00:00:00"/>  
+			<tns:parameter name="subscriberAccountId" paramValue="900000000000000000000000000022"/>
+			<tns:parameter name="providerContractid" paramValue="90000000000000000028"/>
+			<tns:parameter name="utrId" paramValue="CHLIM"/>
+			<tns:parameter name="bucketValue" paramValue="100"/>		
+			<tns:parameter name="billingPeriodUsage" paramValue="14.22"/>
+			
+			<tns:parameter name="amount1" paramValue="15"/>
+			<tns:parameter name="amount2" paramValue="-2.48"/>	
+			<tns:parameter name="amount3" paramValue="-3.13"/>	
+			<tns:parameter name="product1" paramValue="PR000015"/>
+			<tns:parameter name="product2" paramValue="PR000015"/>
+			<tns:parameter name="product3" paramValue="PR000015"/>				
+			<tns:parameter name="fromDate1" paramValue="2026-09-01T00:00:00"/>
+			<tns:parameter name="toDate1" paramValue="2026-09-30T23:59:59"/>	
+			<tns:parameter name="fromDate2" paramValue="2026-09-01T00:00:00"/>
+			<tns:parameter name="toDate2" paramValue="2026-09-30T23:59:59"/>	
+			<tns:parameter name="fromDate3" paramValue="2026-09-01T00:00:00"/>
+			<tns:parameter name="toDate3" paramValue="2026-09-30T23:59:59"/>				
+        </tns:test>		
+
+		<tns:test>		     
+            <tns:id>109</tns:id>
+            <tns:labels>ACTIVATE_OCTOBER</tns:labels>
+			<!--setup-->
+			<tns:parameter name="startNotifListener" paramValue="true"/> 
+			<tns:parameter name="startNotifListenerDelayMills" paramValue="100"/>
+			<tns:parameter name="stopNotifListenerDelayMills" paramValue="100"/>	 
+            <tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-activate-FEE-UO-PROMO.xml"/>
+			<!--test-specific parameters-->
+			<tns:parameter name="activationDate" paramValue="2026-11-01T00:00:00"/>  
+			<tns:parameter name="subscriberAccountId" paramValue="900000000000000000000000000022"/>
+			<tns:parameter name="providerContractid" paramValue="90000000000000000028"/>
+			<tns:parameter name="utrId" paramValue="CHLIM"/>
+			<tns:parameter name="bucketValue" paramValue="100"/>		
+			<tns:parameter name="billingPeriodUsage" paramValue="0"/>
+			
+			<tns:parameter name="amount1" paramValue="15"/>
+			<tns:parameter name="amount2" paramValue="-0.24"/>	
+			<tns:parameter name="amount3" paramValue="-0.54"/>	
+			<tns:parameter name="product1" paramValue="PR000015"/>
+			<tns:parameter name="product2" paramValue="PR000015"/>
+			<tns:parameter name="product3" paramValue="PR000015"/>				
+			<tns:parameter name="fromDate1" paramValue="2026-10-01T00:00:00"/>
+			<tns:parameter name="toDate1" paramValue="2026-10-31T23:59:59"/>	
+			<tns:parameter name="fromDate2" paramValue="2026-10-01T00:00:00"/>
+			<tns:parameter name="toDate2" paramValue="2026-10-03T23:59:59"/>	
+			<tns:parameter name="fromDate3" paramValue="2026-10-01T00:00:00"/>
+			<tns:parameter name="toDate3" paramValue="2026-10-05T23:59:59"/>				
+        </tns:test>	
+
+		<tns:test>		     
+            <tns:id>109</tns:id>
+            <tns:labels>ACTIVATE_NOVEMBER</tns:labels>
+			<!--setup-->
+			<tns:parameter name="startNotifListener" paramValue="true"/> 
+			<tns:parameter name="startNotifListenerDelayMills" paramValue="100"/>
+			<tns:parameter name="stopNotifListenerDelayMills" paramValue="100"/>	 
+            <tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-activate-FEE-UO.xml"/>
+			<!--test-specific parameters-->
+			<tns:parameter name="activationDate" paramValue="2026-12-01T00:00:00"/>  
+			<tns:parameter name="subscriberAccountId" paramValue="900000000000000000000000000022"/>
+			<tns:parameter name="providerContractid" paramValue="90000000000000000028"/>
+			<tns:parameter name="utrId" paramValue="CHLIM"/>
+			<tns:parameter name="bucketValue" paramValue="100"/>		
+			<tns:parameter name="billingPeriodUsage" paramValue="0"/>
+			
+			<tns:parameter name="amount1" paramValue="15.93"/>
+			<tns:parameter name="amount2" paramValue="-2.48"/>		
+			<tns:parameter name="product1" paramValue="OF000013"/>
+			<tns:parameter name="product2" paramValue="OF000013"/>		
+			<tns:parameter name="fromDate1" paramValue="2026-11-01T00:00:00"/>
+			<tns:parameter name="toDate1" paramValue="2026-11-30T23:59:59"/>	
+			<tns:parameter name="fromDate2" paramValue="2026-11-01T00:00:00"/>
+			<tns:parameter name="toDate2" paramValue="2026-11-30T23:59:59"/>				
+        </tns:test>	
+    </tns:testData>
+</tns:testTemplate>

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Concurrent discounts tests - Scenario 7, unified Charge Plan" parallel="false" preserve-order="true">
+
+	<test name="Remove Scenario 7 test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Concurrent_Discounts/test-input-user-uni-scenario7.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+    <test name="Create Scenario 7 test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Concurrent_Discounts/test-input-user-uni-scenario7.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_IMPORT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t920_execute_soap_request"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Initial contract activation" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Concurrent_Discounts/test-input-act-scenario7.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_INIT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Activation of Charging Limit" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Concurrent_Discounts/test-input-utr-scenario7.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_ACTIVATE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Check Charging Limit on next midnight" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Concurrent_Discounts/test-input-act-scenario7.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_INIT_CHLIM_CHECK"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Activate contract at the end of April" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Concurrent_Discounts/test-input-act-scenario7.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_APRIL"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Check Charging Limit at the beginning of May" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Concurrent_Discounts/test-input-utr-scenario7.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_VALIDATE_MAY"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="T1 discount activation" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Concurrent_Discounts/test-input-act-scenario7.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_T1"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Activate contract at the end of May" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Concurrent_Discounts/test-input-act-scenario7.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_MAY"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Check Charging Limit at the beginning of June" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Concurrent_Discounts/test-input-utr-scenario7.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_VALIDATE_JUNE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	<test name="Contract termination" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Concurrent_Discounts/test-input-act-scenario7.xml"/>
+        <parameter name="testFilterLabel" value="CONTRACT_TERMINATION"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+</suite>

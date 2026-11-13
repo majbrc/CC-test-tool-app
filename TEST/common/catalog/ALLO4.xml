@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objectSet version="5.0.6.10">
+  <pnrObjectSet>
+    <chargeableItemClass id="ALLO4" serviceProvider="O2C" description="Allowance consumption item class">
+      <prop name="VTPOS" description="Contract: Item Number in Character Format" type="string"/>
+      <prop name="VKONT" description="Contract Account Number" type="string"/>
+      <prop name="RATE_BASEDATE" description="Baseline Date for Period Assignment in Rating" type="date"/>
+      <prop name="RATE_FIRST" description="Target Date for Rating" type="date"/>
+      <prop name="CITDATE" description="Baseline Date for Period Assignment in Rating" type="date"/>
+      <prop name="CITTIME" description="Contract: Item Number in Character Format" type="string"/>
+      <prop name="SIMULATED" description="Consumption Item Is Simulated" type="string"/>
+      <prop name="ALLOW_DEF_ID" description="Allowance Name" type="string"/>
+      <prop name="ALLOW_START_DATE" description="Time Stamp Valid From Date of Allowance (ISO8601)" type="date"/>
+      <prop name="ZZ_RATE_PLAN" description="Rate plan data element" type="string"/>
+      <prop name="ZZ_PACK_ID" description="Package ID" type="string"/>
+      <prop name="ZZ_QUO_OUT_VAL" description="Outgoing quota value" type="number"/>
+      <prop name="ZZ_OFFER_ID" description="CRM main offer product ID" type="string"/>
+      <prop name="ZZ_PRIORITY" description="Execution priority of allowance" type="number"/>
+      <prop name="ZZ_PACK_TYPE" description="Package type" type="string"/>
+      <prop name="ZZ_PROCESS" description="Business process" type="string"/>
+      <prop name="ZZ_PRODUCT_ID" description="CRMl package product ID" type="string"/>
+      <prop name="ZZ_PRORATE" description="Prorate flag" type="string"/>
+      <prop name="ZZ_QUO_INC_VAL" description="Incoming quota value" type="number"/>
+      <prop name="ZZ_QUO_UOM" description="Quota Unit of Measurement" type="string"/>
+      <prop name="ZZ_PER_DUR" description="Period duration value" type="number"/>
+      <prop name="ZZ_PER_TYPE" description="Period duration type" type="string"/>
+      <prop name="ZZ_VLD_DUR" description="Duration of allowance in period units" type="number"/>
+      <prop name="ZZ_ZONE_DEST" description="Destination allowance zone" type="string"/>
+      <prop name="ZZ_ZONE_ORIG" description="Origination allowance zone" type="string"/>
+      <prop name="ZZ_PACK_LOC" description="Packge eligiblity location" type="string"/>
+      <prop name="ZZ_EXT_ALW_ID" description="External unique allowance identifier" type="string"/>
+    </chargeableItemClass>
+  </pnrObjectSet>
+</objectSet>

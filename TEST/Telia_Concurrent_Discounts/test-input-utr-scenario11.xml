@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $genInfo -->
+<tns:testTemplate xmlns:tns="https://www.w3schools.com"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.w3schools.com ../common/xsd/test-inputs.xsd">
+    <tns:header>
+        <tns:constants>
+            <tns:constant name="__META_TITLE__" constValue="UTR actions"/>
+            <tns:constant name="__META_DESCRIPTION__" constValue="Usage tracking component specific actions"/>
+            <tns:constant name="_TEST_COMMON_DIR" constValue="TEST"/>
+            <tns:constant name="_TEST_DIR" constValue="TEST/Telia_Session_Tests_UTR"/>
+            <tns:constant name="USER_SERVICE_ID" constValue="9000000043"/>	
+            <tns:constant name="SUBSCRIBER_ACCOUNT_ID" constValue="900000000000000000000000000031"/>	
+            <tns:constant name="PROVIDER_CONTRACT_ID" constValue="90000000000000000037"/>
+			
+
+        </tns:constants>
+		
+        <tns:parameters>
+            <tns:parameter name="sessionDefinitionFileList" type="string"/>
+			<tns:parameter name="generateCit" type="string"/>
+            <tns:parameter name="validateCitEnabled" type="string" defaultValue="false"/>
+			<tns:parameter name="wsEndpointPropertyRef" type="string"/>
+			<tns:parameter name="wsRequestTemplate" type="string"/>
+			<tns:parameter name="pcId" type="string"/>
+			<tns:parameter name="subscriberAccountId" type="string"/>
+			<tns:parameter name="providerContractid" type="string"/>
+			<tns:parameter name="USER_SERVICE_ID" type="string"/>
+			
+			<tns:parameter name="ciPropertiesFile" type="string"/>
+			<tns:parameter name="consumptionDate" type="date"/>
+			<tns:parameter name="sapCcApi" type="string"/>
+			<tns:parameter name="testExtension" type="string"/>
+			
+			<tns:parameter name="rccLimit" type="number"/>
+			<tns:parameter name="currentRccUsage" type="number"/>
+			<tns:parameter name="billingPeriodUsage" type="number"/>		
+			<tns:parameter name="bucketValue" type="number"/>
+			<tns:parameter name="utrLimit" type="number"/>
+			<tns:parameter name="zz_utr_id" type="string"/>
+			<tns:parameter name="allow_def_id" type="string"/>
+			<tns:parameter name="zz_ext_alw_id" type="string"/>
+			<tns:parameter name="utrId" type="string"/>
+			<tns:parameter name="validateNotificationEnabled" type="string" defaultValue="false"/>
+		</tns:parameters>
+    </tns:header>
+	
+	<tns:testData>	
+		<tns:test>
+            <tns:id>10</tns:id>
+            <tns:labels>CHLIM_ACTIVATE</tns:labels>
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-activate-utr.properties"/>
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+            <!-- consumption date for charge/blankCharge request -->
+            <tns:parameter name="consumptionDate" paramValue="2026-04-05T08:25:00"/>
+			<tns:parameter name="utrLimit" paramValue="100"/>
+			<tns:parameter name="zz_utr_id" paramValue="CHLIM"/>
+			<tns:parameter name="allow_def_id" paramValue="AAA_AAAAA_AMW"/>
+			<tns:parameter name="USER_SERVICE_ID" paramValue="9000000043"/>
+        </tns:test>
+		<tns:test>
+            <tns:id>21</tns:id>
+            <tns:labels>CHLIM_VALIDATE_MAY</tns:labels>
+            <!-- path to the properties file --> 
+            <tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-utr.xml"/>
+			<!--test-specific parameters-->
+			<tns:parameter name="subscriberAccountId" paramValue="900000000000000000000000000031"/>
+			<tns:parameter name="providerContractid" paramValue="90000000000000000037"/>
+			<tns:parameter name="utrId" paramValue="CHLIM"/>
+			<tns:parameter name="bucketValue" paramValue="100"/>		
+			<tns:parameter name="billingPeriodUsage" paramValue="7.45"/>
+        </tns:test>
+		
+    </tns:testData>
+</tns:testTemplate>

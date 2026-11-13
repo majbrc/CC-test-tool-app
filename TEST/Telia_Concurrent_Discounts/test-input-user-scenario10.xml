@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $genInfo -->
+<tns:testTemplate xmlns:tns="https://www.w3schools.com"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.w3schools.com ../common/xsd/test-inputs.xsd">
+    <tns:header>
+        <tns:constants>
+            <tns:constant name="__META_TITLE__" constValue="Change of RP fee, prorated RP discounts"/>
+            <tns:constant name="__META_DESCRIPTION__" constValue="Concurrent discounts"/>			
+            <tns:constant name="_TEST_COMMON_DIR" constValue="TEST"/>
+            <tns:constant name="_TEST_DIR" constValue="TEST/Telia_Concurrent_Discounts"/>
+            
+			<!-- parameters for subscriber creation -->
+			<tns:constant name="USER_SERVICE_ID" constValue="9000000042"/>
+			<tns:constant name="SUBSCRIBER_ACCOUNT_ID" constValue="900000000000000000000000000030"/>
+            <tns:constant name="PROVIDER_CONTRACT_ID" constValue="90000000000000000036"/>
+			<tns:constant name="SUBSCRIBER_CODE" constValue="9000000028"/>
+			<tns:constant name="DFL_ACC" constValue="900000000032"/>
+			
+			<tns:constant name="START_DATE" constValue="2026-04-05T08:25:00"/>
+			<tns:constant name="CH_START_DATE" constValue="2026-04-05T00:00:00"/>
+			<tns:constant name="CUSTOMER_TYPE" constValue="B2B"/>
+			<tns:constant name="OFFER_ID" constValue="OF000013"/>
+			<tns:constant name="RATE_PLAN" constValue="TARNYBINIS_MHS"/>
+			<tns:constant name="RP_PRODUCT_ID" constValue="OF000013"/>
+			<tns:constant name="PRICE_KEY_RPFEE" constValue="69D13FEDB5F61711F091025CE470021E"/> 
+			<tns:constant name="PRICE_TABLE_ID_RPFEE" constValue="001DD8B71CFE1EDBA5EF17B39D0E8120"/>
+			<tns:constant name="VAS_PRODUCT_ID" constValue="PR000015"/>
+			<tns:constant name="PRICE_KEY_VASFEE" constValue="960AEDD040C1D4992FEAE4D558AA4B9E"/> 
+			<tns:constant name="PRICE_TABLE_ID_VASFEE" constValue="001DD8B71CFE1EDC93B14A05DFD4C12C"/>
+			
+			<!-- UO discount -->
+			<tns:constant name="PRICE_KEY_UODISC" constValue="4CC9ACD715A7F85F3ADC713E013E84FA"/> 
+			<tns:constant name="CH_UO_START_DATE" constValue="2026-04-05T00:00:00"/>
+			<tns:constant name="CH_UO_END_DATE" constValue="2028-04-04T00:00:00"/>
+			
+			<!-- Promo discount -->
+			<tns:constant name="CH_PROMO_START_DATE" constValue="2026-04-05T00:00:00"/>
+			<tns:constant name="CH_PROMO_END_DATE" constValue="2026-07-04T00:00:00"/>
+			
+			<!-- T1 discount -->
+			<tns:constant name="CH_T1_START_DATE" constValue="2026-04-05T00:00:00"/>
+			<tns:constant name="CH_T1_END_DATE" constValue="2026-05-04T00:00:00"/>			
+        </tns:constants>
+		
+        <tns:parameters>
+            			
+			<tns:parameter name="wsEndpointPropertyRef" type="string"/>
+			<tns:parameter name="wsRequestTemplate" type="string"/>
+			<tns:parameter name="pcId" type="string"/>
+			<tns:parameter name="subscriberAccountId" type="string"/>
+
+		</tns:parameters>
+    </tns:header>
+	
+	<tns:testData>
+	<tns:test>
+            <tns:id>1</tns:id>
+            <tns:labels>SUAC_IMPORT</tns:labels>
+            <tns:parameter name="wsEndpointPropertyRef" paramValue="cc.ws.url.pcexim"/>
+            <tns:parameter name="wsRequestTemplate" paramValue="$_TEST_DIR/templates/suac-template-scenario-suspension.xml"/>
+        </tns:test>
+			
+		<tns:test>
+            <tns:id>999</tns:id>
+            <tns:labels>SUAC_DELETE</tns:labels>
+			<tns:parameter name="pcId" paramValue="${PROVIDER_CONTRACT_ID}"/>
+			<tns:parameter name="subscriberAccountId" paramValue="${SUBSCRIBER_ACCOUNT_ID}"/>
+        </tns:test>
+		
+		
+    </tns:testData>
+</tns:testTemplate>

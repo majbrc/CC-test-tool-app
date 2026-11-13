@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Test cases - recurring fee and Charging Limit - B2C customer" parallel="false" preserve-order="true">
+
+	<test name="Remove test user" parallel="false" preserve-order="true" enabled="false">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_RecFee_Charging_Limit/test-input-user-b2c.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	
+	<test name="Create test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_RecFee_Charging_Limit/test-input-user-b2c.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_IMPORT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t920_execute_soap_request"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Activation of Charging Limit" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_RecFee_Charging_Limit/test-input-utr-b2c.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_ACTIVATE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Update of Charging Limit with prorated VAS fee after contract activation" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_RecFee_Charging_Limit/test-input-act-b2c.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_INITIAL"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Update of Charging Limit with VAS fee in a new month" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_RecFee_Charging_Limit/test-input-act-b2c.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_NEW_MONTH"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Termination of VAS recurring fee" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_RecFee_Charging_Limit/test-input-act-b2c.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_VAS_TERM"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Resumption of VAS recurring fee in the same month as termination" parallel="false" preserve-order="true" enabled="false">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_RecFee_Charging_Limit/test-input-act-b2c.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_VAS_RES_SAME_MONTH"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Termination of VAS recurring fee in current month" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_RecFee_Charging_Limit/test-input-act-b2c.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_VAS_TERM_FOR_NEW_MONTH"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Resumption of VAS recurring fee in the next month" parallel="false" preserve-order="true" enabled="false">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_RecFee_Charging_Limit/test-input-act-b2c.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_VAS_RES_NEW_MONTH"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="New VAS fee with special VAT rate added" parallel="false" preserve-order="true" enabled="false">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_RecFee_Charging_Limit/test-input-act-b2c.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_NEW_VAS_SPEC_VAT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="New VAS fee discount added" parallel="false" preserve-order="true" enabled="false">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_RecFee_Charging_Limit/test-input-act-b2c.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_VAS_DISC"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Apply VAS discount in a new month" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_RecFee_Charging_Limit/test-input-act-b2c.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_VAS_DISC_NEW_MONTH"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Change of Charging Limit to reach 70% threshold" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_RecFee_Charging_Limit/test-input-utr-b2c.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_USAGE_SET_70PCT_REACHED_TESTS"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Attempt to trigger 70% threshold notification" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_RecFee_Charging_Limit/test-input-act-b2c.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_VAS_DISC_70PCT_NOTIF"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="PGW 70% Charging Limit reached by a direct charge" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_RecFee_Charging_Limit/test-input-act-b2c.xml"/>
+        <parameter name="testFilterLabel" value="PGW_70PCT_DIRECT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Change of Charging Limit to reach 100% threshold" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_RecFee_Charging_Limit/test-input-utr-b2c.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_USAGE_SET_LIMIT_REACHED_TESTS"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Attempt to trigger 100% threshold notification" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_RecFee_Charging_Limit/test-input-act-b2c.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_VAS_DISC_100PCT_NOTIF"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="PGW charge rejected due to limit breached after fee charging" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_RecFee_Charging_Limit/test-input-act-b2c.xml"/>
+        <parameter name="testFilterLabel" value="PGW_100PCT_DIRECT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="CH_PER_START after month start" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_RecFee_Charging_Limit/test-input-act-b2c.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_CH_PER_START"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="CH_PER_END before month start" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_RecFee_Charging_Limit/test-input-act-b2c.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_CH_PER_END"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Remove test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_RecFee_Charging_Limit/test-input-user-b2c.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Recurring tests" parallel="false" preserve-order="true">
+
+<!-- RECURRING TESTS MAIN-VAS-DISC-->
+	<test name="Remove B2B test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests/test-input-B2B-user-MAIN-VAS-VASDISC.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Remove B2C test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests/test-input-B2C-user-MAIN-VAS-VASDISC.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+    <test name="Create B2B test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests/test-input-B2B-user-MAIN-VAS-VASDISC.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_IMPORT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t920_execute_soap_request"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	<test name="Create B2C test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests/test-input-B2C-user-MAIN-VAS-VASDISC.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_IMPORT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t920_execute_soap_request"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+	
+	<test name="Recurring activation MAIN+VAS+VAS discount" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests/test-input-act-MAIN-VAS-VASDISC.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+	<!-- SSC activate returns purchase order with all transactions. Currently it is only possible to validated summary, and not individual transactions (enhancemetn possbile!) Activates whole SUAC, not issue for this test.-->
+	<!--  SOAP activate does not produce any charged items in response. Alerts may also be used for validation. Better option in case of multiple contracts on SUAC, which is not relevant for this test
+	
+	<test name="Recurring activation" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests/test-input-actsoap.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t920_execute_soap_request"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	-->
+	
+
+	
+<!-- RECURRING TESTS FREE TRIAL -->
+	<test name="Remove test B2B FT user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests/test-input-B2B-user-freetrial.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	<test name="Remove test B2C FT user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests/test-input-B2C-user-freetrial.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+    <test name="Create test B2B FT user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests/test-input-B2B-user-freetrial.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_IMPORT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t920_execute_soap_request"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	    <test name="Create test B2C FT user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests/test-input-B2C-user-freetrial.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_IMPORT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t920_execute_soap_request"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+		<test name="Recurring FT activation" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests/test-input-act-freetrial.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	
+	
+	<!-- RECURRING TESTS SPECIAL CASES -->
+	<test name="Remove test B2B SPEC user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests/test-input-B2B-user-speccases.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	<test name="Remove test B2C SPEC user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests/test-input-B2C-user-speccases.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+    <test name="Create test B2B SPEC user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests/test-input-B2B-user-speccases.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_IMPORT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t920_execute_soap_request"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Create test B2C SPEC user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests/test-input-B2C-user-speccases.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_IMPORT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t920_execute_soap_request"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+	
+	<test name="Recurring SPEC activation" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests/test-input-act-speccases.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	
+	
+</suite>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+      <!-- $genInfo -->
+      <tns:extension xmlns:tns="https://www.w3schools.com"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="https://www.w3schools.com ../templates/test-inputs/test-extension.xsd">
+          <!-- this execution point is executed before session starts -->
+          <tns:executionPoint id="AFTER" >
+         <tns:validations>
+             <tns:validate id="chargedItems" name="validate ALW charged item" enabled="true">
+                 <tns:cits>
+                     <tns:cit name="Charged item validation" expectedNumber="1" classId="MALW" enabled="true">
+                         <tns:citParameter name="BITTYPE" expectedValue="${bittype}" enabled="true"/>						 
+						 <tns:citParameter name="BIT_QUANTITY" expectedValue="${bit_quantity}" enabled="true"/>
+						 <tns:citParameter name="BIT_QTY_UNIT" expectedValue="${bit_qty_unit}" enabled="true"/>						 
+						 <tns:citParameter name="SUBPROCESS" expectedValue="${subprocess}" enabled="true"/>											 
+                     </tns:cit>
+                 </tns:cits>
+             </tns:validate>
+         </tns:validations>
+     </tns:executionPoint>
+</tns:extension>

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $genInfo -->
+<tns:testTemplate xmlns:tns="https://www.w3schools.com"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.w3schools.com ../common/xsd/test-inputs.xsd">
+    <tns:header>
+        <tns:constants>
+            <tns:constant name="__META_TITLE__" constValue="Telia test group B2C MBB1 (with roaming)"/>
+            <tns:constant name="__META_DESCRIPTION__" constValue="Test inputs for B2C MBB1 usage scenarios"/>
+            <tns:constant name="_TEST_COMMON_DIR" constValue="TEST"/>
+            <tns:constant name="_TEST_DIR" constValue="${_TEST_COMMON_DIR}/Telia_MBB_ROAM"/>
+			<!-- subscriber ID -->
+			<tns:constant name="USER_SERVICE_ID" constValue="9000000051"/>	  
+			<!-- extract current year -->
+			<tns:constant name="CURRENT_YEAR" constValue="$DATE_TIME_NOW_items.Year"/>		
+			
+        </tns:constants>
+        <tns:parameters>
+            <tns:parameter name="wsRequestTemplate" type="string"/>
+            <tns:parameter name="wsEndpointPropertyRef" type="string"/>
+			<tns:parameter name="pcId" type="string"/>
+			<tns:parameter name="subscriberAccountId" type="string"/>
+			<tns:parameter name="ciPropertiesFile" type="string"/>
+			<tns:parameter name="consumptionDate" type="date"/>
+			<tns:parameter name="sapCcApi" type="string"/>
+			<tns:parameter name="testExtension" type="string"/>
+			<tns:parameter name="generateCit" type="string"/>
+			<tns:parameter name="onErrorFailTheTest" type="string"/>
+			<tns:parameter name="errorMessage" type="string"/>
+					
+			<tns:parameter name="newBucketValue" type="number"/>
+			<tns:parameter name="alwId" type="string"/>
+			<!-- MCIT input properties -->
+			<tns:parameter name="duration" type="number"/>	
+			<tns:parameter name="billing_party" type="string"/>	
+			<tns:parameter name="called_number" type="string"/>	
+			<tns:parameter name="plmn" type="string"/>	
+			<tns:parameter name="tadig" type="string"/>	
+			<tns:parameter name="fup_code" type="string"/>	
+			<tns:parameter name="cdr_cost" type="number"/>	
+			<tns:parameter name="transaction_type" type="string"/>
+			<!-- MUSG output properties -->
+			<tns:parameter name="bit_amount" type="number"/>			
+			<tns:parameter name="bit_quantity" type="number"/>
+			<tns:parameter name="bitdate_from" type="date"/>
+			<tns:parameter name="bitdate_to" type="date"/>
+			<tns:parameter name="zz_in_out" type="string"/>
+			<tns:parameter name="zz_voicesmsdata" type="string"/>
+			<tns:parameter name="zz_ch_quantity" type="number"/>
+			<tns:parameter name="zz_ch_uom" type="string"/>
+			<tns:parameter name="zz_log_chg_qty" type="number"/>
+			<tns:parameter name="zz_log_alw_qty" type="number"/>			
+			<tns:parameter name="zz_domintroam" type="string"/>
+			<tns:parameter name="zz_event_usp" type="string"/>
+			<tns:parameter name="zz_orig_zone" type="string"/>
+			<tns:parameter name="zz_dest_zone" type="string"/>
+			<tns:parameter name="zz_orig_country" type="string"/>
+			<tns:parameter name="zz_dest_country" type="string"/>
+			<tns:parameter name="zz_orig_dscr" type="string"/>
+			<tns:parameter name="zz_dest_dscr" type="string"/>
+			<tns:parameter name="zz_orig_zon_sch" type="string"/>
+			<tns:parameter name="zz_dest_zon_sch" type="string"/>
+			<tns:parameter name="zz_prc_group" type="string"/>
+			<tns:parameter name="zz_price_id" type="string"/>
+			<tns:parameter name="zz_roam_prc_type" type="string"/>
+			<tns:parameter name="zz_tariff" type="number"/>
+			<tns:parameter name="zz_tax_code" type="string"/>
+			<tns:parameter name="zz_exem_price" type="number"/>
+			<tns:parameter name="zz_det_inv_digit" type="string"/>
+			<tns:parameter name="printrel" type="string"/>
+			<!-- properties that are not always present in output -->
+			<tns:parameter name="zz_exem_price_present" type="string" defaultValue="true"/>
+			<tns:parameter name="zz_log_alw_qty_present" type="string" defaultValue="true"/>
+        </tns:parameters>
+    </tns:header>
+	
+    <tns:testData>	
+		<tns:test>
+            <tns:id>100</tns:id>
+			<!-- Domestic regular voice call to Telia mobile	Charged by duration -->
+			<tns:labels>VOI,MOC,MOC_DOMESTIC</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-voi.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="SCC"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<tns:parameter name="onErrorFailTheTest" paramValue="false"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-error.xml"/>
+			<tns:parameter name="errorMessage" paramValue="Price not defined"/>
+			
+			<!-- MCIT input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="${CURRENT_YEAR}-02-04T10:26:46"/>	
+			<tns:parameter name="duration" paramValue="18"/>			
+			<tns:parameter name="billing_party" paramValue="90000000000000004"/>				
+			<tns:parameter name="transaction_type" paramValue="MOC"/>
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>130</tns:id>
+			<!-- International voice call to NB country -->
+			<tns:labels>VOI,MOC,MOC_INTERNATIONAL</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-voi.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="SCC"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<tns:parameter name="onErrorFailTheTest" paramValue="false"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-error.xml"/>
+			<tns:parameter name="errorMessage" paramValue="Price not defined"/>
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="${CURRENT_YEAR}-02-04T10:26:46"/>	
+			<tns:parameter name="duration" paramValue="197"/>			
+			<tns:parameter name="billing_party" paramValue="9000000000039"/>				
+			<tns:parameter name="transaction_type" paramValue="MOC"/>			
+        </tns:test>
+	
+		<tns:test>
+            <tns:id>160</tns:id>
+			<!-- Roaming voice call from RLAH zone to Telia mobile -->
+			<tns:labels>VOI,MOC,MOC_ROAMING</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-voi.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="SCC"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<tns:parameter name="onErrorFailTheTest" paramValue="false"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-error.xml"/>
+			<tns:parameter name="errorMessage" paramValue="not found"/>
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="${CURRENT_YEAR}-02-04T10:26:46"/>	
+			<tns:parameter name="duration" paramValue="82"/>			
+			<tns:parameter name="billing_party" paramValue="90000000000000004"/>
+			<tns:parameter name="plmn" paramValue="21901"/>
+			<tns:parameter name="cdr_cost" paramValue="0.0314"/>			
+			<tns:parameter name="transaction_type" paramValue="MOC"/>		
+        </tns:test>
+
+		
+    </tns:testData>
+</tns:testTemplate>

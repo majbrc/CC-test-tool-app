@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Acquisition of CITs" parallel="false" preserve-order="true">
+
+
+	
+	
+	    <test enabled="true" name="Acquisition single request order as in input file" parallel="false" preserve-order="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Acquire_CITs/test-input-acquire.xml"/>
+        <parameter name="testFilterLabel" value="BUGFIX"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t500_execute_acquire"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+	
+</suite>

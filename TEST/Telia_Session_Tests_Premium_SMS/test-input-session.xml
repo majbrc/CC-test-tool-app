@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $genInfo -->
+<tns:testTemplate xmlns:tns="https://www.w3schools.com"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.w3schools.com ../common/xsd/test-inputs.xsd">
+    <tns:header>
+        <tns:constants>
+            <tns:constant name="__META_TITLE__" constValue="Charging Limit tests"/>
+            <tns:constant name="__META_DESCRIPTION__" constValue="Charging Limit"/>
+            <tns:constant name="_TEST_COMMON_DIR" constValue="TEST"/>
+            <tns:constant name="_TEST_DIR" constValue="TEST/Telia_Session_Tests_Premium_SMS"/>
+            <tns:constant name="USER_SERVICE_ID" constValue="9000000022"/>
+			<tns:constant name="CURRENT_YEAR" constValue="$DATE_TIME_NOW_items.Year"/> 
+			
+			<tns:constant name="SUBSCRIBER_ACCOUNT_ID" constValue="900000000000000000000000000006"/>
+            <tns:constant name="PROVIDER_CONTRACT_ID" constValue="90000000000000000014"/>
+			<tns:constant name="EVENT_DATE" constValue="${CURRENT_YEAR}-11-24T12:53:41"/>
+			<tns:constant name="ACTIVATION_DATE1" constValue="${CURRENT_YEAR}-12-01T00:00:01"/>
+			
+			<tns:constant name="RESERVATION_DATE_01" constValue="${CURRENT_YEAR}-11-27T11:44:24"/>
+			<tns:constant name="CONFIRMATION_DATE_01" constValue="${CURRENT_YEAR}-12-02T15:25:32"/>
+			<tns:constant name="CONFIRMATION_DATE_01_SEC" constValue="${CONFIRMATION_DATE_01_timestamp}"/>
+			
+			<tns:constant name="RESERVATION_DATE_02" constValue="${CURRENT_YEAR}-11-2711:44:24"/>
+			<tns:constant name="CONFIRMATION_DATE_02" constValue="${CURRENT_YEAR}-12-02T12:25:32"/>
+			<tns:constant name="CONFIRMATION_DATE_02_SEC" constValue="${CONFIRMATION_DATE_02_timestamp}"/>
+			
+			<tns:constant name="RESERVATION_DATE_03" constValue="${CURRENT_YEAR}-02-03T11:44:24"/>
+			<tns:constant name="CONFIRMATION_DATE_03" constValue="${CURRENT_YEAR}-02-05T15:25:32"/>
+			<tns:constant name="CONFIRMATION_DATE_03_SEC" constValue="${CONFIRMATION_DATE_03_timestamp}"/>
+			
+			<tns:constant name="RESERVATION_DATE_04" constValue="${CURRENT_YEAR}-02-03T15:44:24"/>
+			<tns:constant name="CONFIRMATION_DATE_04" constValue="${CURRENT_YEAR}-02-03T17:25:32"/>
+			<tns:constant name="CONFIRMATION_DATE_04_SEC" constValue="${CONFIRMATION_DATE_04_timestamp}"/>
+        </tns:constants>
+		
+        <tns:parameters>
+            <tns:parameter name="sessionDefinitionFileList" type="string"/>
+			<tns:parameter name="generateCit" type="string"/>
+            <tns:parameter name="validateCitEnabled" type="string" defaultValue="false"/>
+			<tns:parameter name="fwOnErrorFailTheTest" type="string" defaultValue="true"/>
+			<tns:parameter name="onErrorFailTheTest" type="string" defaultValue="true"/>
+			
+			<tns:parameter name="ciPropertiesFile" type="string"/>
+			<tns:parameter name="consumptionDate" type="date"/>
+			<tns:parameter name="sapCcApi" type="string"/>
+			<tns:parameter name="testExtension" type="string"/>
+			
+			<!-- MCIT input properties  -->
+			<tns:parameter name="billing_party" type="string"/>								
+			<tns:parameter name="transaction_type" type="string"/>
+			<tns:parameter name="vat_included" type="string"/>			
+			<tns:parameter name="cdr_price" type="number"/>						
+			<tns:parameter name="plmn" type="string"/>	
+			<tns:parameter name="tadig" type="string"/>	
+			<tns:parameter name="total_volume" type="number"/>	
+			<tns:parameter name="msrn" type="string"/>
+			<tns:parameter name="request_type" type="string"/>	
+			
+			<!-- Validation parameters -->
+			<tns:parameter name="billingPeriodUsage" type="number"/>		
+			<tns:parameter name="bucketValue" type="number"/>
+			<tns:parameter name="utrId" type="string"/>
+			<tns:parameter name="validateNotificationEnabled" type="string" defaultValue="false"/>
+			<tns:parameter name="threshold" type="string"/>
+			
+			<tns:parameter name="startNotifListener" type="string"/>
+            <tns:parameter name="startNotifListenerDelayMills" type="number"/>
+            <tns:parameter name="stopNotifListenerDelayMills" type="number"/>
+		</tns:parameters>
+    </tns:header>
+	
+	<tns:testData>
+		
+		<tns:test>
+            <tns:id>1</tns:id>
+            <tns:labels>OPAALI,CHLIM_PREMIUM_SMS</tns:labels>
+            <tns:parameter name="sessionDefinitionFileList" paramValue="${_TEST_DIR}/templates/01.telia.test.opaali.ini"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<tns:parameter name="validateCitEnabled" paramValue="false"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-utr.xml"/>
+			<!-- Validation -->
+			<tns:parameter name="utrId" paramValue="CHLIM"/>
+			<tns:parameter name="billingPeriodUsage" paramValue="31"/>
+			<tns:parameter name="bucketValue" paramValue="100"/>
+		
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>2</tns:id>
+            <tns:labels>OPAALI,CHLIM_PREMIUM_SMS_BETWEEN_CYCLES</tns:labels>
+            <tns:parameter name="sessionDefinitionFileList" paramValue="${_TEST_DIR}/templates/02.telia.test.opaali.ini"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<tns:parameter name="validateCitEnabled" paramValue="false"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-activate-utr.xml"/>
+			<!-- Validation 
+			<tns:parameter name="utrId" paramValue="CHLIM"/>
+			<tns:parameter name="billingPeriodUsage" paramValue="100"/>
+			<tns:parameter name="bucketValue" paramValue="100"/>-->
+		
+        </tns:test>
+		
+		
+		<tns:test>
+            <tns:id>3</tns:id>
+            <tns:labels>OPAALI,CHLIM_PREMIUM_SMS_REJECTED</tns:labels>
+            <tns:parameter name="sessionDefinitionFileList" paramValue="${_TEST_DIR}/templates/03.telia.test.opaali.ini,${_TEST_DIR}/templates/01.telia.test.data.ini"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<tns:parameter name="validateCitEnabled" paramValue="false"/>
+			
+			<tns:parameter name="fwOnErrorFailTheTest" paramValue="false"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-utr.xml"/>-->
+			<!-- Validation 
+			<tns:parameter name="utrId" paramValue="CHLIM"/>
+			<tns:parameter name="billingPeriodUsage" paramValue="31"/>
+			<tns:parameter name="bucketValue" paramValue="100"/>-->
+		
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>200</tns:id>
+            <tns:labels>DATA_SESSION_BETWEEN_CYCLES</tns:labels>
+            <tns:parameter name="sessionDefinitionFileList" paramValue="${_TEST_DIR}/templates/01.telia.test.data.ini"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<tns:parameter name="validateCitEnabled" paramValue="false"/>
+			<!-- Validation 
+			<tns:parameter name="utrId" paramValue="CHLIM"/>
+			<tns:parameter name="billingPeriodUsage" paramValue="100"/>
+			<tns:parameter name="bucketValue" paramValue="100"/>-->
+		
+        </tns:test>
+		
+    </tns:testData>
+</tns:testTemplate>

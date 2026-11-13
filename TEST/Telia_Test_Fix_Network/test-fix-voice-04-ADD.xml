@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $genInfo -->
+<tns:testTemplate xmlns:tns="https://www.w3schools.com"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.w3schools.com ../common/xsd/test-inputs.xsd">
+    <tns:header>
+        <tns:constants>
+            <tns:constant name="__META_TITLE__" constValue="Telia fix network tests"/>
+            <tns:constant name="__META_DESCRIPTION__" constValue="Test inputs for fix network subscribers"/>
+            <tns:constant name="_TEST_COMMON_DIR" constValue="TEST"/>
+            <tns:constant name="_TEST_DIR" constValue="TEST/Telia_Test_Fix_Network"/>
+			<!-- mandatory parameters in legacy framework, to be removed in release for Telia -->
+            <tns:constant name="SUBSCRIBER_ACCOUNT_ID" constValue="9000000009"/>			
+            <tns:constant name="SUBSCRIBER_ACCOUNT_SUBSCRIBER_ID" constValue="${SUBSCRIBER_ACCOUNT_ID}"/>
+			<tns:constant name="PROVIDER_CONTRACT_ID" constValue="90000000000000000009"/>
+			<tns:constant name="PC_REC_EXT_ID" constValue="00155D1701081ED7BCCFE4AED3196099"/>
+			<tns:constant name="PC_USG_EXT_ID" constValue="00155D1701081ED7BCCFE4AED3198099"/>
+			
+			<tns:constant name="CONTRACT_START_DATE" constValue="2025-01-01T23:29:57"/>
+			
+			<tns:constant name="CONTRACT_ACCOUNT" constValue="900000000012"/>
+			<tns:constant name="EXTERNAL_ACCOUNT_ID" constValue="${SUBSCRIBER_ACCOUNT_ID}"/>
+			<tns:constant name="PHONE_NUMBER" constValue="90000010"/>
+			<!-- this is not part of the real master data, but is introduced to be used in MT name and CP item naes -->
+			<tns:constant name="SUBSCRIBER_INTERNAL_ID" constValue="TEST000014"/>
+			<tns:constant name="SUBSCRIBER_MAPPING_TABLE_ID" constValue="MT_${SUBSCRIBER_ACCOUNT_ID}_${SUBSCRIBER_INTERNAL_ID}"/>
+			<tns:constant name="FAR_PAST_DATE" constValue="1800-01-01T12:00:00"/>
+			<tns:constant name="FAR_FUTURE_DATE" constValue="9999-01-01T12:00:00"/>
+			<tns:constant name="PRICE_DET_DATE" constValue="2025-01-01T03:00:00"/>
+								
+			<tns:constant name="PRICE_DET_YEAR" constValue="$PRICE_DET_DATE_items.YEAR"/>
+			<tns:constant name="PRICE_DET_MONTH" constValue="$PRICE_DET_DATE_items.MONTH"/>
+			<tns:constant name="PRICE_DET_DAY" constValue="$PRICE_DET_DATE_items.DAY"/>
+			
+			<tns:constant name="MT_PRICE_DET_STRING_VALUE" constValue="${PRICE_DET_MONTH}/${PRICE_DET_DAY}/${PRICE_DET_YEAR}"/>
+			
+			<tns:constant name="RATE_PLAN" constValue="DAYS"/>
+			<tns:constant name="PRODUCT_VOICE" constValue="PR000005"/>
+			<tns:constant name="OFFER_CODE" constValue="OF000006"/>
+			
+            <tns:constant name="SAP_BILL_CYCLE_DATE" constValue="2018-01-01T00:00:00"/>
+			<tns:constant name="CURRENT_DATE_AND_TIME" constValue="${DATE_TIME_NOW}"/>
+			<tns:constant name="OFFPEAK_TIME" constValue="${DATE_NOW}T06:00:00"/>
+			<tns:constant name="PEAK_TIME" constValue="${DATE_NOW}T10:00:00"/>
+			
+			<tns:constant name="ACTIVATE_DATE" constValue="$CURRENT_DATE_AND_TIME_expr.MonthStart"/>
+					   
+        </tns:constants>
+		
+        <tns:parameters>
+			<tns:parameter name="product" type="string" defaultValue="$PRODUCT_VOICE"/>
+			<tns:parameter name="cp_rec_01_id" type="string" defaultValue="#01"/>
+			<tns:parameter name="cp_rec_02_id" type="string" defaultValue="#02"/>
+			<tns:parameter name="cp_usg_01_id" type="string" defaultValue="#01"/>
+			
+			<tns:parameter name="cp_rec_param_01_start_date_charge" type="string"/>
+			<tns:parameter name="cp_rec_param_01_end_date_charge" type="string"/>
+			<tns:parameter name="cp_rec_param_01_contract_activation_date" type="string"/>
+			<tns:parameter name="cp_rec_param_01_rate_plan" type="string"/>
+			
+			<tns:parameter name="cp_rec_param_02_start_date_charge" type="string"/>
+			<tns:parameter name="cp_rec_param_02_end_date_charge" type="string"/>
+			<tns:parameter name="cp_rec_param_02_contract_activation_date" type="string"/>
+			<tns:parameter name="cp_rec_param_02_rate_plan" type="string"/>
+			
+			<tns:parameter name="cp_rec_param_03_start_date_charge" type="string"/>
+			<tns:parameter name="cp_rec_param_03_end_date_charge" type="string"/>
+			<tns:parameter name="cp_rec_param_03_contract_activation_date" type="string"/>
+			<tns:parameter name="cp_rec_param_03_rate_plan" type="string"/>
+			
+            <tns:parameter name="wsRequestTemplate" type="string"/>
+            <tns:parameter name="wsEndpointPropertyRef" type="string"/>
+			
+			<tns:parameter name="pcId" type="string"/>
+			<tns:parameter name="subscriberAccountId" type="string"/>
+			<tns:parameter name="ciPropertiesFile" type="string"/>
+			<tns:parameter name="activateToDate" type="string"/>
+			<tns:parameter name="sapCcApi" type="string"/>
+			<tns:parameter name="mtAofId" type="string"/>
+			<tns:parameter name="testExtension" type="string"/>
+			<tns:parameter name="generateCit" type="string"/>
+			
+			<!-- TUSF input properties -->			
+			<tns:parameter name="consumptionDate" type="date"/>
+			<tns:parameter name="calledPartyAddress" type="string"/>
+			<tns:parameter name="callDuration" type="string"/>
+			<tns:parameter name="usageType" type="string"/>
+			
+			<!-- TUSE output properties -->
+			<tns:parameter name="bit_amount" type="number"/>			
+			<tns:parameter name="bit_amount_present" type="string" defaultValue="true"/>
+			<tns:parameter name="bit_quantity" type="number"/>
+			<tns:parameter name="bitdate_from" type="date"/>
+			<tns:parameter name="bitdate_to" type="date"/>			
+			<tns:parameter name="zzcrm_call_type" type="string"/> 
+			<tns:parameter name="zzcrm_call_dest" type="string"/> 
+			<tns:parameter name="zzcrm_ref4" type="string"/>
+			
+		</tns:parameters>
+    </tns:header>
+	
+    <tns:testData>
+        <tns:test>
+            <tns:id>1</tns:id>
+            <tns:labels>SUAC_IMPORT</tns:labels>
+            <tns:parameter name="wsEndpointPropertyRef" paramValue="cc.ws.url.pcexim"/>
+            <tns:parameter name="wsRequestTemplate" paramValue="$_TEST_DIR/templates/suac-template-fix-add.xml"/>
+			
+			<tns:parameter name="cp_rec_param_01_start_date_charge" paramValue="1970-01-01T00:00:00"/>
+			<tns:parameter name="cp_rec_param_01_end_date_charge" paramValue="${FAR_FUTURE_DATE}"/>
+			<tns:parameter name="cp_rec_param_01_contract_activation_date" paramValue="2003-06-03T00:00:00"/>
+			<tns:parameter name="cp_rec_param_01_rate_plan" paramValue="${RATE_PLAN}"/>
+			
+			<tns:parameter name="cp_rec_param_02_start_date_charge" paramValue="1970-01-01T00:00:00"/>
+			<tns:parameter name="cp_rec_param_02_end_date_charge" paramValue="${FAR_FUTURE_DATE}"/>
+			<tns:parameter name="cp_rec_param_02_contract_activation_date" paramValue="2003-06-03T00:00:00"/>
+			<tns:parameter name="cp_rec_param_02_rate_plan" paramValue="${RATE_PLAN}"/>
+			
+			<tns:parameter name="cp_rec_param_03_start_date_charge" paramValue="1970-01-01T00:00:00"/>
+			<tns:parameter name="cp_rec_param_03_end_date_charge" paramValue="${FAR_FUTURE_DATE}"/>
+			<tns:parameter name="cp_rec_param_03_contract_activation_date" paramValue="2003-06-03T00:00:00"/>
+			<tns:parameter name="cp_rec_param_03_rate_plan" paramValue="FOREIGN"/>
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>110</tns:id>
+            <tns:labels>ACTIVATE_CREATE_ALW</tns:labels>
+            <tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-activate-DAYSFOREIGN.xml"/>
+            <tns:parameter name="activateToDate" paramValue="$ACTIVATE_DATE"/>
+        </tns:test>
+		
+
+							
+		<tns:test>
+            <tns:id>108</tns:id>
+			<!--international call to Croatia  -->
+			<tns:labels>USAGE</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-tusf.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-TUSE-output.xml"/>
+			
+			<tns:parameter name="consumptionDate" paramValue="${CURRENT_DATE_AND_TIME}"/>
+			<tns:parameter name="calledPartyAddress" paramValue="90000000000003"/>
+			<tns:parameter name="callDuration" paramValue="100"/>
+			<tns:parameter name="usageType" paramValue="25003"/>
+			
+			<!-- output charged item validations, different from default value specified in testExtension file -->					
+			<tns:parameter name="bit_amount" paramValue="0.000000"/>
+			<tns:parameter name="bit_quantity" paramValue="100.000000"/>
+			<tns:parameter name="zzcrm_ref4" paramValue="PLAN_FREE_SECONDS"/>
+			<tns:parameter name="zzcrm_call_type" paramValue="INTERNATIONAL"/>			
+		</tns:test>
+		
+		<tns:test>
+            <tns:id>109</tns:id>
+			<!--international call to Australia  -->
+			<tns:labels>USAGE</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-tusf.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-TUSE-output.xml"/>
+			
+			<tns:parameter name="consumptionDate" paramValue="${CURRENT_DATE_AND_TIME}"/>
+			<tns:parameter name="calledPartyAddress" paramValue="900000000022"/>
+			<tns:parameter name="callDuration" paramValue="100"/>
+			<tns:parameter name="usageType" paramValue="25003"/>
+			
+			<!-- output charged item validations, different from default value specified in testExtension file -->					
+			<tns:parameter name="bit_amount" paramValue="0.000000"/>
+			<tns:parameter name="bit_quantity" paramValue="100.000000"/>
+			<tns:parameter name="zzcrm_ref4" paramValue="PLAN_FREE_SECONDS"/>
+			<tns:parameter name="zzcrm_call_type" paramValue="INTERNATIONAL"/>			
+		</tns:test>
+		
+		<tns:test>
+            <tns:id>999</tns:id>
+            <tns:labels>SUAC_DELETE</tns:labels>
+			<tns:parameter name="pcId" paramValue="${PROVIDER_CONTRACT_ID}"/>
+			<tns:parameter name="subscriberAccountId" paramValue="${SUBSCRIBER_ACCOUNT_ID}"/>
+			<tns:parameter name="mtAofId" paramValue="${SUBSCRIBER_MAPPING_TABLE_ID}"/>
+        </tns:test>
+    </tns:testData>
+</tns:testTemplate>

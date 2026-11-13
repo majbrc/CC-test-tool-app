@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objectSet version="5.0.6.10">
+  <pnrObjectSet>
+    <chargeableItemClass id="MUTR_T01" serviceProvider="O2C" description="CIT class for managing Usage Tracking/Charging Limit ">
+      <prop name="ZZ_UTR_ID" description="Usage tracking component ID" type="string"/>
+      <prop name="ZZ_UTR_LIMIT" description="Usage tracking limit value" type="number"/>
+      <prop name="ZZ_UTR_EVENT" description="Type of usage tracking management event" type="string"/>
+      <prop name="ALLOW_DEF_ID" description="Allowance definition ID" type="string"/>
+      <prop name="ALLOW_START_DATE" description="Component start date" type="date"/>
+    </chargeableItemClass>
+  </pnrObjectSet>
+</objectSet>

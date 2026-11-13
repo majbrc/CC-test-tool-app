@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $genInfo -->
+<tns:testTemplate xmlns:tns="https://www.w3schools.com"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.w3schools.com ../common/xsd/test-inputs.xsd">
+    <tns:header>
+        <tns:constants>
+            <tns:constant name="__META_TITLE__" constValue="Recurring test for special cases"/>
+            <tns:constant name="__META_DESCRIPTION__" constValue="Recurring"/>			
+            <tns:constant name="_TEST_COMMON_DIR" constValue="TEST"/>
+            <tns:constant name="_TEST_DIR" constValue="TEST/Telia_Recurring_Tests"/>
+            
+			<!-- parameters for subscriber creation -->
+			<tns:constant name="USER_SERVICE_ID" constValue="90000000000000000026"/>
+			<tns:constant name="SUBSCRIBER_ACCOUNT_ID" constValue="900000000000000000000000000020"/>
+            <tns:constant name="PROVIDER_CONTRACT_ID" constValue="90000000000000000026"/>
+			<tns:constant name="SUBSCRIBER_CODE" constValue="9000000028"/>
+			<tns:constant name="DFL_ACC" constValue="900000000032"/>
+			
+			<tns:constant name="START_DATE" constValue="2023-06-11T10:20:00"/>
+			<tns:constant name="END_DATE_VAS" constValue="2023-08-11T10:20:00"/>
+			<tns:constant name="END_DATE_DEVICE" constValue="2023-09-11T10:20:00"/>
+			
+			<tns:constant name="CUSTOMER_TYPE" constValue="B2C"/>
+			<tns:constant name="OFFER_ID" constValue="OF000013"/>
+			<tns:constant name="RATE_PLAN" constValue="TELIA_FAM_30GB_MHS_C"/>
+			<tns:constant name="PRODUCT_ID" constValue="OF000013"/>
+			<tns:constant name="PRODUCT_ID2" constValue="PR000025"/>
+			<tns:constant name="PRODUCT_ID3" constValue="PR000030"/>
+			<tns:constant name="PRICE_KEY" constValue="39A1FC9BC9DA12B2742E4356968753DF"/> 
+			<tns:constant name="PRICE_KEY2" constValue="E274EA9945C92E5A0E4E2D1C46639444"/>			
+			<tns:constant name="PRICE_TABLE_ID" constValue="001DD8B71CFE1EDC93B14A05DFD4C12C"/>
+			<tns:constant name="PRICE_TABLE_ID2" constValue="001DD8B71CFE1EDABAFBC6F98D9E6112"/>					
+        </tns:constants>
+		
+        <tns:parameters>
+            			
+			<tns:parameter name="wsEndpointPropertyRef" type="string"/>
+			<tns:parameter name="wsRequestTemplate" type="string"/>
+			<tns:parameter name="pcId" type="string"/>
+			<tns:parameter name="subscriberAccountId" type="string"/>
+
+		</tns:parameters>
+    </tns:header>
+	
+	<tns:testData>
+	<tns:test>
+            <tns:id>1</tns:id>
+            <tns:labels>SUAC_IMPORT</tns:labels>
+            <tns:parameter name="wsEndpointPropertyRef" paramValue="cc.ws.url.pcexim"/>
+            <tns:parameter name="wsRequestTemplate" paramValue="$_TEST_DIR/templates/suac-template-specialcases.xml"/>
+        </tns:test>
+			
+		<tns:test>
+            <tns:id>999</tns:id>
+            <tns:labels>SUAC_DELETE</tns:labels>
+			<tns:parameter name="pcId" paramValue="${PROVIDER_CONTRACT_ID}"/>
+			<tns:parameter name="subscriberAccountId" paramValue="${SUBSCRIBER_ACCOUNT_ID}"/>
+        </tns:test>
+		
+		
+    </tns:testData>
+</tns:testTemplate>
+

@@ -1,0 +1,19 @@
+Sanitized project export
+
+Generated reports are reduced to newly rendered numeric-only suite summaries. Original report HTML,
+XML, request bodies, SVG charts, JavaScript, images, detailed output and all logs are omitted:
+the originals contain authentication headers, identifiers, and other uncontrolled data.
+Archives, compiled outputs, third-party and SAP framework binaries, installed-framework templates,
+three matching vendor-derived TEST CSS/schema files, generated API documentation, examples, and
+repository metadata are omitted. Existing notices are retained
+without implying they authorize redistribution of any other material.
+
+Environment hosts, URLs, usernames, and passwords are placeholders. Restore valid local configuration
+privately. Framework/SAP runtime libraries, templates, schemas, CSS and display dependencies must be obtained
+separately under appropriate licenses. The project cannot execute tests without those prerequisites.
+Test fixtures are anonymized samples and may require review and adaptation before use.
+The repository owner confirmed permission to publish the retained test definitions and
+build/configuration files. This confirmation does not cover the omitted vendor components.
+The legal notices retained under doc and __doc relate to Oracle documentation; they do not
+establish rights for the framework configuration or this project's fixtures.
+Do not commit restored credentials, production identifiers, or raw execution reports.

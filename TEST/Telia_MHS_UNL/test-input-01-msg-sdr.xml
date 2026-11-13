@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $genInfo -->
+<tns:testTemplate xmlns:tns="https://www.w3schools.com"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.w3schools.com ../common/xsd/test-inputs.xsd">
+    <tns:header>
+        <tns:constants>
+            <tns:constant name="__META_TITLE__" constValue="Telia test group 01 (Tarnybinis)"/>
+            <tns:constant name="__META_DESCRIPTION__" constValue="Test inputs for Tarnybinis messaging usage scenarios"/>
+            <tns:constant name="_TEST_COMMON_DIR" constValue="TEST"/>
+            <tns:constant name="_TEST_DIR" constValue="${_TEST_COMMON_DIR}/Telia_MHS_UNL"/>
+			<!-- subscriber ID -->
+			<tns:constant name="USER_SERVICE_ID" constValue="9000000054"/>	
+					   
+        </tns:constants>
+        <tns:parameters>
+            <tns:parameter name="wsRequestTemplate" type="string"/>
+            <tns:parameter name="wsEndpointPropertyRef" type="string"/>
+			<tns:parameter name="pcId" type="string"/>
+			<tns:parameter name="subscriberAccountId" type="string"/>
+			<tns:parameter name="ciPropertiesFile" type="string"/>
+			<tns:parameter name="consumptionDate" type="date"/>
+			<tns:parameter name="sapCcApi" type="string"/>
+			<tns:parameter name="testExtension" type="string"/>
+			<tns:parameter name="generateCit" type="string"/>
+						
+			<!-- MCIT input properties -->
+			<tns:parameter name="total_volume" type="number"/>	
+			<tns:parameter name="billing_party" type="string"/>		
+			<tns:parameter name="plmn" type="string"/>
+			<tns:parameter name="tadig" type="string"/>
+			<tns:parameter name="transaction_type" type="string"/>
+			<tns:parameter name="vat_included" type="string"/>
+			<tns:parameter name="cdr_rated" type="string"/>
+			<tns:parameter name="cdr_price" type="number"/>
+			<tns:parameter name="download_value" type="number"/>
+			<tns:parameter name="source_id" type="string"/>
+			<tns:parameter name="cdr_cost" type="number"/>
+			<tns:parameter name="fup_code" type="string"/>
+			<!-- MUSG output properties -->
+			<tns:parameter name="bit_amount" type="number"/>			
+			<tns:parameter name="bit_quantity" type="number"/>
+			<tns:parameter name="bitdate_from" type="date"/>
+			<tns:parameter name="bitdate_to" type="date"/>
+			<tns:parameter name="zz_in_out" type="string"/>
+			<tns:parameter name="zz_ch_quantity" type="number"/>
+			<tns:parameter name="zz_ch_uom" type="string"/>
+			<tns:parameter name="zzcrm_call_type" type="string"/> 
+			<tns:parameter name="zzcrm_call_dest" type="string"/> 
+			<tns:parameter name="zz_log_chg_qty" type="number"/>
+			<tns:parameter name="zz_log_alw_qty" type="number"/>
+			<tns:parameter name="zz_domintroam" type="string"/>
+			<tns:parameter name="zz_event_usp" type="string"/>
+			<tns:parameter name="zz_orig_zone" type="string"/>
+			<tns:parameter name="zz_dest_zone" type="string"/>
+			<tns:parameter name="zz_orig_country" type="string"/>
+			<tns:parameter name="zz_dest_country" type="string"/>
+			<tns:parameter name="zz_orig_dscr" type="string"/>
+			<tns:parameter name="zz_dest_dscr" type="string"/>
+			<tns:parameter name="zz_orig_zon_sch" type="string"/>
+			<tns:parameter name="zz_dest_zon_sch" type="string"/>
+			<tns:parameter name="zz_prc_group" type="string"/>
+			<tns:parameter name="zz_price_id" type="string"/>
+			<tns:parameter name="zz_roam_prc_type" type="string"/>
+			<tns:parameter name="zz_tariff" type="number"/>
+			<tns:parameter name="zz_voicesmsdata" type="string"/>
+			<tns:parameter name="zz_tax_code" type="string"/>
+			<tns:parameter name="zz_exem_price" type="number"/>
+			<tns:parameter name="zz_download_val" type="number"/>
+			<tns:parameter name="zz_det_inv_digit" type="string"/>
+			<tns:parameter name="printrel" type="string"/>
+			<tns:parameter name="zz_exem_price_present" type="string" defaultValue="true"/>
+			<tns:parameter name="zz_log_alw_qty_present" type="string" defaultValue="true"/>
+        </tns:parameters>
+    </tns:header>
+    <tns:testData>
+		<tns:test>
+            <tns:id>216</tns:id>
+			<!-- ITSD_16086 - SMS from RLAH zone - CDR cost above threshold -->
+            <tns:labels>MSG_SDR,SMSMO_ROAM,RLAH</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2025-01-20T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="9000000000020"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			<tns:parameter name="plmn" paramValue="21901"/>
+			<tns:parameter name="cdr_cost" paramValue="5"/>
+			<!-- output charged item validations, different from default value specified in testExtension file -->					
+			<tns:parameter name="bit_amount" paramValue="6.901510"/>			
+			<tns:parameter name="bit_quantity" paramValue="1.000000"/>
+			<tns:parameter name="bitdate_from" paramValue="2025-01-20T10:26:46"/>
+			<tns:parameter name="bitdate_to" paramValue="2025-01-20T10:26:46"/>
+			<tns:parameter name="zz_ch_quantity" paramValue="1.000000"/>
+			<tns:parameter name="zz_in_out" paramValue="O"/>
+			<tns:parameter name="zz_log_chg_qty" paramValue="0.000000"/>			
+			<tns:parameter name="zz_domintroam" paramValue="R"/>
+			<tns:parameter name="zz_event_usp" paramValue="SMSMO_ROAM"/>
+			<tns:parameter name="zz_voicesmsdata" paramValue="S"/>
+			<tns:parameter name="zz_orig_zone" paramValue="EU"/>
+			<tns:parameter name="zz_dest_zone" paramValue="ALL"/>
+			<tns:parameter name="zz_orig_country" paramValue="HRV"/>
+			<tns:parameter name="zz_dest_country" paramValue="LTU"/>
+			<tns:parameter name="zz_orig_dscr" paramValue="HRVCN"/>
+			<tns:parameter name="zz_dest_dscr" paramValue="LT_MOB_OTHER"/>
+			<tns:parameter name="zz_orig_zon_sch" paramValue="ZS_ROAM_A_DEFAULT_B2X"/>
+			<tns:parameter name="zz_dest_zon_sch" paramValue="ZS_ROAM_B_DEFAULT_B2X"/>
+			<tns:parameter name="zz_prc_group" paramValue="PG_ROAM_STD_C"/>
+			<tns:parameter name="zz_price_id" paramValue="RSO_ES_ALL_RLH"/>
+			<tns:parameter name="zz_roam_prc_type" paramValue="RLAH"/>
+			<tns:parameter name="zz_tariff" paramValue="0.000000"/>
+			<tns:parameter name="zz_tax_code" paramValue="PVM1"/>
+			<tns:parameter name="zz_det_inv_digit" paramValue="Y"/>
+			<tns:parameter name="printrel" paramValue="true"/>
+			<tns:parameter name="zz_exem_price_present" paramValue="false"/>
+			<tns:parameter name="zz_log_alw_qty_present" paramValue="false"/>
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>217</tns:id>
+			<!-- ITSD_16087 - SMS from RLAH zone - FUP rule applies -->
+            <tns:labels>MSG_FUP,SMSMO,SMSMO_ROAM,RLAH</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2025-01-20T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="9000000000020"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			<tns:parameter name="plmn" paramValue="21901"/>
+			<tns:parameter name="fup_code" paramValue="Y"/>
+			<!-- output charged item validations, different from default value specified in testExtension file -->					
+			<tns:parameter name="bit_amount" paramValue="0.004000"/>			
+			<tns:parameter name="bit_quantity" paramValue="1.000000"/>
+			<tns:parameter name="bitdate_from" paramValue="2025-01-20T10:26:46"/>
+			<tns:parameter name="bitdate_to" paramValue="2025-01-20T10:26:46"/>
+			<tns:parameter name="zz_ch_quantity" paramValue="1.000000"/>
+			<tns:parameter name="zz_in_out" paramValue="O"/>
+			<tns:parameter name="zz_log_chg_qty" paramValue="0.000000"/>
+			<tns:parameter name="zz_log_alw_qty" paramValue="1.000000"/>
+			<tns:parameter name="zz_domintroam" paramValue="R"/>
+			<tns:parameter name="zz_event_usp" paramValue="SMSMO_ROAM"/>
+			<tns:parameter name="zz_voicesmsdata" paramValue="S"/>
+			<tns:parameter name="zz_orig_zone" paramValue="EU"/>
+			<tns:parameter name="zz_dest_zone" paramValue="ALL"/>
+			<tns:parameter name="zz_orig_country" paramValue="HRV"/>
+			<tns:parameter name="zz_dest_country" paramValue="LTU"/>
+			<tns:parameter name="zz_orig_dscr" paramValue="HRVCN"/>
+			<tns:parameter name="zz_dest_dscr" paramValue="LT_MOB_OTHER"/>
+			<tns:parameter name="zz_orig_zon_sch" paramValue="ZS_ROAM_A_DEFAULT_B2X"/>
+			<tns:parameter name="zz_dest_zon_sch" paramValue="ZS_ROAM_B_DEFAULT_B2X"/>
+			<tns:parameter name="zz_prc_group" paramValue="PG_MHS_UNL_VOICE_SMS_C"/>
+			<tns:parameter name="zz_price_id" paramValue="LT_SALL_FREE"/>
+			<tns:parameter name="zz_roam_prc_type" paramValue="RLAH"/>
+			<tns:parameter name="zz_tariff" paramValue="0.000000"/>
+			<tns:parameter name="zz_tax_code" paramValue="PVM1"/>
+			<tns:parameter name="zz_exem_price" paramValue="0.004000"/>			
+			<tns:parameter name="zz_det_inv_digit" paramValue="Y"/>
+			<tns:parameter name="printrel" paramValue="true"/>
+          
+        </tns:test>
+		
+		
+		<tns:test>
+            <tns:id>220</tns:id>
+			<!-- SMS from non EU zone, CDR cost above threshold -->
+            <tns:labels>MSG_SDR,SMSMO_ROAM</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2025-01-20T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="9000000000020"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			<tns:parameter name="plmn" paramValue="45403"/>
+			<tns:parameter name="cdr_cost" paramValue="5"/>
+			<!-- output charged item validations, different from default value specified in testExtension file -->					
+			<tns:parameter name="bit_amount" paramValue="6.901510"/>			
+			<tns:parameter name="bit_quantity" paramValue="1.000000"/>
+			<tns:parameter name="bitdate_from" paramValue="2025-01-20T10:26:46"/>
+			<tns:parameter name="bitdate_to" paramValue="2025-01-20T10:26:46"/>
+			<tns:parameter name="zz_ch_quantity" paramValue="1.000000"/>
+			<tns:parameter name="zz_in_out" paramValue="O"/>
+			<tns:parameter name="zz_log_chg_qty" paramValue="0.000000"/>			
+			<tns:parameter name="zz_domintroam" paramValue="R"/>
+			<tns:parameter name="zz_event_usp" paramValue="SMSMO_ROAM"/>
+			<tns:parameter name="zz_voicesmsdata" paramValue="S"/>
+			<tns:parameter name="zz_orig_zone" paramValue="OTHER2"/>
+			<tns:parameter name="zz_dest_zone" paramValue="ALL"/>
+			<tns:parameter name="zz_orig_country" paramValue="HKG"/>
+			<tns:parameter name="zz_dest_country" paramValue="LTU"/>
+			<tns:parameter name="zz_orig_dscr" paramValue="HKGH3"/>
+			<tns:parameter name="zz_dest_dscr" paramValue="LT_MOB_OTHER"/>
+			<tns:parameter name="zz_orig_zon_sch" paramValue="ZS_ROAM_A_DEFAULT_B2X"/>
+			<tns:parameter name="zz_dest_zon_sch" paramValue="ZS_ROAM_B_DEFAULT_B2X"/>
+			<tns:parameter name="zz_prc_group" paramValue="PG_ROAM_STD_C"/>
+			<tns:parameter name="zz_price_id" paramValue="RSO_OTH_ALL_02"/>
+			<tns:parameter name="zz_roam_prc_type" paramValue="NORM"/>
+			<tns:parameter name="zz_tariff" paramValue="0.000000"/>
+			<tns:parameter name="zz_tax_code" paramValue="PVM1"/>				
+			<tns:parameter name="zz_det_inv_digit" paramValue="Y"/>
+			<tns:parameter name="printrel" paramValue="true"/>
+			<tns:parameter name="zz_exem_price_present" paramValue="false"/>
+			<tns:parameter name="zz_log_alw_qty_present" paramValue="false"/>     
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>222</tns:id>
+			<!--  Incoming SMS in RLAH zone , FUP rule applies -->
+            <tns:labels>MSG_FUP,SMSMT,SMSMT_ROAM,RLAH</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2025-01-20T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="90000000000001"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMT"/>
+			<tns:parameter name="plmn" paramValue="20888"/>
+			<tns:parameter name="tadig" paramValue="FRAF3"/>
+			<tns:parameter name="source_id" paramValue="TAP_IN"/>
+			<tns:parameter name="fup_code" paramValue="Y"/>
+			<!-- output charged item validations, different from default value specified in testExtension file -->					
+			<tns:parameter name="bit_amount" paramValue="0.000000"/>			
+			<tns:parameter name="bit_quantity" paramValue="1.000000"/>
+			<tns:parameter name="bitdate_from" paramValue="2025-01-20T10:26:46"/>
+			<tns:parameter name="bitdate_to" paramValue="2025-01-20T10:26:46"/>
+			<tns:parameter name="zz_ch_quantity" paramValue="1.000000"/>
+			<tns:parameter name="zz_in_out" paramValue="I"/>
+			<tns:parameter name="zz_log_chg_qty" paramValue="1.000000"/>
+			<tns:parameter name="zz_log_alw_qty" paramValue="0.000000"/>
+			<tns:parameter name="zz_domintroam" paramValue="R"/>
+			<tns:parameter name="zz_event_usp" paramValue="SMSMT_ROAM"/>
+			<tns:parameter name="zz_voicesmsdata" paramValue="S"/>
+			<tns:parameter name="zz_orig_zone" paramValue="N/A"/>
+			<tns:parameter name="zz_dest_zone" paramValue="EU"/>
+			<tns:parameter name="zz_orig_country" paramValue="N/A"/>
+			<tns:parameter name="zz_dest_country" paramValue="FRA"/>
+			<tns:parameter name="zz_orig_dscr" paramValue="N/A"/>
+			<tns:parameter name="zz_dest_dscr" paramValue="FRAF3"/>
+			<tns:parameter name="zz_orig_zon_sch" paramValue="N/A"/>
+			<tns:parameter name="zz_dest_zon_sch" paramValue="ZS_ROAM_A_DEFAULT_B2X"/>
+			<tns:parameter name="zz_prc_group" paramValue="PG_ROAM_STD_C"/>
+			<tns:parameter name="zz_price_id" paramValue="RSI_ALL_01"/>
+			<tns:parameter name="zz_roam_prc_type" paramValue="NORM"/>
+			<tns:parameter name="zz_tariff" paramValue="0.000000"/>
+			<tns:parameter name="zz_tax_code" paramValue="PVM1"/>
+			<tns:parameter name="zz_exem_price" paramValue="0.000000"/>
+			<tns:parameter name="zz_det_inv_digit" paramValue="N"/>
+			<tns:parameter name="printrel" paramValue="true"/>		        
+        </tns:test>
+
+		<tns:test>
+            <tns:id>224</tns:id>
+			<!-- SMS from satellite network -->
+            <tns:labels>MSG_SDR,SMSMO_ROAM</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2025-01-20T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="90000000000000004"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			<tns:parameter name="plmn" paramValue="90118"/>
+			<tns:parameter name="cdr_cost" paramValue="5"/>
+			<!-- output charged item validations, different from default value specified in testExtension file -->					
+			<tns:parameter name="bit_amount" paramValue="6.901510"/>			
+			<tns:parameter name="bit_quantity" paramValue="1.000000"/>
+			<tns:parameter name="bitdate_from" paramValue="2025-01-20T10:26:46"/>
+			<tns:parameter name="bitdate_to" paramValue="2025-01-20T10:26:46"/>
+			<tns:parameter name="zz_ch_quantity" paramValue="1.000000"/>
+			<tns:parameter name="zz_in_out" paramValue="O"/>
+			<tns:parameter name="zz_log_chg_qty" paramValue="0.000000"/>
+			<tns:parameter name="zz_domintroam" paramValue="R"/>
+			<tns:parameter name="zz_event_usp" paramValue="SMSMO_ROAM"/>
+			<tns:parameter name="zz_voicesmsdata" paramValue="S"/>
+			<tns:parameter name="zz_orig_zone" paramValue="SATEL1"/>
+			<tns:parameter name="zz_dest_zone" paramValue="ALL"/>
+			<tns:parameter name="zz_orig_country" paramValue="BMU"/>
+			<tns:parameter name="zz_dest_country" paramValue="LTU"/>
+			<tns:parameter name="zz_orig_dscr" paramValue="BMU01"/>
+			<tns:parameter name="zz_dest_dscr" paramValue="LT_MOB_TELIA"/>
+			<tns:parameter name="zz_orig_zon_sch" paramValue="ZS_ROAM_A_DEFAULT_B2X"/>
+			<tns:parameter name="zz_dest_zon_sch" paramValue="ZS_ROAM_B_DEFAULT_B2X"/>
+			<tns:parameter name="zz_prc_group" paramValue="PG_ROAM_STD_C"/>
+			<tns:parameter name="zz_price_id" paramValue="RSO_SAT_ALL_OPR"/>
+			<tns:parameter name="zz_roam_prc_type" paramValue="OPER"/>
+			<tns:parameter name="zz_tariff" paramValue="0.000000"/>
+			<tns:parameter name="zz_tax_code" paramValue="PVM1"/>					
+			<tns:parameter name="zz_det_inv_digit" paramValue="Y"/>
+			<tns:parameter name="printrel" paramValue="true"/>          
+			<tns:parameter name="zz_exem_price_present" paramValue="false"/>
+			<tns:parameter name="zz_log_alw_qty_present" paramValue="false"/>
+        </tns:test>
+		
+		
+		<tns:test>
+            <tns:id>999</tns:id>
+            <tns:labels>SUAC_DELETE</tns:labels>
+			<tns:parameter name="pcId" paramValue="${SUBSCRIBER_CODE}"/>
+			<tns:parameter name="subscriberAccountId" paramValue="${SUBSCRIBER_CODE}"/>
+        </tns:test>
+    </tns:testData>
+</tns:testTemplate>

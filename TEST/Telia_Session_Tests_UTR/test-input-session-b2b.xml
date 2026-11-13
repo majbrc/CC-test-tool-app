@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $genInfo -->
+<tns:testTemplate xmlns:tns="https://www.w3schools.com"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.w3schools.com ../common/xsd/test-inputs.xsd">
+    <tns:header>
+        <tns:constants>
+            <tns:constant name="__META_TITLE__" constValue="Tests including multiple usage tracking components for B2B customer"/>
+            <tns:constant name="__META_DESCRIPTION__" constValue="Tests including RCC and Charging Limit"/>
+            <tns:constant name="_TEST_COMMON_DIR" constValue="TEST"/>
+            <tns:constant name="_TEST_DIR" constValue="TEST/Telia_Session_Tests_UTR"/>
+            <tns:constant name="USER_SERVICE_ID" constValue="9000000023"/>
+			<!-- extract current year -->
+			<tns:constant name="CURRENT_YEAR" constValue="$DATE_TIME_NOW_items.Year"/>		
+			
+			<tns:constant name="SUBSCRIBER_ACCOUNT_ID" constValue="900000000000000000000000000007"/>
+            <tns:constant name="PROVIDER_CONTRACT_ID" constValue="90000000000000000015"/>
+			<tns:constant name="EVENT_DATE" constValue="${CURRENT_YEAR}-06-12T11:53:41"/>
+        </tns:constants>
+		
+        <tns:parameters>
+            <tns:parameter name="sessionDefinitionFileList" type="string"/>
+			<tns:parameter name="generateCit" type="string"/>
+            <tns:parameter name="validateCitEnabled" type="string" defaultValue="false"/>
+			<tns:parameter name="fwOnErrorFailTheTest" type="string" defaultValue="true"/>
+			<tns:parameter name="onErrorFailTheTest" type="string" defaultValue="true"/>
+			
+			<tns:parameter name="ciPropertiesFile" type="string"/>
+			<tns:parameter name="consumptionDate" type="date"/>
+			<tns:parameter name="sapCcApi" type="string"/>
+			<tns:parameter name="testExtension" type="string"/>
+			
+			<!-- Validation parameters -->
+			<tns:parameter name="billingPeriodUsageChargingLimit" type="number"/>		
+			<tns:parameter name="bucketValueChargingLimit" type="number"/>
+			<tns:parameter name="billingPeriodUsageRCC" type="number"/>		
+			<tns:parameter name="bucketValueRCC" type="number"/>
+			<tns:parameter name="validateNotificationEnabled" type="string" defaultValue="false"/>
+			<tns:parameter name="threshold" type="string"/>
+			<tns:parameter name="utrId" type="string"/>
+			
+			<tns:parameter name="startNotifListener" type="string"/>
+            <tns:parameter name="startNotifListenerDelayMills" type="number"/>
+            <tns:parameter name="stopNotifListenerDelayMills" type="number"/>
+		</tns:parameters>
+    </tns:header>
+	
+	<tns:testData>
+
+		<tns:test>
+            <tns:id>1</tns:id>
+            <tns:labels>ROAMING_DATA</tns:labels>
+            <tns:parameter name="sessionDefinitionFileList" paramValue="${_TEST_DIR}/templates/01.telia.test.data.ini"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<tns:parameter name="validateCitEnabled" paramValue="false"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-all-utr-and-utrid.xml"/>
+			<!-- Validation -->
+			<tns:parameter name="utrId" paramValue="RCC"/>
+			<tns:parameter name="billingPeriodUsageChargingLimit" paramValue="0.267759"/>
+			<tns:parameter name="bucketValueChargingLimit" paramValue="100"/>
+			<tns:parameter name="billingPeriodUsageRCC" paramValue="0.267759"/>
+			<tns:parameter name="bucketValueRCC" paramValue="49.59"/>
+			<tns:parameter name="validateNotificationEnabled" paramValue="false"/>
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>2</tns:id>
+            <tns:labels>ROAMING_DATA_NOTIF_RCC_REACHED</tns:labels>
+            <tns:parameter name="sessionDefinitionFileList" paramValue="${_TEST_DIR}/templates/02.telia.test.data.ini"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<tns:parameter name="validateCitEnabled" paramValue="false"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-all-utr.xml"/>
+			<!-- Validation -->
+			<tns:parameter name="billingPeriodUsageChargingLimit" paramValue="70.116553"/>
+			<tns:parameter name="bucketValueChargingLimit" paramValue="100"/>
+			<tns:parameter name="billingPeriodUsageRCC" paramValue="49.59"/>
+			<tns:parameter name="bucketValueRCC" paramValue="49.59"/>
+			<tns:parameter name="validateNotificationEnabled" paramValue="true"/>
+			<tns:parameter name="threshold" paramValue="70"/>
+			
+            <tns:parameter name="startNotifListener" paramValue="true"/>
+            <tns:parameter name="startNotifListenerDelayMills" paramValue="500"/>
+            <tns:parameter name="stopNotifListenerDelayMills" paramValue="1000"/>
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>3</tns:id>
+            <tns:labels>RCC_REACHED_REJECTION</tns:labels>
+            <tns:parameter name="sessionDefinitionFileList" paramValue="${_TEST_DIR}/templates/03.telia.test.data.ini"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<tns:parameter name="validateCitEnabled" paramValue="false"/>
+			<tns:parameter name="fwOnErrorFailTheTest" paramValue="false"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/charging-limit-reached-validation-startrate.xml"/>
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>4</tns:id>
+            <tns:labels>ROAMING_DATA_AFTER_RCC_LIMIT_CHANGE</tns:labels>
+            <tns:parameter name="sessionDefinitionFileList" paramValue="${_TEST_DIR}/templates/01.telia.test.data.ini"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<tns:parameter name="validateCitEnabled" paramValue="false"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-all-utr-and-utrid.xml"/>
+			<!-- Validation -->
+			<tns:parameter name="utrId" paramValue="CHLIM"/>
+			<tns:parameter name="billingPeriodUsageChargingLimit" paramValue="70.384312"/>
+			<tns:parameter name="bucketValueChargingLimit" paramValue="100"/>
+			<tns:parameter name="billingPeriodUsageRCC" paramValue="49.857759"/>
+			<tns:parameter name="bucketValueRCC" paramValue="100"/>
+			<tns:parameter name="validateNotificationEnabled" paramValue="false"/>
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>5</tns:id>
+            <tns:labels>ROAMING_DATA_NOTIF_CHLIM_REACHED</tns:labels>
+            <tns:parameter name="sessionDefinitionFileList" paramValue="${_TEST_DIR}/templates/02.telia.test.data.ini"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<tns:parameter name="validateCitEnabled" paramValue="false"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-all-utr-and-utrid.xml"/>
+			<!-- Validation -->
+			<tns:parameter name="utrId" paramValue="CHLIM"/>
+			<tns:parameter name="billingPeriodUsageChargingLimit" paramValue="100.000000"/>
+			<tns:parameter name="bucketValueChargingLimit" paramValue="100"/>
+			<tns:parameter name="billingPeriodUsageRCC" paramValue="60.216553"/>
+			<tns:parameter name="bucketValueRCC" paramValue="100"/>
+			<tns:parameter name="validateNotificationEnabled" paramValue="false"/>
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>6</tns:id>
+            <tns:labels>CHLIM_REACHED_REJECTION</tns:labels>
+            <tns:parameter name="sessionDefinitionFileList" paramValue="${_TEST_DIR}/templates/03.telia.test.data.ini"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<tns:parameter name="validateCitEnabled" paramValue="false"/>
+			<tns:parameter name="fwOnErrorFailTheTest" paramValue="false"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/charging-limit-reached-validation-startrate.xml"/>
+        </tns:test>
+    </tns:testData>
+</tns:testTemplate>

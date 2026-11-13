@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Test sample on Telia user" parallel="false" preserve-order="true">
+
+	<!--LOCAL_AS_WAS-->
+	<test name="LAW-Remove test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-01.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+    <test name="LAW-Create test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-01.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_IMPORT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t920_execute_soap_request"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="LAW-Activate and create alw" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-01.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_CREATE_ALW"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="LAW-Fixed voice calls" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-01.xml"/>
+        <parameter name="testFilterLabel" value="USAGE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	<!--COUNTRY_PLUS_AS_WAS-->
+	<test name="CPAW-Remove test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-02.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+    <test name="CPAW-Create test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-02.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_IMPORT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t920_execute_soap_request"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="CPAW-Activate and create alw" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-02.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_CREATE_ALW"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="CPAW-Fixed voice calls" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-02.xml"/>
+        <parameter name="testFilterLabel" value="USAGE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+		<!--BASE_PLUS-->
+	<test name="BP-Remove test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-03.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+    <test name="BP-Create test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-03.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_IMPORT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t920_execute_soap_request"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="BP-Activate and create alw" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-03.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_CREATE_ALW"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="BP-Fixed voice calls" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-03.xml"/>
+        <parameter name="testFilterLabel" value="USAGE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+			<!--DAYS-->
+	<test name="DAYS-Remove test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-04.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+    <test name="DAYS-Create test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-04.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_IMPORT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t920_execute_soap_request"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="DAYS-Activate and create alw" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-04.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_CREATE_ALW"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="DAYS-Fixed voice calls" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-04.xml"/>
+        <parameter name="testFilterLabel" value="USAGE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+				<!--HOURS-->
+	<test name="HOURS-Remove test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-05.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+    <test name="HOURS-Create test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-05.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_IMPORT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t920_execute_soap_request"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="HOURS-Activate and create alw" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-05.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_CREATE_ALW"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="HOURS-Fixed voice calls" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-05.xml"/>
+        <parameter name="testFilterLabel" value="USAGE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+					<!--EKO-->
+	<test name="EKO-Remove test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-06.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+    <test name="EKO-Create test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-06.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_IMPORT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t920_execute_soap_request"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="EKO-Activate and create alw" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-06.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_CREATE_ALW"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="EKO-Fixed voice calls" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-06.xml"/>
+        <parameter name="testFilterLabel" value="USAGE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+					<!--MINUTES-->
+	<test name="MINUTES-Remove test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-07.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+    <test name="MINUTES-Create test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-07.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_IMPORT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t920_execute_soap_request"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="MINUTES-Activate and create alw" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-07.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_CREATE_ALW"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="MINUTES-Fixed voice calls" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-07.xml"/>
+        <parameter name="testFilterLabel" value="USAGE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+				<!--DAYS+FOREIGN-->
+	<test name="DAYS+F-Remove test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-04-ADD.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+    <test name="DAYS+F-Create test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-04-ADD.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_IMPORT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t920_execute_soap_request"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="DAYS+F-Activate and create alw" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-04-ADD.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_CREATE_ALW"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="DAYS+F-Fixed voice calls" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-04-ADD.xml"/>
+        <parameter name="testFilterLabel" value="USAGE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+	<!--BASE_PLUS+MOBILE-->
+	<test name="BP+M-Remove test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-03-ADD.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+    <test name="BP+M-Create test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-03-ADD.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_IMPORT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t920_execute_soap_request"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="BP+M-Activate and create alw" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-03-ADD.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_CREATE_ALW"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="BP+M-Fixed voice calls" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Fix_Network/test-fix-voice-03-ADD.xml"/>
+        <parameter name="testFilterLabel" value="USAGE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+</suite>

@@ -1,0 +1,765 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $genInfo -->
+<tns:testTemplate xmlns:tns="https://www.w3schools.com"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.w3schools.com ../common/xsd/test-inputs.xsd">
+    <tns:header>
+        <tns:constants>
+            <tns:constant name="__META_TITLE__" constValue="Telia test group 02 (Telia Family)"/>
+            <tns:constant name="__META_DESCRIPTION__" constValue="Test inputs for Telia Family messaging usage scenarios"/>
+            <tns:constant name="_TEST_COMMON_DIR" constValue="TEST"/>
+            <tns:constant name="_TEST_DIR" constValue="${_TEST_COMMON_DIR}/Telia_Data_Generation"/>
+			<!-- subscriber ID -->
+			<tns:constant name="USER_SERVICE_ID" constValue="9000000010"/>
+					   
+        </tns:constants>
+        <tns:parameters>
+            <tns:parameter name="wsRequestTemplate" type="string"/>
+            <tns:parameter name="wsEndpointPropertyRef" type="string"/>
+			<tns:parameter name="pcId" type="string"/>
+			<tns:parameter name="subscriberAccountId" type="string"/>
+			<tns:parameter name="ciPropertiesFile" type="string"/>
+			<tns:parameter name="consumptionDate" type="date"/>
+			<tns:parameter name="sapCcApi" type="string"/>
+			<tns:parameter name="testExtension" type="string"/>
+			<tns:parameter name="generateCit" type="string"/>
+						
+			<!-- MCIT input properties -->
+			<tns:parameter name="total_volume" type="number"/>	
+			<tns:parameter name="billing_party" type="string"/>		
+			<tns:parameter name="plmn" type="string"/>
+			<tns:parameter name="tadig" type="string"/>
+			<tns:parameter name="transaction_type" type="string"/>
+			<tns:parameter name="vat_included" type="string"/>
+			<tns:parameter name="cdr_rated" type="string"/>
+			<tns:parameter name="cdr_price" type="number"/>
+			<tns:parameter name="download_value" type="number"/>
+			<tns:parameter name="source_id" type="string"/>
+			<tns:parameter name="cdr_cost" type="number"/>
+			<tns:parameter name="fup_code" type="string"/>
+			
+        </tns:parameters>
+    </tns:header>
+    <tns:testData>
+        
+		
+		<tns:test>
+            <tns:id>200</tns:id>
+			<!-- Domestic regular SMS to Telia mobile -->
+			<tns:labels>MSG1,SMSMO,SMSMO_DOMESTIC</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-13T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="90000000000000009"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>201</tns:id>
+			<!-- Domestic regular SMS to Telia mobile with multiple segments -->
+            <tns:labels>MSG2,SMSMO,SMSMO_DOMESTIC</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-08T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="2"/>			
+			<tns:parameter name="billing_party" paramValue="90000000000000009"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>			
+			
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>202</tns:id>
+			<!-- Domestic regular SMS to other LTU mobile -->
+            <tns:labels>MSG3,SMSMO,SMSMO_DOMESTIC</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-04T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="90000000000000013"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>			
+			
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>203</tns:id>
+			<!-- Domestic regular SMS to other LTU mobile with multiple segments -->
+            <tns:labels>MSG1,SMSMO,SMSMO_DOMESTIC</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-04T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="2"/>			
+			<tns:parameter name="billing_party" paramValue="90000000000000012"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>			
+			
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>204</tns:id>
+			<!-- SMS to short number - Free SMS -->
+            <tns:labels>MSG2,SMSMT,SMSMT_DOMESTIC,SMS_SHORT</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-05T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="9004"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			
+        </tns:test>
+			
+		<tns:test>
+            <tns:id>205</tns:id>
+			<!-- SMS to short number - charged -->
+            <tns:labels>MSG3,SMSMO,SMSMO_DOMESTIC,SMS_SHORT</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-03T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="9019"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>206</tns:id>
+			<!-- SMS to short number - Charity, charged by event -->
+            <tns:labels>MSG1,SMSMO,SMSMO_DOMESTIC,SMS_SHORT</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-07T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="9006"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>207</tns:id>
+			<!-- Incoming SMS in home network -->
+            <tns:labels>MSG2,SMSMT,SMSMT_DOMESTIC</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-06T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="9000000000013"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMT"/>
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>229</tns:id>
+			<!-- Incoming SMS in home network from unknown B-party -->
+            <tns:labels>MSG3,SMSMT,SMSMT_DOMESTIC,SMSMT_UNKNOWN</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-04T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="00000AAAAADJ"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMT"/>
+			<tns:parameter name="source_id" paramValue="SMSC"/>
+			
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>230</tns:id>
+			<!-- Incoming SMS in home network from unknown B-party -->
+            <tns:labels>MSG1,SMSMT,SMSMT_DOMESTIC,SMSMT_APP</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-19T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="APP#4321"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMT"/>
+			
+        </tns:test>
+		
+		
+		<tns:test>
+            <tns:id>208</tns:id>
+			<!--  Delivery report for domestic regular SMS to Telia -->
+            <tns:labels>MSG2,SMSDR,SMSDR_DOMESTIC</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-21T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="AAANL"/>
+			<tns:parameter name="transaction_type" paramValue="SMSDR"/>
+			
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>209</tns:id>
+			<!-- ITSD_16592 - Incoming SMS from VAS service - VAT 0% -->
+            <tns:labels>MSG3,SMSMT,SMSMT_DOMESTIC</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-17T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="2469#0140"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMT"/>
+			<tns:parameter name="cdr_price" paramValue="2.000000"/>
+			<tns:parameter name="cdr_rated" paramValue="Y"/>
+			
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>210</tns:id>
+			<!-- ITSD_16592 - Incoming SMS from VAS service - Regular VAT, VAT not included -->
+            <tns:labels>MSG1,SMSMT,SMSMT_DOMESTIC</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-22T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="0094#0151"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMT"/>
+			<tns:parameter name="cdr_price" paramValue="0.730000"/>
+			<tns:parameter name="cdr_rated" paramValue="Y"/>
+			
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>211</tns:id>
+			<!-- ITSD_16592 - Incoming SMS from VAS service - Regular VAT, VAT included -->
+            <tns:labels>MSG2,SMSMT,SMSMT_DOMESTIC</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-23T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="0095#0180"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMT"/>
+			<tns:parameter name="vat_included" paramValue="Y"/>
+			<tns:parameter name="cdr_price" paramValue="0.890000"/>
+			<tns:parameter name="cdr_rated" paramValue="Y"/>
+			
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>212</tns:id>
+			<!-- ITSD_16098 - Domestic regular MMS to Telia mobile -->
+            <tns:labels>MSG3,MMSMO,MMSMO_DOMESTIC</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-02T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="90000000000000005"/>
+			<tns:parameter name="transaction_type" paramValue="MMSMO"/>
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>231</tns:id>
+			<!-- MMS to email -->
+            <tns:labels>MSG1,MMSMO,MMSMO_DOMESTIC,MSE</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!-- <tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-06T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="ANJ"/>
+			<tns:parameter name="transaction_type" paramValue="MMSMO"/>
+        </tns:test>
+		
+		
+		<tns:test>
+            <tns:id>213</tns:id>
+			<!-- ITSD_16099 - Domestic regular MMS to other LTU mobile -->
+            <tns:labels>MSG2,MMSMO,MMSMO_DOMESTIC</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-18T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="9000000000000005"/>
+			<tns:parameter name="transaction_type" paramValue="MMSMO"/>
+			
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>214</tns:id>
+			<!-- ITSD_16099 - Domestic regular MMS to other LTU mobile -->
+            <tns:labels>MSG3,MMSMT,MMSMT_DOMESTIC</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-05T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="9000000000000005"/>
+			<tns:parameter name="transaction_type" paramValue="MMSMT"/>
+			<tns:parameter name="vat_included" paramValue="Y"/>
+			<tns:parameter name="cdr_rated" paramValue="Y"/>
+			<tns:parameter name="cdr_price" paramValue="0"/>
+			<tns:parameter name="download_value" paramValue="20763"/>
+			<tns:parameter name="source_id" paramValue="MR"/>
+			
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>232</tns:id>
+			<!-- ITSD_16099 - Domestic regular MMS to other LTU mobile -->
+            <tns:labels>MSG1,MMSMT,MMSMT_DOMESTIC,APP</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-08T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="0311#0000"/>
+			<tns:parameter name="transaction_type" paramValue="MMSMT"/>
+			<tns:parameter name="vat_included" paramValue="Y"/>
+			<tns:parameter name="cdr_rated" paramValue="Y"/>
+			<tns:parameter name="cdr_price" paramValue="0"/>
+			<tns:parameter name="download_value" paramValue="20763"/>
+			<tns:parameter name="source_id" paramValue="MR"/>
+			
+        </tns:test>
+		
+		
+		<tns:test>
+            <tns:id>215</tns:id>
+			<!-- ITSD_16085 - SMS from RLAH zone -->
+            <tns:labels>MSG2,SMSMO,SMSMO_ROAM,RLAH</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-28T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="9000000000007"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			<tns:parameter name="plmn" paramValue="29340"/>
+			
+        </tns:test>
+
+		<tns:test>
+            <tns:id>215.1</tns:id>
+			<!-- ITSD_16085 - SMS from RLAH zone, unknown B-party -->
+            <tns:labels>MSG,SMSMO,SMSMO_ROAM,RLAH</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/> -->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-04T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue=""/>
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			<tns:parameter name="plmn" paramValue="21901"/>
+			
+          
+        </tns:test>
+
+		
+		<tns:test>
+            <tns:id>216</tns:id>
+			<!-- ITSD_16086 - SMS from RLAH zone - CDR cost above threshold -->
+            <tns:labels>MSG,SMSMO,SMSMO_ROAM,RLAH</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-04T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="9000000000020"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			<tns:parameter name="plmn" paramValue="21901"/>
+			<tns:parameter name="cdr_cost" paramValue="5"/>
+			
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>217</tns:id>
+			<!-- ITSD_16087 - SMS from RLAH zone - FUP rule applies -->
+            <tns:labels>MSG,SMSMO,SMSMO_ROAM,RLAH</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-04T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="9000000000020"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			<tns:parameter name="plmn" paramValue="21901"/>
+			<tns:parameter name="fup_code" paramValue="Y"/>
+		
+          
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>218</tns:id>
+			<!-- ITSD_16087 - SMS from non EU country to the number in the same country -->
+            <tns:labels>MSG,SMSMO,SMSMO_ROAM</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-04T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="9000000000042"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			<tns:parameter name="plmn" paramValue="45403"/>
+			
+          
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>219</tns:id>
+			<!-- SMS from non EU zone -->
+            <tns:labels>MSG,SMSMO,SMSMO_ROAM</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-04T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="9000000000042"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			<tns:parameter name="plmn" paramValue="45403"/>
+			 
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>220</tns:id>
+			<!-- SMS from non EU zone, CDR cost above threshold -->
+            <tns:labels>MSG,SMSMO,SMSMO_ROAM</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-04T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="9000000000020"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			<tns:parameter name="plmn" paramValue="45403"/>
+			<tns:parameter name="cdr_cost" paramValue="5"/>
+			
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>221</tns:id>
+			<!-- ITSD_16087 - Incoming SMS in RLAH zone -->
+            <tns:labels>MSG,SMSMT,SMSMT_ROAM,RLAH</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/> -->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-04T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="90000000000001"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMT"/>
+			<tns:parameter name="plmn" paramValue="20888"/>
+			<tns:parameter name="tadig" paramValue="FRAF3"/>
+			<tns:parameter name="source_id" paramValue="TAP_IN"/>
+			
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>222</tns:id>
+			<!--  Incoming SMS in RLAH zone , FUP rule applies -->
+            <tns:labels>MSG,SMSMT,SMSMT_ROAM,RLAH</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-04T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="90000000000001"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMT"/>
+			<tns:parameter name="plmn" paramValue="20888"/>
+			<tns:parameter name="tadig" paramValue="FRAF3"/>
+			<tns:parameter name="source_id" paramValue="TAP_IN"/>
+			<tns:parameter name="fup_code" paramValue="Y"/>
+			  
+        </tns:test>
+
+		<tns:test>
+            <tns:id>223</tns:id>
+			<!-- Incoming SMS in non EU country -->
+            <tns:labels>MSG,SMSMT,SMSMT_ROAM,RLAH</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-04T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="90000000000001"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMT"/>
+			<tns:parameter name="plmn" paramValue="41250"/>			
+			<tns:parameter name="source_id" paramValue="TAP_IN"/>
+			     
+        </tns:test>
+
+		<tns:test>
+            <tns:id>224</tns:id>
+			<!-- SMS from satellite network -->
+            <tns:labels>MSG,SMSMO,SMSMO_ROAM</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-04T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="90000000000000004"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			<tns:parameter name="plmn" paramValue="90118"/>
+			<tns:parameter name="cdr_cost" paramValue="5"/>
+			
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>225</tns:id>
+			<!-- International SMS to NB country -->
+			<tns:labels>MSG,SMSMO,SMSMO_INT</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-04T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="900000000021"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			
+
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>226</tns:id>
+			<!-- International SMS to EU country -->
+			<tns:labels>MSG,SMSMO,SMSMO_INT</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!-- <tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-04T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="2"/>			
+			<tns:parameter name="billing_party" paramValue="9000000000003"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			
+
+        </tns:test>
+
+		<tns:test>
+            <tns:id>227</tns:id>
+			<!-- International SMS to satellite destination -->
+			<tns:labels>MSG,SMSMO,SMSMO_INT</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-04T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="9000000000043"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>228</tns:id>
+			<!-- Internatioanal MMS-->
+            <tns:labels>MSG,MMSMO,MMSMO_INT</tns:labels>
+			
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-04T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="9000000000035"/>
+			<tns:parameter name="transaction_type" paramValue="MMSMO"/>
+			
+          
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>250</tns:id>
+			<!-- TAP-IN SUPS -->
+			<tns:labels>MSG,SUPS</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<!--<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-msg-output.xml"/>-->
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-04-04T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="0"/>					
+			<tns:parameter name="billing_party" paramValue="AAAAA_AANN"/>				
+			<tns:parameter name="transaction_type" paramValue="SUPS"/>					
+			<tns:parameter name="plmn" paramValue="21901"/>
+					
+        </tns:test>
+
+		
+		<tns:test>
+            <tns:id>999</tns:id>
+            <tns:labels>SUAC_DELETE</tns:labels>
+			<tns:parameter name="pcId" paramValue="${SUBSCRIBER_CODE}"/>
+			<tns:parameter name="subscriberAccountId" paramValue="${SUBSCRIBER_CODE}"/>
+        </tns:test>
+    </tns:testData>
+</tns:testTemplate>

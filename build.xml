@@ -1,0 +1,302 @@
+<project basedir="." xmlns:if="ant:if" xmlns:unless="ant:unless">
+    <!-- load build properties -->
+    <property file="${basedir}/build.local.properties"/>
+    <property file="${basedir}/build.properties"/>
+
+     <!-- needed in to be able to use testng tasks for running the tests -->
+    <taskdef resource="testngtasks" classpath="${testng.lib.dir}/${testng.lib.name}"/>
+
+    <path id="classpath">
+        <fileset dir="${ext.lib.dir}" includes="**/*.jar"/>
+        <fileset dir="${test.jar.dir}" includes="**/*.jar"/>
+    </path>
+
+    <!-- -->
+    <macrodef name="runMultipleSuites">
+        <attribute name="pConfigDirPath" default="${test.config.dir.path}"/>
+        <attribute name="pTestLogDir" default="${test.log.dir.path}"/>
+        <attribute name="pCreateClassSubDirForLogs" default="${test.log.create.class.subdir}"/>
+        <attribute name="pTestTemplateInput" default="${test.input.template}"/>
+        <attribute name="pTestNgReportDir" default="${testng.report.dir}"/>
+        <attribute name="pTestColsoleLoggerLevel" default="${test.console.logger.level}"/> <!-- OFF|SEVERE|WARNING|INFO|CONFIG|FINE|FINER|FINEST|ALL -->
+        <attribute name="pTestReportTemplatesDir" default="${test.report.templates.dir}"/>
+        <attribute name="pFrameworkInternalTemplatesDir" default="${framework.common.templates.dir}"/>
+        <attribute name="pFrameworkInternalCatalogTemplatesDir" default="${framework.common.catalog.dir}"/>
+        <attribute name="pFrameworkInternalTestInputsTemplatesDir" default="${framework.common.templates.test.inputs.dir}"/>
+        <attribute name="pFrameworkInternalXpathPropertiesDir" default="${framework.common.xpath.dir}"/>
+        <attribute name="pFrameworkTestLogTemplatesDir" default="${framework.test.log.templates.dir}"/>
+        <attribute name="pFrameworkTestNgListeners" default="${framework.testng.listeners}"/>
+        <attribute name="pTestJar" default="${test.jar.dir}/${test.jar}"/>
+        <attribute name="pXmlFilesetRef"/>
+        <element name="config" optional="true"/>
+
+        <sequential>
+            <unzip src="${ext.lib.dir}/${jul.formatter.lib.name}" dest="@{pTestLogDir}/${user.name}" overwrite="true">
+                <patternset>
+                    <include name="test-log.css"/>
+                    <include name="verso-altima.css"/>
+                    <include name="w3.css"/>
+                    <include name="jquery-ui.css"/>
+                </patternset>
+            </unzip>
+            <unzip src="${display.dir}/DataTables.zip" dest="@{pTestLogDir}/${user.name}" overwrite="true"/>
+            <testng classpathref="classpath"
+                    outputDir="@{pTestNgReportDir}"
+                    haltOnFailure="false"
+                    testjar="@{pTestJar}"
+                    usedefaultlisteners="false"
+                    listeners="@{pFrameworkTestNgListeners}"
+                    verbose="1"
+                    xmlfilesetref="@{pXmlFilesetRef}">
+
+                <jvmarg value="-DtestConsoleLoggerLevel=@{pTestColsoleLoggerLevel}"/>
+                <jvmarg value="-DreportTemplateDir=@{pTestReportTemplatesDir}"/>
+                <jvmarg value="-DfwInternalTemplatesDir=@{pFrameworkInternalTemplatesDir}"/>
+                <jvmarg value="-DfwInternalCatalogTemplatesDir=@{pFrameworkInternalCatalogTemplatesDir}"/>
+                <jvmarg value="-DfwInternalTemplatesTestInputsDir=@{pFrameworkInternalTestInputsTemplatesDir}"/>
+                <jvmarg value="-DfwInternalXpathPropDir=@{pFrameworkInternalXpathPropertiesDir}"/>
+                <jvmarg value="-DlogTemplatesDir=@{pFrameworkTestLogTemplatesDir}"/>
+
+                <sysproperty key="configDirPath" value="@{pConfigDirPath}"/>
+                <sysproperty key="testLogDir" value="@{pTestLogDir}"/>
+                <sysproperty key="createClassSubDirForLogs" value="@{pCreateClassSubDirForLogs}"/>
+                <sysproperty key="testTemplateInput" value="@{pTestTemplateInput}"/>
+
+                <config/>
+
+                <classpath>
+                    <pathelement location="${basedir}/${test.framework.jar.classpath}"/>
+                </classpath>
+
+            </testng>
+        </sequential>
+
+    </macrodef>
+
+
+    <macrodef name="runSingleSuite">
+        <attribute name="pConfigDirPath" default="${test.config.dir.path}"/>
+        <attribute name="pTestLogDir" default="${test.log.dir.path}"/>
+        <attribute name="pCreateClassSubDirForLogs" default="${test.log.create.class.subdir}"/>
+        <attribute name="pTestTemplateInput" default="${test.input.template}"/>
+        <attribute name="pTestNgReportDir" default="${testng.report.dir}"/>
+        <attribute name="pTestColsoleLoggerLevel" default="${test.console.logger.level}"/> <!-- OFF|SEVERE|WARNING|INFO|CONFIG|FINE|FINER|FINEST|ALL -->
+        <attribute name="pTestReportTemplatesDir" default="${test.report.templates.dir}"/>
+        <attribute name="pFrameworkInternalTemplatesDir" default="${framework.common.templates.dir}"/>
+        <attribute name="pFrameworkInternalCatalogTemplatesDir" default="${framework.common.catalog.dir}"/>
+        <attribute name="pFrameworkInternalTestInputsTemplatesDir" default="${framework.common.templates.test.inputs.dir}"/>
+        <attribute name="pFrameworkInternalXpathPropertiesDir" default="${framework.common.xpath.dir}"/>
+        <attribute name="pFrameworkTestLogTemplatesDir" default="${framework.test.log.templates.dir}"/>
+        <attribute name="pFrameworkTestNgListeners" default="${framework.testng.listeners}"/>
+        <attribute name="pXmlTestDir"/>
+        <attribute name="pTestJar" default="${test.jar.dir}/${test.jar}"/>
+        <attribute name="pXmlTestSuiteFile"/>
+        <element name="config" optional="true"/>
+
+        <sequential>
+            <unzip src="${ext.lib.dir}/${jul.formatter.lib.name}" dest="@{pTestLogDir}/${user.name}" overwrite="true">
+                <patternset>
+                    <include name="test-log.css"/>
+                    <include name="verso-altima.css"/>
+                    <include name="w3.css"/>
+                    <include name="jquery-ui.css"/>
+                </patternset>
+            </unzip>
+            <unzip src="${display.dir}/DataTables.zip" dest="@{pTestLogDir}/${user.name}" overwrite="true"/>
+            <testng classpathref="classpath"
+                    outputDir="@{pTestNgReportDir}"
+                    haltOnFailure="true"
+                    testjar="@{pTestJar}"
+                    usedefaultlisteners="false"
+                    listeners="@{pFrameworkTestNgListeners}"
+                    verbose="1">
+
+                <jvmarg value="-DtestConsoleLoggerLevel=@{pTestColsoleLoggerLevel}" />
+                <jvmarg value="-DreportTemplateDir=@{pTestReportTemplatesDir}"/>
+                <jvmarg value="-DfwInternalTemplatesDir=@{pFrameworkInternalTemplatesDir}"/>
+                <jvmarg value="-DfwInternalCatalogTemplatesDir=@{pFrameworkInternalCatalogTemplatesDir}"/>
+                <jvmarg value="-DfwInternalTemplatesTestInputsDir=@{pFrameworkInternalTestInputsTemplatesDir}"/>
+                <jvmarg value="-DfwInternalXpathPropDir=@{pFrameworkInternalXpathPropertiesDir}"/>
+                <jvmarg value="-DlogTemplatesDir=@{pFrameworkTestLogTemplatesDir}"/>
+
+                <sysproperty key="configDirPath" value="@{pConfigDirPath}"/>
+                <sysproperty key="testLogDir" value="@{pTestLogDir}"/>
+                <sysproperty key="createClassSubDirForLogs" value="@{pCreateClassSubDirForLogs}"/>
+                <sysproperty key="testTemplateInput" value="@{pTestTemplateInput}"/>
+
+                <config/>
+
+                <classpath>
+                    <pathelement location="${basedir}/${test.framework.jar.classpath}"/>
+                </classpath>
+
+                <xmlfileset dir="@{pXmlTestDir}" includes="@{pXmlTestSuiteFile}"/>
+            </testng>
+        </sequential>
+
+    </macrodef>
+
+    <macrodef name="runSingleMethod">
+        <attribute name="pConfigDirPath" default="${test.config.dir.path}"/>
+        <attribute name="pTestLogDir" default="${test.log.dir.path}"/>
+        <attribute name="pCreateClassSubDirForLogs" default="${test.log.create.class.subdir}"/>
+        <attribute name="pTestTemplateInput" default="${test.input.template}"/>
+        <attribute name="pTestNgReportDir" default="${testng.report.dir}"/>
+        <attribute name="pTestColsoleLoggerLevel" default="${test.console.logger.level}"/> <!-- OFF|SEVERE|WARNING|INFO|CONFIG|FINE|FINER|FINEST|ALL -->
+        <attribute name="pTestReportTemplatesDir" default="${test.report.templates.dir}"/>
+        <attribute name="pFrameworkInternalTemplatesDir" default="${framework.common.templates.dir}"/>
+        <attribute name="pFrameworkInternalCatalogTemplatesDir" default="${framework.common.catalog.dir}"/>
+        <attribute name="pFrameworkInternalTestInputsTemplatesDir" default="${framework.common.templates.test.inputs.dir}"/>
+        <attribute name="pFrameworkInternalXpathPropertiesDir" default="${framework.common.xpath.dir}"/>
+        <attribute name="pFrameworkTestLogTemplatesDir" default="${framework.test.log.templates.dir}"/>
+        <attribute name="pFrameworkTestNgListeners" default="${framework.testng.single.method.listeners}"/>
+        <attribute name="pXmlTestDir"/>
+        <attribute name="pXmlTestSuiteFile"/>
+        <attribute name="pTestJar" default="${test.jar.dir}/${test.jar}"/>
+        <attribute name="pMethodName" default="NONE"/>
+        <element name="config" optional="true"/>
+
+        <sequential>
+            <unzip src="${ext.lib.dir}/${jul.formatter.lib.name}" dest="@{pTestLogDir}/${user.name}" overwrite="true">
+                <patternset>
+                    <include name="test-log.css"/>
+                    <include name="verso-altima.css"/>
+                    <include name="w3.css"/>
+                    <include name="jquery-ui.css"/>
+                </patternset>
+            </unzip>
+            <unzip src="${display.dir}/DataTables.zip" dest="@{pTestLogDir}/${user.name}" overwrite="true"/>
+            <testng classpathref="classpath"
+                    outputDir="@{pTestNgReportDir}"
+                    haltOnFailure="true"
+                    testjar="@{pTestJar}"
+                    usedefaultlisteners="false"
+                    listeners="@{pFrameworkTestNgListeners}"
+                    verbose="1">
+
+                <jvmarg value="-DtestConsoleLoggerLevel=@{pTestColsoleLoggerLevel}" />
+                <jvmarg value="-Dtestng.method.prefix=@{pMethodName}"/>
+                <jvmarg value="-DreportTemplateDir=@{pTestReportTemplatesDir}"/>
+                <jvmarg value="-DfwInternalTemplatesDir=@{pFrameworkInternalTemplatesDir}"/>
+                <jvmarg value="-DfwInternalCatalogTemplatesDir=@{pFrameworkInternalCatalogTemplatesDir}"/>
+                <jvmarg value="-DfwInternalTemplatesTestInputsDir=@{pFrameworkInternalTestInputsTemplatesDir}"/>
+                <jvmarg value="-DfwInternalXpathPropDir=@{pFrameworkInternalXpathPropertiesDir}"/>
+                <jvmarg value="-DlogTemplatesDir=@{pFrameworkTestLogTemplatesDir}"/>
+
+                <sysproperty key="configDirPath" value="@{pConfigDirPath}"/>
+                <sysproperty key="testLogDir" value="@{pTestLogDir}"/>
+                <sysproperty key="createClassSubDirForLogs" value="@{pCreateClassSubDirForLogs}"/>
+                <sysproperty key="testTemplateInput" value="@{pTestTemplateInput}"/>
+
+                <config/>
+
+                <classpath>
+                    <pathelement location="${basedir}/${test.framework.jar.classpath}"/>
+                </classpath>
+
+                <xmlfileset dir="@{pXmlTestDir}" includes="@{pXmlTestSuiteFile}"/>
+            </testng>
+        </sequential>
+
+    </macrodef>
+
+    <macrodef name="runSingleMethodInAllSuites">
+        <attribute name="pConfigDirPath" default="${test.config.dir.path}"/>
+        <attribute name="pTestLogDir" default="${test.log.dir.path}"/>
+        <attribute name="pCreateClassSubDirForLogs" default="${test.log.create.class.subdir}"/>
+        <attribute name="pTestTemplateInput" default="${test.input.template}"/>
+        <attribute name="pTestNgReportDir" default="${testng.report.dir}"/>
+        <attribute name="pTestColsoleLoggerLevel" default="${test.console.logger.level}"/> <!-- OFF|SEVERE|WARNING|INFO|CONFIG|FINE|FINER|FINEST|ALL -->
+        <attribute name="pTestReportTemplatesDir" default="${test.report.templates.dir}"/>
+        <attribute name="pFrameworkInternalTemplatesDir" default="${framework.common.templates.dir}"/>
+        <attribute name="pFrameworkInternalCatalogTemplatesDir" default="${framework.common.catalog.dir}"/>
+        <attribute name="pFrameworkInternalTestInputsTemplatesDir" default="${framework.common.templates.test.inputs.dir}"/>
+        <attribute name="pFrameworkInternalXpathPropertiesDir" default="${framework.common.xpath.dir}"/>
+        <attribute name="pFrameworkTestLogTemplatesDir" default="${framework.test.log.templates.dir}"/>
+        <attribute name="pFrameworkTestNgListeners" default="${framework.testng.single.method.listeners}"/>
+        <attribute name="pMethodName" default="NONE"/>
+        <attribute name="pTestJar" default="${test.jar.dir}/${test.jar}"/>
+        <attribute name="pXmlFilesetRef"/>
+        <element name="config" optional="true"/>
+
+        <sequential>
+            <unzip src="${ext.lib.dir}/${jul.formatter.lib.name}" dest="@{pTestLogDir}/${user.name}" overwrite="true">
+                <patternset>
+                    <include name="test-log.css"/>
+                    <include name="verso-altima.css"/>
+                    <include name="w3.css"/>
+                    <include name="jquery-ui.css"/>
+                </patternset>
+            </unzip>
+            <unzip src="${display.dir}/DataTables.zip" dest="@{pTestLogDir}/${user.name}" overwrite="true"/>
+            <testng classpathref="classpath"
+                    outputDir="@{pTestNgReportDir}"
+                    haltOnFailure="true"
+                    testjar="@{pTestJar}"
+                    usedefaultlisteners="false"
+                    xmlfilesetref="@{pXmlFilesetRef}"
+                    listeners="@{pFrameworkTestNgListeners}"
+                    verbose="1">
+
+                <jvmarg value="-DtestConsoleLoggerLevel=@{pTestColsoleLoggerLevel}" />
+                <jvmarg value="-Dtestng.method.prefix=@{pMethodName}"/>
+                <jvmarg value="-DreportTemplateDir=@{pTestReportTemplatesDir}"/>
+                <jvmarg value="-DfwInternalTemplatesDir=@{pFrameworkInternalTemplatesDir}"/>
+                <jvmarg value="-DfwInternalCatalogTemplatesDir=@{pFrameworkInternalCatalogTemplatesDir}"/>
+                <jvmarg value="-DfwInternalTemplatesTestInputsDir=@{pFrameworkInternalTestInputsTemplatesDir}"/>
+                <jvmarg value="-DfwInternalXpathPropDir=@{pFrameworkInternalXpathPropertiesDir}"/>
+                <jvmarg value="-DlogTemplatesDir=@{pFrameworkTestLogTemplatesDir}"/>
+
+                <sysproperty key="configDirPath" value="@{pConfigDirPath}"/>
+                <sysproperty key="testLogDir" value="@{pTestLogDir}"/>
+                <sysproperty key="createClassSubDirForLogs" value="@{pCreateClassSubDirForLogs}"/>
+                <sysproperty key="testTemplateInput" value="@{pTestTemplateInput}"/>
+
+                <config/>
+
+                <classpath>
+                    <pathelement location="${basedir}/${test.framework.jar.classpath}"/>
+                </classpath>
+
+            </testng>
+        </sequential>
+    </macrodef>
+
+    <!-- wrapper to run ant task with external library provided -->
+    <macrodef name="runAntTargetWrapper">
+        <attribute name="pLibDir"/>
+        <attribute name="pBuildFile"/>
+        <attribute name="pTarget"/>
+
+        <sequential>
+            <property environment="env"/>
+            <condition property="antExecutable" value="cmd" else="bash">
+                <os family="windows"/>
+            </condition>
+            <condition property="isWindows" value="win">
+                <os family="windows"/>
+            </condition>
+
+            <exec executable="${antExecutable}" unless:set="isWindows">
+                <arg value="ant"/>
+                <arg value="-lib"/>
+                <arg value="@{pLibDir}"/>
+                <arg value="-f"/>
+                <arg file="@{pBuildFile}"/>
+                <arg value="@{pTarget}"/>
+            </exec>
+
+            <exec executable="${antExecutable}" if:set="isWindows">
+                <arg value="/c"/>
+                <arg value="ant.bat"/>
+                <arg value="-lib"/>
+                <arg value="@{pLibDir}"/>
+                <arg value="-f"/>
+                <arg file="@{pBuildFile}"/>
+                <arg value="@{pTarget}"/>
+            </exec>
+
+        </sequential>
+    </macrodef>
+
+</project>

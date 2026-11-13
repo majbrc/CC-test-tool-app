@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $genInfo -->
+<tns:testTemplate xmlns:tns="https://www.w3schools.com"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.w3schools.com ../common/xsd/test-inputs.xsd">
+    <tns:header>
+        <tns:constants>
+            <tns:constant name="__META_TITLE__" constValue="Acquisition test"/>
+            <tns:constant name="__META_DESCRIPTION__" constValue="Test inputs for acquisition scenarios"/>
+            <tns:constant name="_TEST_COMMON_DIR" constValue="TEST"/>
+            <tns:constant name="_TEST_DIR" constValue="TEST/Telia_Acquire_CITs"/>
+			<tns:constant name="CURRENT_YEAR" constValue="$DATE_TIME_NOW_items.Year"/>
+			<tns:constant name="EVENT_DATE" constValue="${CURRENT_YEAR}-03-26T16:26:37"/>
+			<tns:constant name="EVENT_DATE_1" constValue="${CURRENT_YEAR}-03-26T17:26:27"/>
+			<tns:constant name="USER_SERVICE_ID" constValue="9000000011"/>
+			<tns:constant name="SUBSCRIBER_CODE" constValue="9000000014"/>
+			<tns:constant name="CONTRACT_ACCOUNT" constValue="900000000003"/>
+			
+        </tns:constants>
+		
+        <tns:parameters>
+            <tns:parameter name="wsRequestTemplate" type="string"/>
+            <tns:parameter name="wsEndpointPropertyRef" type="string"/>
+			<tns:parameter name="pcId" type="string"/>
+			<tns:parameter name="subscriberAccountId" type="string"/>
+			<!-- Acquisition input file -->
+			<tns:parameter name="acquisitionInputFile" type="string"/>
+		</tns:parameters>
+    </tns:header>
+	
+    <tns:testData>
+
+		<tns:test>
+            <tns:id>11</tns:id>
+            <tns:labels>ACQUIRE_SINGLE</tns:labels>
+            <tns:parameter name="acquisitionInputFile" paramValue="$_TEST_DIR/acquisition-single-req-order-none.ini"/>
+        </tns:test>
+
+		<tns:test>
+            <tns:id>12</tns:id>
+            <tns:labels>ACQUIRE_SEPARATE</tns:labels>
+            <tns:parameter name="acquisitionInputFile" paramValue="$_TEST_DIR/acquisition-separate-req-order-none.ini"/>
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>13</tns:id>
+            <tns:labels>BUGFIX</tns:labels>
+            <tns:parameter name="acquisitionInputFile" paramValue="$_TEST_DIR/acquisition-single-specific-contract.ini"/>
+        </tns:test>
+		
+    </tns:testData>
+</tns:testTemplate>

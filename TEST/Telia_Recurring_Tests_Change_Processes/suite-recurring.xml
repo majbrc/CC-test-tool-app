@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Recurring tests including change processes" parallel="false" preserve-order="true">
+
+<!-- RECURRING TESTS MAIN-VAS-DISC-->
+	<test name="Remove B2B test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests_Change_Processes/test-input-B2B-user-act-susp-react-term.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Remove B2C test user" parallel="false" preserve-order="true" enabled="false">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests_Change_Processes/test-input-B2C-user-act-susp-react-term.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+    <test name="Create B2B test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests_Change_Processes_Change_Processes/test-input-B2B-user-act-susp-react-term.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_IMPORT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t920_execute_soap_request"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	<test name="Create B2C test user" parallel="false" preserve-order="true" enabled="false">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests_Change_Processes_Change_Processes/test-input-B2C-user-act-susp-react-term.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_IMPORT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t920_execute_soap_request"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+	
+	<test name="User activation after first month" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests_Change_Processes/test-input-B2B-act-susp-react-term.xml"/>
+        <parameter name="testFilterLabel" value="FIRST_MONTH_ACTIVATE_B2B"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Trigger lock during the month" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests_Change_Processes/test-input-susp_react_actions.xml"/>
+        <parameter name="testFilterLabel" value="TRIGGER_LOCK_B2B"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Trigger fee BITs after suspension" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests_Change_Processes/test-input-B2B-act-susp-react-term.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_MIDNIGHT_AFTER_LOCK"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+	<test name="Trigger unlock during the same month" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests_Change_Processes/test-input-susp_react_actions.xml"/>
+        <parameter name="testFilterLabel" value="TRIGGER_UNLOCK_B2B"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="User activation after contract reactivation" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Recurring_Tests_Change_Processes/test-input-B2B-act-susp-react-term.xml"/>
+        <parameter name="testFilterLabel" value="ACTIVATE_AFTER_RESUMPTION"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t990_execute_action"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	
+	
+</suite>

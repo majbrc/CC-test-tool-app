@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Test on Telia user" parallel="false" preserve-order="true">
+
+
+	
+	<test name="Mobile voice calls" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Group_01/test-input-01-voi-RQAS-specific-contract.xml"/>
+        <parameter name="testFilterLabel" value="BUGFIX"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Mobile messaging" parallel="false" preserve-order="true" enabled="false">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Group_01/test-input-01-msg.xml"/>
+        <parameter name="testFilterLabel" value="MSG"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Mobile data" parallel="false" preserve-order="true" enabled="false">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Test_Group_01/test-input-01-data.xml"/>
+        <parameter name="testFilterLabel" value="DATA"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	
+</suite>

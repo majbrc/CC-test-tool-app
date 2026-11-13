@@ -1,0 +1,511 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Charging Limit Test Cases - B2B" parallel="false" preserve-order="true">
+
+	<test name="Remove test user" parallel="false" preserve-order="true" enabled="false">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-user.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	
+	<test name="Create test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-user.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_IMPORT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t920_execute_soap_request"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Activation of Charging Limit" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-utr.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_ACTIVATE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+	<test name="Premium SMS charged between billing cycles" parallel="false" preserve-order="true" enabled="false">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-session.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_PREMIUM_SMS"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t900_execute_charging_session"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Change of Charging Limit so that 70% limit can be reached in a direct charge" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-utr.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_USAGE_SET_70PCT_REACHED_TESTS"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="PGW 70% Charging Limit reached by a direct charge" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-session.xml"/>
+        <parameter name="testFilterLabel" value="PGW_70PCT_DIRECT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Change of Charging Limit so that 100% limit can be reached in a direct charge" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-utr.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_USAGE_SET_LIMIT_REACHED_TESTS"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="PGW 100% Charging Limit reached by a direct charge" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-session.xml"/>
+        <parameter name="testFilterLabel" value="PGW_100PCT_REACHED_DIRECT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Change of Charging Limit so that 100% limit can be breached in a direct charge" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-utr.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_USAGE_SET_LIMIT_REACHED_TESTS"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="PGW 100% Charging Limit breached by a direct charge" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-session.xml"/>
+        <parameter name="testFilterLabel" value="PGW_100PCT_BREACHED_DIRECT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Change of Charging Limit so that 70% limit can be reached in an online charge" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-utr.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_USAGE_SET_70PCT_REACHED_TESTS"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="PGW 70% Charging Limit reached by an online charge" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-session.xml"/>
+        <parameter name="testFilterLabel" value="PGW_70PCT_SESSION"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t900_execute_charging_session"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Change of Charging Limit so that 100% limit can be reached in an online charge" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-utr.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_USAGE_SET_LIMIT_REACHED_TESTS"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="PGW 100% Charging Limit reached by an online charge" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-session.xml"/>
+        <parameter name="testFilterLabel" value="PGW_100PCT_REACHED_SESSION"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t900_execute_charging_session"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Change of Charging Limit so that 100% limit can be breached in an online charge" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-utr.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_USAGE_SET_LIMIT_REACHED_TESTS"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="PGW 100% Charging Limit breached by an online charge" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-session.xml"/>
+        <parameter name="testFilterLabel" value="PGW_100PCT_BREACHED_SESSION"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t900_execute_charging_session"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Change of Charging Limit so that 70% limit can be breached in an PAYG online charge" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-utr.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_PAYG_SET_70PCT_REACHED_TESTS"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="PAYG Data Roaming 70% Charging Limit breached by an online charge" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-session.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_PAYG_SESSION_70PCT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t900_execute_charging_session"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Change of Charging Limit so that 100% limit can be reached in an PAYG online charge" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-utr.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_PAYG_SET_100PCT_REACHED_TESTS"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="PAYG Data Roaming 100% Charging Limit reached by an online charge" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-session.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_PAYG_SESSION_100PCT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t900_execute_charging_session"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Change of Charging Limit so that 100% limit is reached" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-utr.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_LIMIT_REACHED"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="PAYG Data session in domestic network" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-session.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_PAYG_DOMESTIC_DATA"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t900_execute_charging_session"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Change of Charging Limit so that 100% limit is breached" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-utr.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_LIMIT_BREACHED"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="PAYG Data session reservation request attempt in roaming network - reservation rejected" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-session.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_PAYG_ROAMING_DATA_RESERVATION_FOR_REJECTION"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t900_execute_charging_session"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="PAYG Data session reservation request attempt in domestic network - reservation rejected" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-session.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_PAYG_DOMESTIC_DATA_RESERVATION_FOR_REJECTION"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t900_execute_charging_session"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Change of Charging Limit so that enough money is available for direct charge" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-utr.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_FUNDS_AVAILABLE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="One-time fee charged via direct charge method" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-otf.xml"/>
+        <parameter name="testFilterLabel" value="TOPUP_FEE_DIRECT_CHARGE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Change of Charging Limit so that enough money is available for session-based charge" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-utr.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_FUNDS_AVAILABLE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="One-time fee charged via session-based charge method" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-otf.xml"/>
+        <parameter name="testFilterLabel" value="TOPUP_FEE_SESSION_CHARGE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t900_execute_charging_session"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Change of Charging Limit so that enough money is available for test fee" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-utr.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_FUNDS_AVAILABLE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Test fee charged via direct charge method" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-otf.xml"/>
+        <parameter name="testFilterLabel" value="TEST_FEE_DIRECT_CHARGE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Change of Charging Limit so that 70% limit is reached after one-time fee charge" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-utr.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_USAGE_SET_70PCT_REACHED_TESTS"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="One-time fee charged via direct charge method, 70% threshold notification triggered" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-otf.xml"/>
+        <parameter name="testFilterLabel" value="TOPUP_FEE_DIRECT_CHARGE_70PCT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Change of Charging Limit so that 70% and 100% limit are breached at an attempt of one-time fee charge reservation" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-utr.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_USAGE_SET_70PCT_REACHED_TESTS"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="One-time fee charged via session-based charge method, 70% and 100% limit breached, reservation rejected" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-otf.xml"/>
+        <parameter name="testFilterLabel" value="TOPUP_FEE_SESSION_CHARGE_HIGH_AMOUNT_REJECT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t900_execute_charging_session"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Change of Charging Limit so that 100% limit is breached after one-time fee charge attempt" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-utr.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_USAGE_SET_LIMIT_REACHED_TESTS"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="One-time fee charged via direct charge method, limit breached, charge rejected" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-otf.xml"/>
+        <parameter name="testFilterLabel" value="TOPUP_FEE_DIRECT_CHARGE_REJECTED"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Change of Charging Limit so that 70% and 100% limit is breached after one-time fee charge, charge allowed" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-utr.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_USAGE_SET_70PCT_REACHED_TESTS"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="One-time fee charged via direct charge method, limit breached, charge allowed" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-otf.xml"/>
+        <parameter name="testFilterLabel" value="TOPUP_FEE_DIRECT_CHARGE_REJECTION_ALLOWED"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Change of Charging Limit so that 70% is breached and 100% limit is reached after one-time fee charge, charge allowed" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-utr.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_USAGE_SET_70PCT_REACHED_TESTS"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="One-time fee charged via session-based charge method, limit reached, charge allowed" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-otf.xml"/>
+        <parameter name="testFilterLabel" value="TOPUP_FEE_SESSION_CHARGE_LIMIT_REACHED"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t900_execute_charging_session"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+		
+	<test name="Remove test user" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_Charging_Limit/test-input-user.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+</suite>

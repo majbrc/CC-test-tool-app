@@ -1,0 +1,84 @@
+<project basedir="." default="info">
+    <!-- load build properties -->
+    <property file="${basedir}/setup.local.properties"/>
+    <property file="${basedir}/setup.properties"/>
+    
+    
+    <target name="105" description="Directory based install: Copy sap cc unit testing framework installation package">
+        <echo message="Copy framework installation package - version: ${framework.version}"/>
+        
+        <copyFromLocalDir
+                pArtifactPath="${framework.install.dir}/v${framework.version}/framework.zip"
+                pDestDir="${basedir}"
+                pDestName="framework.zip"/>
+    </target>
+
+    <target name="115" description="Directory based install: Copy template test framework javadoc">
+        <echo message="Copy template test javadoc - version: ${framework.version}"/>
+        
+        <copyFromLocalDir
+                pArtifactPath="${framework.install.dir}/v${framework.version}/javadoc.zip"
+                pDestDir="${basedir}"
+                pDestName="javadoc.zip"/>
+
+        <unzip src="${basedir}/javadoc.zip" dest="${basedir}/doc" overwrite="true"/>
+        <delete file="${basedir}/javadoc.zip"/>
+    </target>
+
+
+    <target name="200" description="Setup environment">
+        <unzip src="${basedir}/framework.zip" dest="${basedir}" overwrite="true"/>
+        <move file="${basedir}/${framework.dir.name}/build.properties" tofile="${basedir}/build.properties" overwrite="true"/>
+        <move file="${basedir}/${framework.dir.name}/build.xml" tofile="${basedir}/build.xml" overwrite="true"/>
+        <delete file="${basedir}/framework.zip"/>
+    </target>
+
+    <target name="package">
+        <zip destfile="${basedir}/sap-cc-unit-template-test-setup.zip" update="yes">
+            <fileset dir="${basedir}" includes=".gitignore"/>
+            <fileset dir="${basedir}" includes="setup.properties"/>
+            <fileset dir="${basedir}" includes="setup.xml"/>    
+        </zip>
+    </target>
+
+    <!-- Cleans old framework -->
+    <target name="900" description="Clean local framework installation and doc files">
+        <delete dir="${basedir}/doc" failonerror="false"/>
+        <delete file="${basedir}/build.properties" failonerror="false"/>
+        <delete file="${basedir}/build.xml" failonerror="false"/>
+        <input message="Please enter version of framework to delete:" addproperty="f.v"/>
+        <delete dir="${basedir}/install-package-${framework.artifactId}-${f.v}" failonerror="false"/>
+    </target>
+
+    <!-- Cleans old framework -->
+    <target name="505" description="Directory based install: Change framework version - removes old framework and installs new" depends="105,900,200,115">
+    </target>
+	
+    <target name="info">
+        <echo>This script is used to create environment for template based tests.</echo>
+        <echo>Currently configured sap cc unit testing framework version: ${framework.version}</echo>
+        <echo>To see the available tasks invoke the script with: ant -f setup.xml -p</echo>
+    </target>
+
+    <target name="home-windows">
+        <property environment="env"/>
+        <echo>User.Home=${env.HOMEPATH}</echo>
+    </target>
+
+    <target name="home-linux">
+        <property environment="env"/>
+        <echo>User.Home=${env.HOME}</echo>
+    </target> 
+	
+    <macrodef name="copyFromLocalDir">
+        <attribute name="pArtifactPath"/>
+        <attribute name="pDestDir"/>
+        <attribute name="pDestName"/>
+        
+        <sequential>
+            <copy file="@{pArtifactPath}" tofile="@{pDestDir}/@{pDestName}" overwrite="true"/>
+        </sequential>
+    </macrodef>
+
+</project>
+

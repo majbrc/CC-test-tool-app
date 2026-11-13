@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $genInfo -->
+<tns:testTemplate xmlns:tns="https://www.w3schools.com"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.w3schools.com ../common/xsd/test-inputs.xsd">
+    <tns:header>
+        <tns:constants>
+            <tns:constant name="__META_TITLE__" constValue="Telia test group 01 (Tarnybinis)"/>
+            <tns:constant name="__META_DESCRIPTION__" constValue="Test inputs for Tarnybinis data usage scenarios"/>
+            <tns:constant name="_TEST_COMMON_DIR" constValue="TEST"/>
+            <tns:constant name="_TEST_DIR" constValue="${_TEST_COMMON_DIR}/Telia_MHS_UNL"/>
+			<!-- subscriber ID -->
+			<tns:constant name="USER_SERVICE_ID" constValue="9000000048"/>	  
+			<!-- extract current year -->
+			<tns:constant name="CURRENT_YEAR" constValue="$DATE_TIME_NOW_items.Year"/>		
+			
+        </tns:constants>
+        <tns:parameters>
+            <tns:parameter name="wsRequestTemplate" type="string"/>
+            <tns:parameter name="wsEndpointPropertyRef" type="string"/>
+			<tns:parameter name="pcId" type="string"/>
+			<tns:parameter name="subscriberAccountId" type="string"/>
+			<tns:parameter name="ciPropertiesFile" type="string"/>
+			<tns:parameter name="consumptionDate" type="date"/>
+			<tns:parameter name="sapCcApi" type="string"/>
+			<tns:parameter name="testExtension" type="string"/>
+			<tns:parameter name="generateCit" type="string"/>
+					
+			<!-- MCIT input properties  -->
+			<tns:parameter name="duration" type="number"/>	
+			<tns:parameter name="billing_party" type="string"/>								
+			<tns:parameter name="transaction_type" type="string"/>
+			<tns:parameter name="vat_included" type="string"/>
+			<tns:parameter name="cdr_rated" type="string"/>
+			<tns:parameter name="cdr_price" type="number"/>
+			<tns:parameter name="total_volume" type="number"/>	
+			<tns:parameter name="allow_used" type="number"/>
+			<tns:parameter name="download_value" type="number"/>
+			<tns:parameter name="upload_value" type="number"/>
+			<tns:parameter name="source_id" type="string"/>
+			<tns:parameter name="plmn" type="string"/>	
+			<tns:parameter name="tadig" type="string"/>	
+			<tns:parameter name="fup_code" type="string"/>
+			<!-- MUSG output properties -->
+			<tns:parameter name="bit_amount" type="number"/>			
+			<tns:parameter name="bit_quantity" type="number"/>
+			<tns:parameter name="bitdate_from" type="date"/>
+			<tns:parameter name="bitdate_to" type="date"/>
+			<tns:parameter name="zz_in_out" type="string"/>
+			<tns:parameter name="zz_voicesmsdata" type="string"/>
+			<tns:parameter name="zz_ch_quantity" type="number"/>
+			<tns:parameter name="zz_ch_uom" type="string"/>
+			<tns:parameter name="zz_log_chg_qty" type="number"/>
+			<tns:parameter name="zz_log_alw_qty" type="number"/>			
+			<tns:parameter name="zz_domintroam" type="string"/>
+			<tns:parameter name="zz_event_usp" type="string"/>
+			<tns:parameter name="zz_orig_zone" type="string"/>
+			<tns:parameter name="zz_dest_zone" type="string"/>
+			<tns:parameter name="zz_orig_country" type="string"/>
+			<tns:parameter name="zz_dest_country" type="string"/>
+			<tns:parameter name="zz_orig_dscr" type="string"/>
+			<tns:parameter name="zz_dest_dscr" type="string"/>
+			<tns:parameter name="zz_orig_zon_sch" type="string"/>
+			<tns:parameter name="zz_dest_zon_sch" type="string"/>
+			<tns:parameter name="zz_prc_group" type="string"/>
+			<tns:parameter name="zz_price_id" type="string"/>
+			<tns:parameter name="zz_tariff" type="number"/>
+			<tns:parameter name="zz_tax_code" type="string"/>
+			<tns:parameter name="zz_det_inv_digit" type="string"/>
+			<tns:parameter name="printrel" type="string"/>
+			<!-- properties that are not always present in output -->			
+			<tns:parameter name="zz_log_alw_qty_present" type="string" defaultValue="true"/>
+        </tns:parameters>
+    </tns:header>
+	
+    <tns:testData>	
+		<tns:test>
+            <tns:id>300</tns:id>
+			<!-- Domestic GPRS from PS core -->
+			<tns:labels>DATA,PS,DATA_DOMESTIC</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-data.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-data-output.xml"/>
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="${CURRENT_YEAR}-04-20T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1024"/>	
+			<tns:parameter name="download_value" paramValue="50"/>
+			<tns:parameter name="upload_value" paramValue="50"/>
+			<tns:parameter name="duration" paramValue="281"/>			
+			<tns:parameter name="billing_party" paramValue="AAAAAAAA_AANB"/>				
+			<tns:parameter name="transaction_type" paramValue="GPRS"/>
+			<!-- output charged item validations, different from default value specified in testExtension file -->					
+			<tns:parameter name="bit_amount" paramValue="0.000000"/>			
+			<tns:parameter name="bit_quantity" paramValue="0.000095"/>
+			<tns:parameter name="bitdate_from" paramValue="${CURRENT_YEAR}-04-20T10:26:46"/>
+			<tns:parameter name="bitdate_to" paramValue="${CURRENT_YEAR}-04-20T10:31:27"/>			
+			<tns:parameter name="zz_ch_quantity" paramValue="0.000976"/>
+			<tns:parameter name="zz_log_chg_qty" paramValue="1024.000000"/>			
+			<tns:parameter name="zz_domintroam" paramValue="D"/>
+			<tns:parameter name="zz_in_out" paramValue="O"/>
+			<tns:parameter name="zz_voicesmsdata" paramValue="D"/>
+			<tns:parameter name="zz_event_usp" paramValue="GPRS"/>
+			<tns:parameter name="zz_orig_zone" paramValue="HOME"/>
+			<tns:parameter name="zz_dest_zone" paramValue="AAAAAAAA_AANB"/>
+			<tns:parameter name="zz_orig_country" paramValue="LTU"/>
+			<tns:parameter name="zz_dest_country" paramValue="LTU"/>
+			<tns:parameter name="zz_orig_dscr" paramValue="LT_MOB_TELIA"/>
+			<tns:parameter name="zz_dest_dscr" paramValue="AAAAAAAA_AANB"/>
+			<tns:parameter name="zz_orig_zon_sch" paramValue="N/A"/>
+			<tns:parameter name="zz_dest_zon_sch" paramValue="N/A"/>
+			<tns:parameter name="zz_prc_group" paramValue="PG_DLOC_DEFAULT_X"/>
+			<tns:parameter name="zz_price_id" paramValue="D_FREEY"/>			
+			<tns:parameter name="zz_tariff" paramValue="0.000000"/>
+			<tns:parameter name="zz_tax_code" paramValue="PVM1"/>			
+			<tns:parameter name="zz_det_inv_digit" paramValue="Y"/>
+			<tns:parameter name="printrel" paramValue="true"/>
+			<tns:parameter name="zz_log_alw_qty_present" paramValue="false"/>	
+        </tns:test>
+
+		<tns:test>
+            <tns:id>301</tns:id>
+			<!-- Domestic GPRS, domestic bucket used -->
+			<tns:labels>DATA,PAYG,DATA_DOMESTIC</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-data.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-data-output.xml"/>
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="${CURRENT_YEAR}-04-20T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1048576"/>	
+			<tns:parameter name="allow_used" paramValue="1048576"/>	
+			<tns:parameter name="download_value" paramValue="524288"/>
+			<tns:parameter name="upload_value" paramValue="524288"/>
+			<tns:parameter name="duration" paramValue="281"/>			
+			<tns:parameter name="billing_party" paramValue="PLAN#TEST_PLAN_MONTH_1"/>				
+			<tns:parameter name="transaction_type" paramValue="GPRS"/>
+			<tns:parameter name="cdr_rated" paramValue="Y"/>
+			<tns:parameter name="cdr_price" paramValue="0.000000"/>			
+			<!-- output charged item validations, different from default value specified in testExtension file -->					
+			<tns:parameter name="bit_amount" paramValue="0.000000"/>			
+			<tns:parameter name="bit_quantity" paramValue="1.000000"/>
+			<tns:parameter name="bitdate_from" paramValue="${CURRENT_YEAR}-04-20T10:26:46"/>
+			<tns:parameter name="bitdate_to" paramValue="${CURRENT_YEAR}-04-20T10:31:27"/>			
+			<tns:parameter name="zz_ch_quantity" paramValue="1.000000"/>
+			<tns:parameter name="zz_log_chg_qty" paramValue="0.000000"/>
+			<tns:parameter name="zz_log_alw_qty" paramValue="1048576.000000"/>			
+			<tns:parameter name="zz_domintroam" paramValue="D"/>
+			<tns:parameter name="zz_in_out" paramValue="O"/>
+			<tns:parameter name="zz_voicesmsdata" paramValue="D"/>
+			<tns:parameter name="zz_event_usp" paramValue="GPRS"/>
+			<tns:parameter name="zz_orig_zone" paramValue="HOME"/>
+			<tns:parameter name="zz_dest_zone" paramValue="GPRS_PLAN"/>
+			<tns:parameter name="zz_orig_country" paramValue="LTU"/>
+			<tns:parameter name="zz_dest_country" paramValue="LTU"/>
+			<tns:parameter name="zz_orig_dscr" paramValue="LT_MOB_TELIA"/>
+			<tns:parameter name="zz_dest_dscr" paramValue="PLAN"/>
+			<tns:parameter name="zz_orig_zon_sch" paramValue="N/A"/>
+			<tns:parameter name="zz_dest_zon_sch" paramValue="N/A"/>
+			<tns:parameter name="zz_prc_group" paramValue="PG_DLOC_DEFAULT_X"/>
+			<tns:parameter name="zz_price_id" paramValue="D_FREEY"/>			
+			<tns:parameter name="zz_tariff" paramValue="0.000000"/>
+			<tns:parameter name="zz_tax_code" paramValue="PVM1"/>			
+			<tns:parameter name="zz_det_inv_digit" paramValue="Y"/>
+			<tns:parameter name="printrel" paramValue="true"/>
+			
+        </tns:test>
+
+		<tns:test>
+            <tns:id>302</tns:id>
+			<!-- Domestic GPRS , PAYG outside bucket (offline charging, not real case) -->
+			<tns:labels>DATA,PAYG,DATA_DOMESTIC</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-data.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-data-output.xml"/>
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="${CURRENT_YEAR}-04-20T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1024"/>	
+			<tns:parameter name="download_value" paramValue="50"/>
+			<tns:parameter name="upload_value" paramValue="50"/>
+			<tns:parameter name="duration" paramValue="281"/>			
+			<tns:parameter name="billing_party" paramValue="PAYG#"/>				
+			<tns:parameter name="transaction_type" paramValue="GPRS"/>
+			<!-- output charged item validations, different from default value specified in testExtension file -->					
+			<tns:parameter name="bit_amount" paramValue="0.000000"/>			
+			<tns:parameter name="bit_quantity" paramValue="0.000095"/>
+			<tns:parameter name="bitdate_from" paramValue="${CURRENT_YEAR}-04-20T10:26:46"/>
+			<tns:parameter name="bitdate_to" paramValue="${CURRENT_YEAR}-04-20T10:31:27"/>			
+			<tns:parameter name="zz_ch_quantity" paramValue="0.000976"/>
+			<tns:parameter name="zz_log_chg_qty" paramValue="1024.000000"/>			
+			<tns:parameter name="zz_domintroam" paramValue="D"/>
+			<tns:parameter name="zz_in_out" paramValue="O"/>
+			<tns:parameter name="zz_voicesmsdata" paramValue="D"/>
+			<tns:parameter name="zz_event_usp" paramValue="GPRS"/>
+			<tns:parameter name="zz_orig_zone" paramValue="HOME"/>
+			<tns:parameter name="zz_dest_zone" paramValue="GPRS_PAYG"/>
+			<tns:parameter name="zz_orig_country" paramValue="LTU"/>
+			<tns:parameter name="zz_dest_country" paramValue="LTU"/>
+			<tns:parameter name="zz_orig_dscr" paramValue="LT_MOB_TELIA"/>
+			<tns:parameter name="zz_dest_dscr" paramValue="PAYG"/>
+			<tns:parameter name="zz_orig_zon_sch" paramValue="N/A"/>
+			<tns:parameter name="zz_dest_zon_sch" paramValue="N/A"/>
+			<tns:parameter name="zz_prc_group" paramValue="PG_DLOC_DEFAULT_X"/>
+			<tns:parameter name="zz_price_id" paramValue="DD_PAYG_100KB_0Y"/>			
+			<tns:parameter name="zz_tariff" paramValue="0.000000"/>
+			<tns:parameter name="zz_tax_code" paramValue="PVM1"/>			
+			<tns:parameter name="zz_det_inv_digit" paramValue="Y"/>
+			<tns:parameter name="printrel" paramValue="true"/>
+			<tns:parameter name="zz_log_alw_qty_present" paramValue="false"/>	
+        </tns:test>
+
+		<tns:test>
+            <tns:id>310</tns:id>
+			<!-- Roaming GPRS, bucket used -->
+			<tns:labels>DATA,PAYG,DATA_ROAMING</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-data.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-data-output.xml"/>
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="${CURRENT_YEAR}-04-20T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="2082846"/>	
+			<tns:parameter name="allow_used" paramValue="2082846"/>	
+			<tns:parameter name="download_value" paramValue="2020747"/>
+			<tns:parameter name="upload_value" paramValue="62099"/>
+			<tns:parameter name="duration" paramValue="20"/>			
+			<tns:parameter name="billing_party" paramValue="PLAN#TEST_PLAN_MONTH_1"/>				
+			<tns:parameter name="transaction_type" paramValue="GPRS"/>
+			<tns:parameter name="cdr_rated" paramValue="Y"/>
+			<tns:parameter name="cdr_price" paramValue="0.000000"/>		
+			<tns:parameter name="plmn" paramValue="21901"/>			
+			<!-- output charged item validations, different from default value specified in testExtension file -->					
+			<tns:parameter name="bit_amount" paramValue="0.000000"/>			
+			<tns:parameter name="bit_quantity" paramValue="1.986356"/>
+			<tns:parameter name="bitdate_from" paramValue="${CURRENT_YEAR}-04-20T10:26:46"/>
+			<tns:parameter name="bitdate_to" paramValue="${CURRENT_YEAR}-04-20T10:27:06"/>			
+			<tns:parameter name="zz_ch_quantity" paramValue="1.986356"/>
+			<tns:parameter name="zz_log_chg_qty" paramValue="0.000000"/>
+			<tns:parameter name="zz_log_alw_qty" paramValue="2082846.000000"/>			
+			<tns:parameter name="zz_domintroam" paramValue="R"/>
+			<tns:parameter name="zz_in_out" paramValue="O"/>
+			<tns:parameter name="zz_voicesmsdata" paramValue="D"/>
+			<tns:parameter name="zz_event_usp" paramValue="GPRS_ROAM"/>
+			<tns:parameter name="zz_orig_zone" paramValue="EU"/>
+			<tns:parameter name="zz_dest_zone" paramValue="GPRS_PLAN"/>
+			<tns:parameter name="zz_orig_country" paramValue="HRV"/>
+			<tns:parameter name="zz_dest_country" paramValue="LTU"/>
+			<tns:parameter name="zz_orig_dscr" paramValue="HRVCN"/>
+			<tns:parameter name="zz_dest_dscr" paramValue="PLAN"/>
+			<tns:parameter name="zz_orig_zon_sch" paramValue="ZS_DROAM_DFL_2_B2X"/>
+			<tns:parameter name="zz_dest_zon_sch" paramValue="N/A"/>
+			<tns:parameter name="zz_prc_group" paramValue="PG_DROAM_STD_X"/>
+			<tns:parameter name="zz_price_id" paramValue="D_FREEY"/>			
+			<tns:parameter name="zz_tariff" paramValue="0.000000"/>
+			<tns:parameter name="zz_tax_code" paramValue="PVM1"/>			
+			<tns:parameter name="zz_det_inv_digit" paramValue="Y"/>
+			<tns:parameter name="printrel" paramValue="true"/>			
+        </tns:test>
+
+		<tns:test>
+            <tns:id>311</tns:id>
+			<!-- Roaming GPRS, PAYG rounding 1KB -->
+			<tns:labels>DATA,PAYG,DATA_ROAMING</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-data.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-data-output.xml"/>
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="${CURRENT_YEAR}-04-20T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="1024"/>	
+			<tns:parameter name="download_value" paramValue="50"/>
+			<tns:parameter name="upload_value" paramValue="50"/>
+			<tns:parameter name="duration" paramValue="20"/>			
+			<tns:parameter name="billing_party" paramValue="PAYG#"/>				
+			<tns:parameter name="transaction_type" paramValue="GPRS"/>			
+			<tns:parameter name="plmn" paramValue="21901"/>			
+			<!-- output charged item validations, different from default value specified in testExtension file -->					
+			<tns:parameter name="bit_amount" paramValue="0.000001"/>			
+			<tns:parameter name="bit_quantity" paramValue="0.000095"/>
+			<tns:parameter name="bitdate_from" paramValue="${CURRENT_YEAR}-04-20T10:26:46"/>
+			<tns:parameter name="bitdate_to" paramValue="${CURRENT_YEAR}-04-20T10:27:06"/>			
+			<tns:parameter name="zz_ch_quantity" paramValue="0.000976"/>
+			<tns:parameter name="zz_log_chg_qty" paramValue="1024.000000"/>		
+			<tns:parameter name="zz_domintroam" paramValue="R"/>
+			<tns:parameter name="zz_in_out" paramValue="O"/>
+			<tns:parameter name="zz_voicesmsdata" paramValue="D"/>
+			<tns:parameter name="zz_event_usp" paramValue="GPRS_ROAM"/>
+			<tns:parameter name="zz_orig_zone" paramValue="EU"/>
+			<tns:parameter name="zz_dest_zone" paramValue="GPRS_PAYG"/>
+			<tns:parameter name="zz_orig_country" paramValue="HRV"/>
+			<tns:parameter name="zz_dest_country" paramValue="LTU"/>
+			<tns:parameter name="zz_orig_dscr" paramValue="HRVCN"/>
+			<tns:parameter name="zz_dest_dscr" paramValue="PAYG"/>
+			<tns:parameter name="zz_orig_zon_sch" paramValue="ZS_DROAM_DFL_2_B2X"/>
+			<tns:parameter name="zz_dest_zon_sch" paramValue="N/A"/>
+			<tns:parameter name="zz_prc_group" paramValue="PG_DROAM_STD_X"/>
+			<tns:parameter name="zz_price_id" paramValue="DRS_ES_1KB_01"/>			
+			<tns:parameter name="zz_tariff" paramValue="0.001269"/>
+			<tns:parameter name="zz_tax_code" paramValue="PVM1"/>			
+			<tns:parameter name="zz_det_inv_digit" paramValue="Y"/>
+			<tns:parameter name="printrel" paramValue="true"/>	
+			<tns:parameter name="zz_log_alw_qty_present" paramValue="false"/>				
+        </tns:test>
+
+		<tns:test>
+            <tns:id>312</tns:id>
+			<!-- Roaming GPRS, PAYG rounding 100KB -->
+			<tns:labels>DATA,PAYG,DATA_ROAMING</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-data.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-data-output.xml"/>
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="${CURRENT_YEAR}-04-20T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="102400"/>	
+			<tns:parameter name="download_value" paramValue="500"/>
+			<tns:parameter name="upload_value" paramValue="500"/>
+			<tns:parameter name="duration" paramValue="20"/>			
+			<tns:parameter name="billing_party" paramValue="PAYG#"/>				
+			<tns:parameter name="transaction_type" paramValue="GPRS"/>			
+			<tns:parameter name="plmn" paramValue="45403"/>			
+			<!-- output charged item validations, different from default value specified in testExtension file -->					
+			<tns:parameter name="bit_amount" paramValue="0.024212"/>			
+			<tns:parameter name="bit_quantity" paramValue="0.000953"/>
+			<tns:parameter name="bitdate_from" paramValue="${CURRENT_YEAR}-04-20T10:26:46"/>
+			<tns:parameter name="bitdate_to" paramValue="${CURRENT_YEAR}-04-20T10:27:06"/>			
+			<tns:parameter name="zz_ch_quantity" paramValue="0.097656"/>
+			<tns:parameter name="zz_log_chg_qty" paramValue="102400.000000"/>					
+			<tns:parameter name="zz_domintroam" paramValue="R"/>
+			<tns:parameter name="zz_in_out" paramValue="O"/>
+			<tns:parameter name="zz_voicesmsdata" paramValue="D"/>
+			<tns:parameter name="zz_event_usp" paramValue="GPRS_ROAM"/>
+			<tns:parameter name="zz_orig_zone" paramValue="TD6"/>
+			<tns:parameter name="zz_dest_zone" paramValue="GPRS_PAYG"/>
+			<tns:parameter name="zz_orig_country" paramValue="HKG"/>
+			<tns:parameter name="zz_dest_country" paramValue="LTU"/>
+			<tns:parameter name="zz_orig_dscr" paramValue="HKGH3"/>
+			<tns:parameter name="zz_dest_dscr" paramValue="PAYG"/>
+			<tns:parameter name="zz_orig_zon_sch" paramValue="ZS_DROAM_DFL_2_B2X"/>
+			<tns:parameter name="zz_dest_zon_sch" paramValue="N/A"/>
+			<tns:parameter name="zz_prc_group" paramValue="PG_DROAM_STD_X"/>
+			<tns:parameter name="zz_price_id" paramValue="DR_TD6_STD"/>			
+			<tns:parameter name="zz_tariff" paramValue="0.247933"/>
+			<tns:parameter name="zz_tax_code" paramValue="PVM1"/>			
+			<tns:parameter name="zz_det_inv_digit" paramValue="Y"/>
+			<tns:parameter name="printrel" paramValue="true"/>		
+			<tns:parameter name="zz_log_alw_qty_present" paramValue="false"/>				
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>320</tns:id>
+			<!-- TAP-IN GPRS -->
+			<tns:labels>DATA,TAP-IN,DATA_ROAMING</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-data.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-data-output.xml"/>
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="${CURRENT_YEAR}-04-20T10:26:46"/>	
+			<tns:parameter name="total_volume" paramValue="8602"/>				
+			<tns:parameter name="download_value" paramValue="999"/>
+			<tns:parameter name="upload_value" paramValue="7603"/>
+			<tns:parameter name="duration" paramValue="34313"/>			
+			<tns:parameter name="billing_party" paramValue="AAAAA_AANM"/>				
+			<tns:parameter name="transaction_type" paramValue="GPRSTP"/>					
+			<tns:parameter name="plmn" paramValue="20888"/>
+			<!-- output charged item validations, different from default value specified in testExtension file -->					
+			<tns:parameter name="bit_amount" paramValue="0.000000"/>			
+			<tns:parameter name="bit_quantity" paramValue="0.008203"/>
+			<tns:parameter name="bitdate_from" paramValue="${CURRENT_YEAR}-04-20T10:26:46"/>
+			<tns:parameter name="bitdate_to" paramValue="${CURRENT_YEAR}-04-20T19:58:39"/>			
+			<tns:parameter name="zz_ch_quantity" paramValue="0.008203"/>
+			<tns:parameter name="zz_log_chg_qty" paramValue="8602.000000"/>					
+			<tns:parameter name="zz_domintroam" paramValue="R"/>
+			<tns:parameter name="zz_in_out" paramValue="O"/>
+			<tns:parameter name="zz_voicesmsdata" paramValue="D"/>
+			<tns:parameter name="zz_event_usp" paramValue="GPRS_ROAM"/>
+			<tns:parameter name="zz_orig_zone" paramValue="EU"/>
+			<tns:parameter name="zz_dest_zone" paramValue="GPRS_TAPIN"/>
+			<tns:parameter name="zz_orig_country" paramValue="FRA"/>
+			<tns:parameter name="zz_dest_country" paramValue="LTU"/>
+			<tns:parameter name="zz_orig_dscr" paramValue="FRAF3"/>
+			<tns:parameter name="zz_dest_dscr" paramValue="NOTREL"/>
+			<tns:parameter name="zz_orig_zon_sch" paramValue="ZS_DROAM_DFL_2_B2X"/>
+			<tns:parameter name="zz_dest_zon_sch" paramValue="N/A"/>
+			<tns:parameter name="zz_prc_group" paramValue="PG_DROAM_STD_X"/>
+			<tns:parameter name="zz_price_id" paramValue="D_FREEN"/>			
+			<tns:parameter name="zz_tariff" paramValue="0.000000"/>
+			<tns:parameter name="zz_tax_code" paramValue="PVM1"/>			
+			<tns:parameter name="zz_det_inv_digit" paramValue="N"/>
+			<tns:parameter name="printrel" paramValue="false"/>
+			<tns:parameter name="zz_log_alw_qty_present" paramValue="false"/>				
+        </tns:test>
+	
+	
+    </tns:testData>
+</tns:testTemplate>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+      <!-- $genInfo -->
+<tns:extension xmlns:tns="https://www.w3schools.com"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="https://www.w3schools.com ../templates/test-inputs/test-extension.xsd">
+          <!-- this execution point is executed AFTER the test  -->
+          
+		<tns:executionPoint id="BEFORE">  
+		   <tns:actions>
+			<tns:action id="activateProviderContract" name="Activates provider contract">			
+			<tns:property name="serviceProvider">O2C</tns:property>
+			<tns:property name="subscriberAccountId">${subscriberAccountId}</tns:property>
+			<tns:property name="activateToDate">${activationDate}</tns:property>
+			</tns:action>
+		  </tns:actions>
+	    </tns:executionPoint>	
+		<tns:executionPoint id="AFTER">
+		  <tns:actions>
+         <tns:action id="chargingContractAllowanceFind" name="Find allowances on provider contract">
+         <tns:property name="subscriberAccountId">${subscriberAccountId}</tns:property>
+         <tns:property name="providerContractId">${providerContractid}</tns:property>
+         <tns:validations id="Verify allowance find response">
+             <tns:validate id="allowanceFindResponse" name="Validation of allowance find response" enabled="true">
+                 <tns:allowances>
+                     <tns:allowance expectedNumber="1" name="Find UO discount allowance in state active - there should be 1 of them">
+						<tns:alwPlanId expectedValue="AP_DISC_T01"/>
+                        <tns:alwStatus expectedValue="active"/>
+						<tns:alwValidityEnd mode="at" expectedValue="${discEndDate1}"/>
+						<tns:alwParameters>
+                             <!-- parameter type can be: string | date | number -->
+                             <tns:alwParameter name="PACK_SEL01" type="string" expectedValue="${discType1}"/>
+                             <tns:alwParameter name="PRIORITY" type="number" expectedValue="${discPriority1}"/>
+                         </tns:alwParameters>
+                     </tns:allowance>
+                 </tns:allowances>
+             </tns:validate>
+         </tns:validations>
+		 
+		 </tns:action>
+	 </tns:actions>
+		 
+     </tns:executionPoint>
+         
+</tns:extension>

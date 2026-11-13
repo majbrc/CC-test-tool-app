@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Test cases - multiple usage tracking components - B2C customer" parallel="false" preserve-order="true">
+
+	<test name="Remove test user" parallel="false" preserve-order="true" enabled="false">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_UTR/test-input-user-b2c.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	
+	<test name="Create test user" parallel="false" preserve-order="true" enabled="false">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_UTR/test-input-user-b2c.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_IMPORT"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t920_execute_soap_request"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Activation of Charging Limit" parallel="false" preserve-order="true" enabled="false">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_UTR/test-input-utr-b2c.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_ACTIVATE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Activation of RCC" parallel="false" preserve-order="true" enabled="false">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_UTR/test-input-utr-b2c.xml"/>
+        <parameter name="testFilterLabel" value="RCC_ACTIVATE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Roaming data session, RCC and CHLIM are updated" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_UTR/test-input-session-b2c.xml"/>
+        <parameter name="testFilterLabel" value="UT1"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t900_execute_charging_session"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<!--
+	<test name="Change RCC usage counter so that limit is reached" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_UTR/test-input-utr-b2c.xml"/>
+        <parameter name="testFilterLabel" value="RCC_USAGE_CHANGE_SMALL_QUOTA"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Change Charging Limit usage counter so that 70% limit reached notification is triggered" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_UTR/test-input-utr-b2c.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_USAGE_SET_70PCT_REACHED_TESTS"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Roaming data session, RCC limit reached, CHLIM notification triggered" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_UTR/test-input-session-b2c.xml"/>
+        <parameter name="testFilterLabel" value="ROAMING_DATA_NOTIF_RCC_REACHED"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t900_execute_charging_session"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Roaming data session rejected due to RCC limit reached" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_UTR/test-input-session-b2c.xml"/>
+        <parameter name="testFilterLabel" value="RCC_REACHED_REJECTION"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t900_execute_charging_session"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Change of RCC limit" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_UTR/test-input-utr-b2c.xml"/>
+        <parameter name="testFilterLabel" value="RCC_LIMIT_RAISED_100"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Roaming data session after RCC limit is raised" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_UTR/test-input-session-b2c.xml"/>
+        <parameter name="testFilterLabel" value="ROAMING_DATA_AFTER_RCC_LIMIT_CHANGE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t900_execute_charging_session"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Change RCC usage counter so that there is still plenty limit left" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_UTR/test-input-utr-b2c.xml"/>
+        <parameter name="testFilterLabel" value="RCC_USAGE_CHANGE_60"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Change Charging Limit usage counter so that small quota is applied" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_UTR/test-input-utr-b2c.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_USAGE_SET_LIMIT_REACHED_TESTS"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t930_execute_charge"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Roaming data session, charging limit reached" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_UTR/test-input-session-b2c.xml"/>
+        <parameter name="testFilterLabel" value="ROAMING_DATA_NOTIF_CHLIM_REACHED"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t900_execute_charging_session"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+	
+	<test name="Roaming data session rejected due to Charging Limit limit reached" parallel="false" preserve-order="true" enabled="true">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_UTR/test-input-session-b2c.xml"/>
+        <parameter name="testFilterLabel" value="CHLIM_REACHED_REJECTION"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t900_execute_charging_session"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+		-->
+	<test name="Remove test user" parallel="false" preserve-order="true" enabled="false">
+        <parameter name="xmlTemplateFile" value="TEST/Telia_Session_Tests_UTR/test-input-user-b2c.xml"/>
+        <parameter name="testFilterLabel" value="SUAC_DELETE"/>
+        <classes>
+            <class name="hr.altima.testng.test.template.TestNgTemplateTest">
+                <methods>
+                    <include name="t999_cleanup_delete_subscriber_from_cc"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

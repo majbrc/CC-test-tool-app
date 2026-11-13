@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+      <!-- $genInfo -->
+<tns:extension xmlns:tns="https://www.w3schools.com"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="https://www.w3schools.com ../templates/test-inputs/test-extension.xsd">
+          <!-- this execution point is executed AFTER the test  -->
+          
+		<tns:executionPoint id="afterSessionStartRateCallback">  
+		   <tns:actions>
+		   
+		   <tns:action id="chargingSessionFind" name="Find session in November" enabled="true">	
+			<tns:property name="subscriberAccountId">${SUBSCRIBER_ACCOUNT_ID}</tns:property>
+			<tns:property name="providerContractId">${PROVIDER_CONTRACT_ID}</tns:property>
+			</tns:action>
+		   
+			<tns:action id="activateProviderContract" name="Activates provider contract" enabled="true">			
+			<tns:property name="serviceProvider">O2C</tns:property>
+			<tns:property name="subscriberAccountId">${SUBSCRIBER_ACCOUNT_ID}</tns:property>
+			<tns:property name="activateToDate">${ACTIVATION_DATE1}</tns:property>
+			</tns:action>
+			
+			<tns:action id="chargingSessionFind" name="Find session in December after midnight" enabled="true">	
+			<tns:property name="subscriberAccountId">${SUBSCRIBER_ACCOUNT_ID}</tns:property>
+			<tns:property name="providerContractId">${PROVIDER_CONTRACT_ID}</tns:property>
+			
+			</tns:action>
+		  </tns:actions>
+	    </tns:executionPoint>
+		
+		
+	
+         
+</tns:extension>

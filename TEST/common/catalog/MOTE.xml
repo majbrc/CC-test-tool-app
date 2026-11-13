@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objectSet version="5.0.6.10">
+  <pnrObjectSet>
+    <chargeableItemClass id="MOTE" serviceProvider="O2C" description="Chargeable Item Class for processing one-time events">
+      <prop name="AMOUNT" description="Amount" type="number"/>
+      <prop name="EXTERNAL_ID" description="External ID" type="string"/>
+      <prop name="MSISDN" description="Subscriber MSISDN" type="string"/>
+      <prop name="PRODUCT_CODE" description="Product code" type="string"/>
+      <prop name="PRODUCT_ID" description="Short generic product ID" type="string"/>
+      <prop name="PRODUCT_TYPE" description="Product type" type="string"/>
+      <prop name="REJECT_CHARGE" description="Indicator if charge request should be rejected if some limit is breached" type="string"/>
+      <prop name="REQUEST_TYPE" description="Request type" type="string"/>
+      <prop name="VAT_INCLUDED" description="Indicator if VAT is included in the amount" type="string"/>
+      <prop name="REQUEST_SOURCE" description="Request source" type="string"/>
+    </chargeableItemClass>
+  </pnrObjectSet>
+</objectSet>

@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $genInfo -->
+<tns:testTemplate xmlns:tns="https://www.w3schools.com"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.w3schools.com ../common/xsd/test-inputs.xsd">
+    <tns:header>
+        <tns:constants>
+            <tns:constant name="__META_TITLE__" constValue="Charging Limit One Time Fee tests"/>
+            <tns:constant name="__META_DESCRIPTION__" constValue="One Time Fees"/>
+            <tns:constant name="_TEST_COMMON_DIR" constValue="TEST"/>
+            <tns:constant name="_TEST_DIR" constValue="TEST/Telia_Session_Tests_Charging_Limit"/>
+            <tns:constant name="USER_SERVICE_ID" constValue="9000000020"/>
+			<!-- extract current year -->
+			<tns:constant name="CURRENT_YEAR" constValue="$DATE_TIME_NOW_items.Year"/>	
+			
+			<tns:constant name="SUBSCRIBER_ACCOUNT_ID" constValue="900000000000000000000000000004"/>
+            <tns:constant name="PROVIDER_CONTRACT_ID" constValue="90000000000000000012"/>
+			<tns:constant name="EVENT_DATE" constValue="${CURRENT_YEAR}-07-12T11:53:41"/>
+        </tns:constants>
+		
+        <tns:parameters>
+            <tns:parameter name="sessionDefinitionFileList" type="string"/>
+			<tns:parameter name="generateCit" type="string"/>
+            <tns:parameter name="validateCitEnabled" type="string" defaultValue="false"/>
+			<tns:parameter name="fwOnErrorFailTheTest" type="string" defaultValue="true"/>
+			<tns:parameter name="onErrorFailTheTest" type="string" defaultValue="true"/>
+			
+			<tns:parameter name="ciPropertiesFile" type="string"/>
+			<tns:parameter name="consumptionDate" type="date"/>
+			<tns:parameter name="sapCcApi" type="string"/>
+			<tns:parameter name="testExtension" type="string"/>
+			
+			<!-- MCOTE input properties  -->
+			<tns:parameter name="request_type" type="string"/>								
+			<tns:parameter name="reject_charge" type="string"/>
+			<tns:parameter name="vat_included" type="string"/>			
+			<tns:parameter name="amount" type="number"/>
+			<tns:parameter name="product_type" type="string"/>	
+			<tns:parameter name="request_source" type="string"/>			
+			
+			<!-- MOTF output properties -->
+			<tns:parameter name="bit_amount" type="number"/>
+			<tns:parameter name="bittype" type="string"/>
+			<tns:parameter name="subprocess" type="string"/>
+			<tns:parameter name="tax_code" type="string"/>
+			
+			<!-- Validation parameters -->
+			<tns:parameter name="billingPeriodUsage" type="number"/>		
+			<tns:parameter name="bucketValue" type="number"/>
+			<tns:parameter name="utrId" type="string"/>
+			<tns:parameter name="validateNotificationEnabled" type="string" defaultValue="false"/>
+			<tns:parameter name="threshold" type="string"/>
+			
+			<tns:parameter name="startNotifListener" type="string"/>
+            <tns:parameter name="startNotifListenerDelayMills" type="number"/>
+            <tns:parameter name="stopNotifListenerDelayMills" type="number"/>
+		</tns:parameters>
+    </tns:header>
+	
+	<tns:testData>
+	<tns:test>
+        <tns:id>1</tns:id>
+			<!-- One-time fee charge via direct charge method, no threshold reached -->
+			<tns:labels>TOPUP_FEE_DIRECT_CHARGE</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mote-tp.properties"/>                    
+			<tns:parameter name="sapCcApi" paramValue="SSC"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<tns:parameter name="validateCitEnabled" paramValue="false"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-utr-and-otf.xml"/>
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="${CURRENT_YEAR}-07-04T10:26:46"/>
+			<tns:parameter name="amount" paramValue="6"/>
+			<!-- Charging Limit Validation -->
+			<tns:parameter name="utrId" paramValue="CHLIM"/>
+			<tns:parameter name="billingPeriodUsage" paramValue="31"/>
+			<tns:parameter name="bucketValue" paramValue="100"/>
+			
+			<!-- MOTF BIT Validation -->
+			<tns:parameter name="bit_amount" paramValue="6.000000"/>
+			<tns:parameter name="bittype" paramValue="M300"/>
+			<tns:parameter name="subprocess" paramValue="MOBB"/>
+			<tns:parameter name="tax_code" paramValue="S1"/>
+    </tns:test>
+	<tns:test>
+        <tns:id>2</tns:id>
+			<!-- One-time fee charge via direct charge method, 70% threshold reached -->
+			<tns:labels>TOPUP_FEE_DIRECT_CHARGE_70PCT</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mote-tp.properties"/>                    
+			<tns:parameter name="sapCcApi" paramValue="SSC"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<tns:parameter name="validateCitEnabled" paramValue="false"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-utr-and-otf.xml"/>
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="${CURRENT_YEAR}-07-04T10:26:46"/>
+			<tns:parameter name="amount" paramValue="6"/>
+			<!-- Charging Limit Validation -->
+			<tns:parameter name="utrId" paramValue="CHLIM"/>
+			<tns:parameter name="billingPeriodUsage" paramValue="73.50"/>
+			<tns:parameter name="bucketValue" paramValue="100"/>
+			<tns:parameter name="validateNotificationEnabled" paramValue="true"/>
+			<tns:parameter name="threshold" paramValue="70"/>
+			
+            <tns:parameter name="startNotifListener" paramValue="true"/>
+            <tns:parameter name="startNotifListenerDelayMills" paramValue="500"/>
+            <tns:parameter name="stopNotifListenerDelayMills" paramValue="1000"/>
+			<!-- MOTF BIT Validation -->
+			<tns:parameter name="bit_amount" paramValue="6.000000"/>
+			<tns:parameter name="bittype" paramValue="M300"/>
+			<tns:parameter name="subprocess" paramValue="MOBB"/>
+			<tns:parameter name="tax_code" paramValue="S1"/>
+    </tns:test>	
+	<tns:test>
+        <tns:id>3</tns:id>
+			<!-- One-time fee charge via direct charge method, threshold breached, charge rejected -->
+			<tns:labels>TOPUP_FEE_DIRECT_CHARGE_REJECTED</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mote-tp.properties"/>                    
+			<tns:parameter name="sapCcApi" paramValue="SSC"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<tns:parameter name="validateCitEnabled" paramValue="false"/>
+			<tns:parameter name="onErrorFailTheTest" paramValue="false"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/charging-limit-reached-validation-charge.xml"/>
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="${CURRENT_YEAR}-07-04T10:26:46"/>
+			<tns:parameter name="amount" paramValue="6"/>
+    </tns:test>
+		<tns:test>
+			<tns:id>4</tns:id>
+			<!-- Top-up fee charged via direct charge, charge rejection not allowed, limit breached, charge successful -->
+			<tns:labels>TOPUP_FEE_DIRECT_CHARGE_REJECTION_ALLOWED</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mote-tp.properties"/>                    
+			<tns:parameter name="sapCcApi" paramValue="SSC"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<tns:parameter name="validateCitEnabled" paramValue="false"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-utr-and-otf.xml"/>
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="${CURRENT_YEAR}-07-04T10:26:46"/>
+			<tns:parameter name="amount" paramValue="40"/>
+			<tns:parameter name="reject_charge" paramValue="false"/>
+			<tns:parameter name="request_source" paramValue="LP"/>
+			<!-- Charging Limit Validation -->
+			<tns:parameter name="utrId" paramValue="CHLIM"/>
+			<tns:parameter name="billingPeriodUsage" paramValue="107.50"/>
+			<tns:parameter name="bucketValue" paramValue="100"/>
+			<tns:parameter name="validateNotificationEnabled" paramValue="true"/>
+			<tns:parameter name="threshold" paramValue="100"/>
+			
+            <tns:parameter name="startNotifListener" paramValue="true"/>
+            <tns:parameter name="startNotifListenerDelayMills" paramValue="500"/>
+            <tns:parameter name="stopNotifListenerDelayMills" paramValue="1000"/>
+			<!-- MOTF BIT Validation -->
+			<tns:parameter name="bit_amount" paramValue="40.000000"/>
+			<tns:parameter name="bittype" paramValue="M300"/>
+			<tns:parameter name="subprocess" paramValue="MOBB"/>
+			<tns:parameter name="tax_code" paramValue="S1"/>
+        </tns:test>
+		
+	<tns:test>
+        <tns:id>10</tns:id>
+			<!-- Top-up fee charged via an online session, no notification triggered -->
+			<tns:labels>TOPUP_FEE_SESSION_CHARGE</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="sessionDefinitionFileList" paramValue="${_TEST_DIR}/templates/01.telia.test.otf.ini"/>                    
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<tns:parameter name="validateCitEnabled" paramValue="false"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-utr.xml"/>
+			<!-- Charging Limit Validation -->
+			<tns:parameter name="utrId" paramValue="CHLIM"/>
+			<tns:parameter name="billingPeriodUsage" paramValue="29.958678"/>
+			<tns:parameter name="bucketValue" paramValue="100"/>
+    </tns:test>
+		
+		<tns:test>
+			<tns:id>12</tns:id>
+			<!-- One-time fee, limit breached by an online session, session is rejected -->
+			<tns:labels>TOPUP_FEE_SESSION_CHARGE_HIGH_AMOUNT_REJECT</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="sessionDefinitionFileList" paramValue="${_TEST_DIR}/templates/02.telia.test.otf.ini"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<tns:parameter name="validateCitEnabled" paramValue="false"/>
+			<tns:parameter name="fwOnErrorFailTheTest" paramValue="false"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/charging-limit-reached-validation-startrate.xml"/>
+        </tns:test>
+		
+		<tns:test>
+			<tns:id>13</tns:id>
+			<!-- One-time fee,limit reached by an online session, session is allowed -->
+			<tns:labels>TOPUP_FEE_SESSION_CHARGE_LIMIT_REACHED</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="sessionDefinitionFileList" paramValue="${_TEST_DIR}/templates/03.telia.test.otf.ini"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<tns:parameter name="validateCitEnabled" paramValue="false"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-utr-and-otf.xml"/>
+			<!-- Charging Limit Validation -->
+			<tns:parameter name="utrId" paramValue="CHLIM"/>
+			<tns:parameter name="billingPeriodUsage" paramValue="100"/>
+			<tns:parameter name="bucketValue" paramValue="100"/>
+			<tns:parameter name="validateNotificationEnabled" paramValue="false"/>
+			
+            <tns:parameter name="startNotifListener" paramValue="true"/>
+            <tns:parameter name="startNotifListenerDelayMills" paramValue="500"/>
+            <tns:parameter name="stopNotifListenerDelayMills" paramValue="1000"/>
+			<!-- MOTF BIT Validation -->
+			<tns:parameter name="bit_amount" paramValue="32.500000"/>
+			<tns:parameter name="bittype" paramValue="M300"/>
+			<tns:parameter name="subprocess" paramValue="MOBB"/>
+			<tns:parameter name="tax_code" paramValue="S1"/>
+        </tns:test>
+	<tns:test>
+        <tns:id>20</tns:id>
+			<!-- Test fee one time charge - not tracked by Charging Limit -->
+			<tns:labels>TEST_FEE_DIRECT_CHARGE</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mote-tp.properties"/>                    
+			<tns:parameter name="sapCcApi" paramValue="SSC"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<tns:parameter name="validateCitEnabled" paramValue="false"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-utr-and-otf.xml"/>
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="${CURRENT_YEAR}-07-04T10:26:46"/>
+			<tns:parameter name="amount" paramValue="10"/>
+			<tns:parameter name="product_type" paramValue="TEST"/>
+			<!-- Validation -->
+			<tns:parameter name="utrId" paramValue="CHLIM"/>
+			<tns:parameter name="billingPeriodUsage" paramValue="25"/>
+			<tns:parameter name="bucketValue" paramValue="100"/>
+			<!-- MOTF BIT Validation -->
+			<tns:parameter name="bit_amount" paramValue="10.000000"/>
+			<tns:parameter name="bittype" paramValue="M300"/>
+			<tns:parameter name="subprocess" paramValue="MOBB"/>
+			<tns:parameter name="tax_code" paramValue="S1"/>
+    </tns:test>
+		
+    </tns:testData>
+</tns:testTemplate>

@@ -1,0 +1,723 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objectSet version="5.0.6.10">
+  <pnrObjectSet>
+    <chargeableItemClass id="MCIT" serviceProvider="O2C" description="Telia Mobile Usage">
+      <prop name="GPART" description="Business Partner Number" type="string"/>
+      <prop name="VTPOS" description="Contract: Item Number in Character Format" type="string"/>
+      <prop name="VKONT" description="Contract Account Number" type="string"/>
+      <prop name="CIT_QUANTITY" description="Quantity Consumed for the Consumption Item" type="number"/>
+      <prop name="CIT_QTY_UNIT" description="Unit of Measure for Quantity Consumed" type="string"/>
+      <prop name="RATE_BASEDATE" description="Baseline Date for Period Assignment in Rating" type="date"/>
+      <prop name="RATE_FIRST" description="Target Date for Rating" type="date"/>
+      <prop name="CITTYPE" description="Consumption Item Type" type="string"/>
+      <prop name="CITDATE" description="Date of Origin of Consumption Item" type="date"/>
+      <prop name="CITTIME" description="Time of Origin of Consumption Item in CHAR format" type="string"/>
+      
+      <prop name="CITDATE_FROM" description="Start of Consumption Period (Date)" type="date"/>
+      <prop name="CITDATE_TO" description="End of Consumption Period (Date)" type="date"/>
+      <prop name="ALLOW_USED" description="Allowance used in bytes" type="number"/>
+      <prop name="APN" description="APN" type="string"/>
+      <prop name="BILLING_PARTY" description="Billing party to be charged" type="string"/>
+      <prop name="CALLED_NUMBER" description="Called number" type="string"/>
+      <prop name="CALLING_NUMBER" description="Calling number" type="string"/>
+      <prop name="CALL_RECORD" description="Call record" type="string"/>
+      <prop name="CALL_TYPE_LEVEL_1" description="Call type level 1" type="string"/>
+      <prop name="CALL_TYPE_LEVEL_2" description="Call type level 2" type="string"/>
+      <prop name="CAUSE_FOR_TERM" description="Cause for termination" type="string"/>
+      <prop name="CDR_COST" description="CDR cost" type="number"/>
+      <prop name="CDR_CURRENCY" description="CDR currency" type="string"/>
+      <prop name="CDR_DISCOUNT" description="CDR discount" type="number"/>
+      <prop name="CDR_PRICE" description="CDR price" type="number"/>
+      <prop name="CDR_RATED" description="CDR rated flag" type="string"/>
+      <prop name="CONNECTED_TO" description="Connected to number" type="string"/>
+      <prop name="DESCRIPTION" description="Description for VAS" type="string"/>
+      <prop name="DIALLED_DIGITS" description="Caller&apos;s entered symbols" type="string"/>
+      <prop name="DOWNLOAD_VALUE" description="Download value in bytes" type="number"/>
+      <prop name="DURATION" description="Call duration in seconds" type="number"/>
+      <prop name="FACILITY_USAGE" description="Nokia MSS facility_usage field" type="string"/>
+      <prop name="FUP_CODE" description="FUP code for roaming pricing" type="string"/>
+      <prop name="GGSN_ADDRESS" description="GGSN address from source" type="string"/>
+      <prop name="GLOBAL_REFERENCE" description="Ref ID from source. Global call reference for voice" type="string"/>
+      <prop name="IMEI" description="IMEI" type="string"/>
+      <prop name="IMSI" description="IMSI" type="string"/>
+      <prop name="LOCATION_ID" description="Location" type="string"/>
+      <prop name="LT_OPERATOR_ID" description="Operator ID in case of number portability" type="string"/>
+      <prop name="MSC_ID" description="Src file identification for data; MSC ID, SMSC ID otherwise" type="string"/>
+      <prop name="MSRN" description="Nokia MSS MSRN field" type="string"/>
+      <prop name="ORIG_CALLING_NUMBER" description="Originally calling number in forwarding calls" type="string"/>
+      <prop name="PDP_ADDRESS" description="PDP address from source" type="string"/>
+      <prop name="PLMN" description="PLMN" type="string"/>
+      <prop name="PRICE_TYPE" description="Price type for data service" type="string"/>
+      <prop name="PRODUCT_CODE" description="Product code for data" type="string"/>
+      <prop name="PROVIDER_ID" description="Provider ID for PGW" type="string"/>
+      <prop name="RAN_TECHNOLOGY" description="Radio Access Network Technology" type="string"/>
+      <prop name="RATING_GROUP" description="Rating group from data usage CDR sources" type="string"/>
+      <prop name="REQUEST_TYPE" description="Request Type - Reservation/Confirmation/Offline" type="string"/>
+      <prop name="RULE_ID" description="Roaming rule ID" type="string"/>
+      <prop name="SERVICE_CODE" description="Service code" type="string"/>
+      <prop name="SERVICE_ID" description="Service ID for PGW" type="string"/>
+      <prop name="SERVICE_NAME" description="Service name" type="string"/>
+      <prop name="SERVICE_TYPE" description="Service type" type="string"/>
+      <prop name="SGSN_ADDRESS" description="SGSN address from source" type="string"/>
+      <prop name="SMALL_QUOTA" description="Small quota" type="number"/>
+      <prop name="SOURCE_ID" description="Logical source identification" type="string"/>
+      <prop name="SUBR_NUMBER" description="OBSOLETE - Telia mobile user phone number" type="string"/>
+      <prop name="TADIG" description="TADIG" type="string"/>
+      <prop name="TOTAL_VOLUME" description="Total Volume of Chargeable Units" type="number"/>
+      <prop name="TRANSACTION_TYPE" description="Transaction type" type="string"/>
+      <prop name="TARIFF_CLASS_CODE" description="Tariff class code for PGW" type="string"/>
+      <prop name="TRUNC_INC" description="Incoming PABX" type="string"/>
+      <prop name="TRUNC_OUT" description="Outgoing PABX" type="string"/>
+      <prop name="UPLOAD_VALUE" description="Upload value in bytes" type="number"/>
+      <prop name="VAT_INCLUDED" description="VAT included flag" type="string"/>
+      <prop name="ZONE" description="Zone" type="string"/>
+    </chargeableItemClass>
+    <exportableItemMapping externalSystemCode="CI" citcCode="MCIT" chargeableItemClassCode="MCIT" code="MCIT">
+      <additionalInformation name="description" value="Telia Mobile Usage" type="string"/>
+      <additionalInformation name="function" value="/1FC/MCIT_CIT_CREATE_PROXY" type="string"/>
+      <exportableItemMappingField name="CITID" citcFieldName="default.chargeableItemId">
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="length" value="32" type="string"/>
+        <additionalInformation name="description" value="Consumption Item  ID" type="string"/>
+        <additionalInformation name="maxLength" value="32" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="CITIDTYPE" citcFieldName="default.chargeableItemIdType">
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="length" value="5" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="maxLength" value="5" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="description" value="Type of Consumption Item ID" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="SRCTAID" citcFieldName="default.chargedItemSetIdStr">
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="length" value="22" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="maxLength" value="22" type="string"/>
+        <additionalInformation name="description" value="Source Transaction ID" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="SRCTATYPE" citcFieldName="default.chargedItemSetIdType">
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="length" value="5" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="maxLength" value="5" type="string"/>
+        <additionalInformation name="description" value="Source Transaction Type" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ACCESS_USERID" citcFieldName="default.userServiceIdentifier">
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="maxLength" value="50" type="string"/>
+        <additionalInformation name="length" value="50" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="description" value="Consumer ID of Consumption Item" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ACCESS_SERVICEID" citcFieldName="default.serviceIdentifier">
+        <additionalInformation name="length" value="12" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="description" value="Service ID of Consumption Item" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="maxLength" value="12" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="CONSUMDATE" citcFieldName="default.consumptionDate">
+        <additionalInformation name="description" value="Time Stamp of Consumption Date (ISO8601)" type="string"/>
+        <additionalInformation name="length" value="19" type="string"/>
+        <additionalInformation name="maxLength" value="19" type="string"/>
+        <additionalInformation name="ccType" value="DATE" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="GPART" citcFieldName="user.GPART">
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="length" value="10" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="description" value="Business Partner Number" type="string"/>
+        <additionalInformation name="maxLength" value="10" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="SUBAP" citcFieldName="default.contractType">
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="maxLength" value="1" type="string"/>
+        <additionalInformation name="description" value="Subapplication in Contract Accounts Receivable and Payable" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="length" value="1" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="VTREF" citcFieldName="default.contractId">
+        <additionalInformation name="description" value="Reference Specifications from Contract" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="length" value="20" type="string"/>
+        <additionalInformation name="maxLength" value="20" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="CONTRACTITEMID" citcFieldName="default.contractItemExternalId">
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="maxLength" value="32" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="length" value="32" type="string"/>
+        <additionalInformation name="description" value="External GUID of Provider Contract Items (CHAR)" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="RATINGDATE" citcFieldName="default.eventProcessingDate">
+        <additionalInformation name="length" value="19" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="maxLength" value="19" type="string"/>
+        <additionalInformation name="description" value="Date of Rating" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="ccType" value="DATE" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="VTPOS" citcFieldName="user.VTPOS">
+        <additionalInformation name="maxLength" value="6" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="description" value="Contract: Item Number in Character Format" type="string"/>
+        <additionalInformation name="length" value="6" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="VKONT" citcFieldName="user.VKONT">
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="description" value="Contract Account Number" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="maxLength" value="12" type="string"/>
+        <additionalInformation name="length" value="12" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="CIT_QUANTITY" citcFieldName="user.CIT_QUANTITY">
+        <additionalInformation name="type" value="P" type="string"/>
+        <additionalInformation name="length" value="31" type="string"/>
+        <additionalInformation name="description" value="Quantity Consumed for the Consumption Item" type="string"/>
+        <additionalInformation name="maxLength" value="16" type="string"/>
+        <additionalInformation name="decimalLength" value="14" type="string"/>
+        <additionalInformation name="fieldType" value="Q" type="string"/>
+        <additionalInformation name="ccType" value="NUMBER" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="CIT_QTY_UNIT" citcFieldName="user.CIT_QTY_UNIT">
+        <additionalInformation name="length" value="3" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="description" value="Unit of Measure for Quantity Consumed" type="string"/>
+        <additionalInformation name="fieldType" value="U" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="maxLength" value="3" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="RATE_BASEDATE" citcFieldName="user.RATE_BASEDATE">
+        <additionalInformation name="ccType" value="DATE" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="description" value="Baseline Date for Period Assignment in Rating" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="length" value="19" type="string"/>
+        <additionalInformation name="maxLength" value="19" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="RATE_FIRST" citcFieldName="user.RATE_FIRST">
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="description" value="Target Date for Rating" type="string"/>
+        <additionalInformation name="length" value="19" type="string"/>
+        <additionalInformation name="maxLength" value="19" type="string"/>
+        <additionalInformation name="ccType" value="DATE" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="CITTYPE" citcFieldName="user.CITTYPE">
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="length" value="4" type="string"/>
+        <additionalInformation name="maxLength" value="4" type="string"/>
+        <additionalInformation name="description" value="Consumption Item Type" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="CITDATE" citcFieldName="user.CITDATE">
+        <additionalInformation name="length" value="19" type="string"/>
+        <additionalInformation name="description" value="Date of Origin of Consumption Item" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="maxLength" value="19" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="ccType" value="DATE" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="CITTIME" citcFieldName="user.CITTIME">
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="description" value="Time of Origin of Consumption Item in CHAR format" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="length" value="6" type="string"/>
+        <additionalInformation name="maxLength" value="6" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="SIMULATED" citcFieldName="user.SIMULATED">
+        <additionalInformation name="description" value="Consumption Item Is Simulated" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="maxLength" value="1" type="string"/>
+        <additionalInformation name="fieldType" value="X" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="length" value="1" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="CITDATE_FROM" citcFieldName="user.CITDATE_FROM">
+        <additionalInformation name="length" value="19" type="string"/>
+        <additionalInformation name="maxLength" value="19" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="ccType" value="DATE" type="string"/>
+        <additionalInformation name="description" value="Start of Consumption Period (Date)" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="CITDATE_TO" citcFieldName="user.CITDATE_TO">
+        <additionalInformation name="maxLength" value="19" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="description" value="End of Consumption Period (Date)" type="string"/>
+        <additionalInformation name="length" value="19" type="string"/>
+        <additionalInformation name="ccType" value="DATE" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_ALLOW_USED" citcFieldName="user.ALLOW_USED">
+        <additionalInformation name="type" value="P" type="string"/>
+        <additionalInformation name="length" value="16" type="string"/>
+        <additionalInformation name="maxLength" value="9" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="ccType" value="NUMBER" type="string"/>
+        <additionalInformation name="description" value="Allowance used in bytes" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_APN" citcFieldName="user.APN">
+        <additionalInformation name="length" value="64" type="string"/>
+        <additionalInformation name="maxLength" value="64" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="description" value="APN" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_BILLING_PARTY" citcFieldName="user.BILLING_PARTY">
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="description" value="Billing party to be charged" type="string"/>
+        <additionalInformation name="maxLength" value="40" type="string"/>
+        <additionalInformation name="length" value="40" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_CALLED_NUM" citcFieldName="user.CALLED_NUMBER">
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="maxLength" value="20" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="length" value="20" type="string"/>
+        <additionalInformation name="description" value="Called number" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_CALLING_NUM" citcFieldName="user.CALLING_NUMBER">
+        <additionalInformation name="length" value="20" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="maxLength" value="20" type="string"/>
+        <additionalInformation name="description" value="Calling number" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_CALL_RECORD" citcFieldName="user.CALL_RECORD">
+        <additionalInformation name="maxLength" value="6" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="description" value="Call record" type="string"/>
+        <additionalInformation name="length" value="6" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_CAL_TYP_LVL_1" citcFieldName="user.CALL_TYPE_LEVEL_1">
+        <additionalInformation name="length" value="3" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="description" value="Call type level 1" type="string"/>
+        <additionalInformation name="maxLength" value="3" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_CAL_TYP_LVL_2" citcFieldName="user.CALL_TYPE_LEVEL_2">
+        <additionalInformation name="description" value="Call type level 2" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="maxLength" value="3" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="length" value="3" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_CAUSE_FOR_TRM" citcFieldName="user.CAUSE_FOR_TERM">
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="description" value="Cause for termination" type="string"/>
+        <additionalInformation name="length" value="20" type="string"/>
+        <additionalInformation name="maxLength" value="20" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_CDR_COST" citcFieldName="user.CDR_COST">
+        <additionalInformation name="decimalLength" value="6" type="string"/>
+        <additionalInformation name="maxLength" value="7" type="string"/>
+        <additionalInformation name="type" value="P" type="string"/>
+        <additionalInformation name="description" value="CDR cost" type="string"/>
+        <additionalInformation name="length" value="12" type="string"/>
+        <additionalInformation name="ccType" value="NUMBER" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_CDR_CURRENCY" citcFieldName="user.CDR_CURRENCY">
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="description" value="CDR currency" type="string"/>
+        <additionalInformation name="length" value="3" type="string"/>
+        <additionalInformation name="maxLength" value="3" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_CDR_DISCOUNT" citcFieldName="user.CDR_DISCOUNT">
+        <additionalInformation name="length" value="12" type="string"/>
+        <additionalInformation name="description" value="CDR discount" type="string"/>
+        <additionalInformation name="type" value="P" type="string"/>
+        <additionalInformation name="ccType" value="NUMBER" type="string"/>
+        <additionalInformation name="maxLength" value="7" type="string"/>
+        <additionalInformation name="decimalLength" value="6" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_CDR_PRICE" citcFieldName="user.CDR_PRICE">
+        <additionalInformation name="decimalLength" value="6" type="string"/>
+        <additionalInformation name="type" value="P" type="string"/>
+        <additionalInformation name="length" value="12" type="string"/>
+        <additionalInformation name="ccType" value="NUMBER" type="string"/>
+        <additionalInformation name="description" value="CDR price" type="string"/>
+        <additionalInformation name="maxLength" value="7" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_CDR_RATED" citcFieldName="user.CDR_RATED">
+        <additionalInformation name="description" value="CDR rated flag" type="string"/>
+        <additionalInformation name="length" value="1" type="string"/>
+        <additionalInformation name="maxLength" value="1" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_CONNECTED_TO" citcFieldName="user.CONNECTED_TO">
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="length" value="20" type="string"/>
+        <additionalInformation name="maxLength" value="20" type="string"/>
+        <additionalInformation name="description" value="Connected to number" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_DESCRIPTION" citcFieldName="user.DESCRIPTION">
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="length" value="100" type="string"/>
+        <additionalInformation name="description" value="Description for VAS" type="string"/>
+        <additionalInformation name="maxLength" value="100" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_DIALLED_DGTS" citcFieldName="user.DIALLED_DIGITS">
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="length" value="24" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="maxLength" value="24" type="string"/>
+        <additionalInformation name="description" value="Caller&apos;s entered symbols" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_DOWNLOAD_VAL" citcFieldName="user.DOWNLOAD_VALUE">
+        <additionalInformation name="maxLength" value="9" type="string"/>
+        <additionalInformation name="length" value="16" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="description" value="Download value in bytes" type="string"/>
+        <additionalInformation name="ccType" value="NUMBER" type="string"/>
+        <additionalInformation name="type" value="P" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_DURATION" citcFieldName="user.DURATION">
+        <additionalInformation name="type" value="P" type="string"/>
+        <additionalInformation name="length" value="8" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="description" value="Call duration in seconds" type="string"/>
+        <additionalInformation name="maxLength" value="5" type="string"/>
+        <additionalInformation name="ccType" value="NUMBER" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_FACILITY_USG" citcFieldName="user.FACILITY_USAGE">
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="description" value="Nokia MSS facility_usage field" type="string"/>
+        <additionalInformation name="length" value="8" type="string"/>
+        <additionalInformation name="maxLength" value="8" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_FUP_CODE" citcFieldName="user.FUP_CODE">
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="description" value="FUP code for roaming pricing" type="string"/>
+        <additionalInformation name="maxLength" value="3" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="length" value="3" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_GGSN_ADDRESS" citcFieldName="user.GGSN_ADDRESS">
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="description" value="GGSN address from source" type="string"/>
+        <additionalInformation name="maxLength" value="40" type="string"/>
+        <additionalInformation name="length" value="40" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_GLOBAL_REF" citcFieldName="user.GLOBAL_REFERENCE">
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="maxLength" value="22" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="length" value="22" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="description" value="Ref ID from source. Global call reference for voice" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_IMEI" citcFieldName="user.IMEI">
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="maxLength" value="16" type="string"/>
+        <additionalInformation name="length" value="16" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="description" value="IMEI" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_IMSI" citcFieldName="user.IMSI">
+        <additionalInformation name="length" value="15" type="string"/>
+        <additionalInformation name="maxLength" value="15" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="description" value="IMSI" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_LOCATION_ID" citcFieldName="user.LOCATION_ID">
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="maxLength" value="12" type="string"/>
+        <additionalInformation name="length" value="12" type="string"/>
+        <additionalInformation name="description" value="Location" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_LT_OPER_ID" citcFieldName="user.LT_OPERATOR_ID">
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="maxLength" value="5" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="length" value="5" type="string"/>
+        <additionalInformation name="description" value="Operator ID in case of number portability" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_MSC_ID" citcFieldName="user.MSC_ID">
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="length" value="50" type="string"/>
+        <additionalInformation name="description" value="Src file identification for data; MSC ID, SMSC ID otherwise" type="string"/>
+        <additionalInformation name="maxLength" value="50" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_MSRN" citcFieldName="user.MSRN">
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="maxLength" value="20" type="string"/>
+        <additionalInformation name="length" value="20" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="description" value="Nokia MSS MSRN field" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_ORIG_CALL_NUM" citcFieldName="user.ORIG_CALLING_NUMBER">
+        <additionalInformation name="length" value="20" type="string"/>
+        <additionalInformation name="description" value="Originally calling number in forwarding calls" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="maxLength" value="20" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_PDP_ADDRESS" citcFieldName="user.PDP_ADDRESS">
+        <additionalInformation name="length" value="40" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="maxLength" value="40" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="description" value="PDP address from source" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_PLMN" citcFieldName="user.PLMN">
+        <additionalInformation name="maxLength" value="6" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="description" value="PLMN" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="length" value="6" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_PRICE_TYPE" citcFieldName="user.PRICE_TYPE">
+        <additionalInformation name="description" value="Price type for data service" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="length" value="8" type="string"/>
+        <additionalInformation name="maxLength" value="8" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_PRODUCT_CODE" citcFieldName="user.PRODUCT_CODE">
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="description" value="Product code for data" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="length" value="40" type="string"/>
+        <additionalInformation name="maxLength" value="40" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_PROVIDER_ID" citcFieldName="user.PROVIDER_ID">
+        <additionalInformation name="length" value="10" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="maxLength" value="10" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="description" value="Provider ID for PGW" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_RAN_TECH" citcFieldName="user.RAN_TECHNOLOGY">
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="description" value="Radio Access Network Technology" type="string"/>
+        <additionalInformation name="maxLength" value="6" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="length" value="6" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_RATING_GROUP" citcFieldName="user.RATING_GROUP">
+        <additionalInformation name="maxLength" value="10" type="string"/>
+        <additionalInformation name="length" value="10" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="description" value="Rating group from data usage CDR sources" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_REQUEST_TYPE" citcFieldName="user.REQUEST_TYPE">
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="description" value="Request Type - Reservation/Confirmation/Offline" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="length" value="1" type="string"/>
+        <additionalInformation name="maxLength" value="1" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_RULE_ID" citcFieldName="user.RULE_ID">
+        <additionalInformation name="maxLength" value="25" type="string"/>
+        <additionalInformation name="description" value="Roaming rule ID" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="length" value="25" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_SERVICE_CODE" citcFieldName="user.SERVICE_CODE">
+        <additionalInformation name="description" value="Service code" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="length" value="2" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="maxLength" value="2" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_SERVICE_ID" citcFieldName="user.SERVICE_ID">
+        <additionalInformation name="length" value="10" type="string"/>
+        <additionalInformation name="maxLength" value="10" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="description" value="Service ID for PGW" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_SERVICE_NAME" citcFieldName="user.SERVICE_NAME">
+        <additionalInformation name="maxLength" value="10" type="string"/>
+        <additionalInformation name="description" value="Service name" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="length" value="10" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_SERVICE_TYPE" citcFieldName="user.SERVICE_TYPE">
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="maxLength" value="2" type="string"/>
+        <additionalInformation name="description" value="Service type" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="length" value="2" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_SGSN_ADDRESS" citcFieldName="user.SGSN_ADDRESS">
+        <additionalInformation name="maxLength" value="40" type="string"/>
+        <additionalInformation name="description" value="SGSN address from source" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="length" value="40" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_SMALL_QUOTA" citcFieldName="user.SMALL_QUOTA">
+        <additionalInformation name="description" value="Small quota" type="string"/>
+        <additionalInformation name="length" value="16" type="string"/>
+        <additionalInformation name="ccType" value="NUMBER" type="string"/>
+        <additionalInformation name="maxLength" value="9" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="type" value="P" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_SOURCE_ID" citcFieldName="user.SOURCE_ID">
+        <additionalInformation name="description" value="Logical source identification" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="length" value="10" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="maxLength" value="10" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_SUBR_NUMBER" citcFieldName="user.SUBR_NUMBER">
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="description" value="OBSOLETE - Telia mobile user phone number" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="maxLength" value="15" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="length" value="15" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_TADIG" citcFieldName="user.TADIG">
+        <additionalInformation name="length" value="5" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="maxLength" value="5" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="description" value="TADIG" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_TOTAL_VOLUME" citcFieldName="user.TOTAL_VOLUME">
+        <additionalInformation name="ccType" value="NUMBER" type="string"/>
+        <additionalInformation name="maxLength" value="9" type="string"/>
+        <additionalInformation name="description" value="Total Volume of Chargeable Units" type="string"/>
+        <additionalInformation name="type" value="P" type="string"/>
+        <additionalInformation name="length" value="16" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_TRANS_TYPE" citcFieldName="user.TRANSACTION_TYPE">
+        <additionalInformation name="description" value="Transaction type" type="string"/>
+        <additionalInformation name="length" value="6" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="maxLength" value="6" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_TRF_CLASS_COD" citcFieldName="user.TARIFF_CLASS_CODE">
+        <additionalInformation name="length" value="10" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="description" value="Tariff class code for PGW" type="string"/>
+        <additionalInformation name="maxLength" value="10" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_TRUNC_INC" citcFieldName="user.TRUNC_INC">
+        <additionalInformation name="description" value="Incoming PABX" type="string"/>
+        <additionalInformation name="length" value="4" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="maxLength" value="4" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_TRUNC_OUT" citcFieldName="user.TRUNC_OUT">
+        <additionalInformation name="length" value="4" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="maxLength" value="4" type="string"/>
+        <additionalInformation name="description" value="Outgoing PABX" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_UPLOAD_VAL" citcFieldName="user.UPLOAD_VALUE">
+        <additionalInformation name="length" value="16" type="string"/>
+        <additionalInformation name="description" value="Upload value in bytes" type="string"/>
+        <additionalInformation name="ccType" value="NUMBER" type="string"/>
+        <additionalInformation name="type" value="P" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="maxLength" value="9" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_VAT_INCLUDED" citcFieldName="user.VAT_INCLUDED">
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+        <additionalInformation name="maxLength" value="1" type="string"/>
+        <additionalInformation name="length" value="1" type="string"/>
+        <additionalInformation name="description" value="VAT included flag" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+      </exportableItemMappingField>
+      <exportableItemMappingField name="ZZ_ZONE" citcFieldName="user.ZONE">
+        <additionalInformation name="description" value="Zone" type="string"/>
+        <additionalInformation name="type" value="C" type="string"/>
+        <additionalInformation name="ccType" value="STRING" type="string"/>
+        <additionalInformation name="maxLength" value="10" type="string"/>
+        <additionalInformation name="length" value="10" type="string"/>
+        <additionalInformation name="decimalLength" value="0" type="string"/>
+      </exportableItemMappingField>
+    </exportableItemMapping>
+  </pnrObjectSet>
+</objectSet>

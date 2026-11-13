@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+      <!-- $genInfo -->
+      <tns:extension xmlns:tns="https://www.w3schools.com"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="https://www.w3schools.com ../templates/test-inputs/test-extension.xsd">
+          <!-- this execution point is executed before session starts -->
+          <tns:executionPoint id="AFTER">
+		  <tns:actions>
+         <tns:action id="chargingContractAllowanceFind" name="Find allowances on provider contract">
+         <tns:property name="subscriberAccountId">${SUBSCRIBER_CODE}</tns:property>
+         <tns:property name="providerContractId">${SUBSCRIBER_CODE}</tns:property>
+         <tns:validations id="Verify allowance find response">
+             <tns:validate id="allowanceFindResponse" name="Validation of allowance find response" enabled="true">
+                 <tns:allowances>
+                     <!-- find allowances in state active - there should be 4 of them -->
+                     <tns:allowance expectedNumber="${expectedNumOfAlw}" name="find allowances in state active - there should be ${expectedNumOfAlw} of them">
+						<tns:alwPlanId expectedValue="AP_ALW_T02"/>
+                        <tns:alwStatus expectedValue="active"/>
+						 <tns:alwValidityStart mode="at" expectedValue="${expectedAlwStart}"/>
+                         <!--<tns:alwValidityEnd mode="at" expectedValue="${expectedAlwEnd}"/>-->
+						 
+						 <tns:alwParameters>
+                             <!-- parameter type can be: string | date | number -->
+                             <tns:alwParameter name="PE_QUOTAUOM" type="string" expectedValue="${expectedAlwParamPeQuotaUom}"/>
+                             <tns:alwParameter name="PE_ALWINSTANCESTART" type="date" expectedValue="${expectedAlwParamPeAlwInstanceStart}"/>
+							 <!--<tns:alwParameter name="PE_ALWINSTANCEEND" type="date" expectedValue="${expectedAlwParamPeAlwInstanceEnd}"/>-->
+                             <!-- Note: number parameters must be specified exactly as shown in the export -->
+                             <tns:alwParameter name="PRIORITY" type="number" expectedValue="${expectedAlwParamPriority}"/>
+                         </tns:alwParameters>
+						 
+						 <tns:alwCounters>
+                             <tns:alwCounter name="BUCKET_VALUE" expectedValue="${expectedBucketValue}"/>
+                         </tns:alwCounters>
+                     </tns:allowance>
+                     
+                 </tns:allowances>
+             </tns:validate>
+         </tns:validations>
+     </tns:action>
+	 </tns:actions>
+     </tns:executionPoint>
+</tns:extension>

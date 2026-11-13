@@ -1,0 +1,34 @@
+.vag-green,.vag-hover-green:hover{color:#fff!important;background-color:#008899!important}
+.vag-gray,.vag-hover-gray:hover,.vag-grey,.vag-hover-grey:hover{color:#000!important;background-color:#999999!important}
+.vag-black,.vag-hover-black:hover{color:#fff!important;background-color:#000000!important}
+.vag-green-snd,.vag-hover-green-snd:hover{color:#000!important;background-color:#5EAC63!important}
+.vag-lemon-snd,.vag-hover-lemon-snd:hover{color:#000!important;background-color:#A5D516!important}
+.vag-blue-snd,.vag-hover-blue-snd:hover{color:#000!important;background-color:#45A9B2!important}
+.vag-orange-snd,.vag-hover-orange-snd:hover{color:#000!important;background-color:#FF6600!important}
+.vag-yellow-snd,.vag-hover-yellow-snd:hover{color:#000!important;background-color:#FEBF07!important}
+.vag-outline-green{outline: 2px solid; outline-color:#008899;}
+.vag-outline-gray{outline: 2px solid; outline-color:#999999;}
+.vag-outline-black{outline: 2px solid; outline-color:#000000;}
+.vag-outline-green-snd{outline: 2px solid; outline-color:#5EAC63;}
+.vag-outline-lemon-snd{outline: 2px solid; outline-color:#A5D516;}
+.vag-outline-blue-snd{outline: 2px solid; outline-color:#45A9B2;}
+.vag-outline-orange-snd{outline: 2px solid; outline-color:#FF6600;}
+.vag-outline-yellow-snd{outline: 2px solid; outline-color:#FEBF07;}
+.vag-hover-outline-green:hover{outline: 2px solid; outline-color:#008899;}
+.vag-hover-outline-gray:hover{outline: 2px solid; outline-color:#999999;}
+.vag-hover-outline-black:hover{outline: 2px solid; outline-color:#000000;}
+.vag-hover-outline-green-snd:hover{outline: 2px solid; outline-color:#5EAC63;}
+.vag-hover-outline-lemon-snd:hover{outline: 2px solid; outline-color:#A5D516;}
+.vag-hover-outline-blue-snd:hover{outline: 2px solid; outline-color:#45A9B2;}
+.vag-hover-outline-orange-snd:hover{outline: 2px solid; outline-color:#FF6600;}
+.vag-hover-outline-yellow-snd:hover{outline: 2px solid; outline-color:#FEBF07;}
+.vag-text-green{color:#008899!important}
+.vag-text-gray,.vag-text-grey{color:#999999!important}
+.vag-text-black{color:#000000!important}
+.vag-text-green-snd{color:#5EAC63!important}
+.vag-text-lemon-snd{color:#A5D516!important}
+.vag-text-blue-snd{color:#45A9B2!important}
+.vag-text-orange-snd{color:#FF6600!important}
+.vag-text-yellow-snd{color:#FEBF07!important}
+.vag-padding-128{padding-top:128px!important;padding-bottom:128px!important}
+.vag-box-shadow-gray{padding: 10px;box-shadow: 5px 10px #999999;box-sizing:border-box;}

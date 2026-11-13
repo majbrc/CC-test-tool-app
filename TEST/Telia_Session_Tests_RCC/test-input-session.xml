@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $genInfo -->
+<tns:testTemplate xmlns:tns="https://www.w3schools.com"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.w3schools.com ../common/xsd/test-inputs.xsd">
+    <tns:header>
+        <tns:constants>
+            <tns:constant name="__META_TITLE__" constValue="Roaming Cost Control Tests"/>
+            <tns:constant name="__META_DESCRIPTION__" constValue="RCC Tests"/>
+            <tns:constant name="_TEST_COMMON_DIR" constValue="TEST"/>
+            <tns:constant name="_TEST_DIR" constValue="TEST/Telia_Session_Tests_RCC"/>
+            <tns:constant name="USER_SERVICE_ID" constValue="9000000022"/>
+			<!-- extract current year -->
+			<tns:constant name="CURRENT_YEAR" constValue="$DATE_TIME_NOW_items.Year"/>		
+			
+			<tns:constant name="SUBSCRIBER_ACCOUNT_ID" constValue="900000000000000000000000000006"/>
+            <tns:constant name="PROVIDER_CONTRACT_ID" constValue="90000000000000000014"/>
+			<tns:constant name="EVENT_DATE" constValue="${CURRENT_YEAR}-11-12T11:53:41"/>
+        </tns:constants>
+		
+        <tns:parameters>
+            <tns:parameter name="sessionDefinitionFileList" type="string"/>
+			<tns:parameter name="generateCit" type="string"/>
+            <tns:parameter name="validateCitEnabled" type="string" defaultValue="false"/>
+			<tns:parameter name="fwOnErrorFailTheTest" type="string" defaultValue="true"/>
+			<tns:parameter name="validateNotificationEnabled" type="string" defaultValue="false"/>
+			
+			<tns:parameter name="ciPropertiesFile" type="string"/>
+			<tns:parameter name="consumptionDate" type="date"/>
+			<tns:parameter name="sapCcApi" type="string"/>
+			<tns:parameter name="testExtension" type="string"/>
+			
+			<tns:parameter name="rccLimit" type="number"/>
+			<tns:parameter name="currentRccUsage" type="number"/>
+			<tns:parameter name="billingPeriodUsage" type="number"/>		
+			<tns:parameter name="bucketValue" type="number"/>
+			<tns:parameter name="utrId" type="string"/>
+			<tns:parameter name="threshold" type="string"/>
+			
+			<!-- MUSG output properties -->
+			<tns:parameter name="bit_amount" type="number"/>			
+			<tns:parameter name="bit_quantity" type="number"/>
+			<tns:parameter name="zz_voicesmsdata" type="string"/>
+			<tns:parameter name="zz_ch_quantity" type="number"/>
+			<tns:parameter name="zz_ch_uom" type="string"/>
+			<tns:parameter name="zz_log_chg_qty" type="number"/>
+			<tns:parameter name="zz_log_alw_qty" type="number"/>			
+			<tns:parameter name="zz_domintroam" type="string"/>
+			<tns:parameter name="zz_download_val" type="number"/>
+			<tns:parameter name="zz_upload_val" type="number"/>
+			<tns:parameter name="zz_event_usp" type="string"/>
+			<tns:parameter name="zz_orig_zone" type="string"/>
+			<tns:parameter name="zz_orig_country" type="string"/>
+			<tns:parameter name="zz_orig_dscr" type="string"/>
+			<tns:parameter name="zz_orig_zon_sch" type="string"/>
+			<tns:parameter name="zz_prc_group" type="string"/>
+			<tns:parameter name="zz_price_id" type="string"/>
+			<tns:parameter name="zz_tariff" type="number"/>
+			<tns:parameter name="zz_tax_code" type="string"/>
+			<tns:parameter name="zz_det_inv_digit" type="string"/>
+			<tns:parameter name="printrel" type="string"/>
+			<tns:parameter name="zz_log_chg_id" type="string"/>
+			<tns:parameter name="zz_log_full_prc" type="string"/>
+			<tns:parameter name="zz_roam_prc_type" type="string"/>
+			
+			<!-- session charging properties -->
+			<tns:parameter name="startRateValidationEnabled" type="string" defaultValue="true"/>
+			<tns:parameter name="startRate_cc_quota" type="number"/>
+			<tns:parameter name="startRate_reserved_limit" type="number"/>
+			<tns:parameter name="startRate_reserved_quota" type="number"/>
+			<tns:parameter name="startRate_remaining_limit" type="number"/>
+			<tns:parameter name="startRate_amountToReserve" type="number"/>
+			
+			<tns:parameter name="updateRsvValidationEnabled" type="string" defaultValue="false"/>
+			<tns:parameter name="updateRate_rsv_limit_id" type="string"/>
+			<tns:parameter name="updateCfmValidationEnabled" type="string" defaultValue="false"/>
+			<tns:parameter name="updateRate_cfm_limit_id" type="string"/>
+			
+			<tns:parameter name="update1ValidationEnabled" type="string" defaultValue="false"/>
+			<tns:parameter name="updateRate1_rsv_cc_quota" type="number"/>
+			<tns:parameter name="updateRate1_rsv_reserved_limit" type="number"/>
+			<tns:parameter name="updateRate1_rsv_reserved_quota" type="number"/>
+			<tns:parameter name="updateRate1_rsv_remaining_limit" type="number"/>
+			<tns:parameter name="updateRate1_rsv_amountToReserve" type="number" defaultValue="0"/>
+			<tns:parameter name="updateRate1_cfm_cc_quota" type="number"/>
+			<tns:parameter name="updateRate1_cfm_reserved_limit" type="number"/>
+			<tns:parameter name="updateRate1_cfm_reserved_quota" type="number"/>
+			<tns:parameter name="updateRate1_cfm_remaining_limit" type="number"/>
+			<tns:parameter name="updateRate1_cfm_amount" type="number" defaultValue="0"/>
+			<tns:parameter name="updateRate1_cfm_accumulatedAmount" type="number" defaultValue="0"/>
+			
+			<tns:parameter name="update2ValidationEnabled" type="string" defaultValue="false"/>
+			<tns:parameter name="updateRate2_rsv_cc_quota" type="number"/>
+			<tns:parameter name="updateRate2_rsv_reserved_limit" type="number"/>
+			<tns:parameter name="updateRate2_rsv_reserved_quota" type="number"/>
+			<tns:parameter name="updateRate2_rsv_remaining_limit" type="number"/>
+			<tns:parameter name="updateRate2_rsv_amountToReserve" type="number" defaultValue="0"/>
+			<tns:parameter name="updateRate2_cfm_cc_quota" type="number"/>
+			<tns:parameter name="updateRate2_cfm_reserved_limit" type="number"/>
+			<tns:parameter name="updateRate2_cfm_reserved_quota" type="number"/>
+			<tns:parameter name="updateRate2_cfm_remaining_limit" type="number"/>
+			<tns:parameter name="updateRate2_cfm_amount" type="number" defaultValue="0"/>
+			<tns:parameter name="updateRate2_cfm_accumulatedAmount" type="number" defaultValue="0"/>
+			
+			<tns:parameter name="stopRateValidationEnabled" type="string" defaultValue="true"/>
+			<tns:parameter name="stopRate_cc_quota" type="number"/>
+			<tns:parameter name="stopRate_reserved_limit" type="number"/>
+			<tns:parameter name="stopRate_reserved_quota" type="number"/>
+			<tns:parameter name="stopRate_remaining_limit" type="number"/>
+			<tns:parameter name="stopRate_accumulatedAmount" type="number"/>
+			
+			<!-- Notification Listener parameters -->
+			<tns:parameter name="startNotifListener" type="string"/>
+            <tns:parameter name="startNotifListenerDelayMills" type="number"/>
+            <tns:parameter name="stopNotifListenerDelayMills" type="number"/>
+		</tns:parameters>
+    </tns:header>
+	
+	<tns:testData>
+        <tns:test>
+            <tns:id>1</tns:id>
+            <tns:labels>TELIA_DATA_ROAM_USAGE_WITH_CIT_GEN,DATA_SESSION</tns:labels>
+            <tns:parameter name="sessionDefinitionFileList" paramValue="${_TEST_DIR}/templates/01.telia.test.data.ini"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/01-data-session-validation.xml"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<tns:parameter name="validateCitEnabled" paramValue="true"/>
+			
+			<!-- output charged item validations, different from default value specified in testExtension file -->					
+			<tns:parameter name="bit_amount" paramValue="0.267759"/>			
+			<tns:parameter name="bit_quantity" paramValue="211.000000"/>
+			<tns:parameter name="zz_event_usp" paramValue="GPRS_ROAM"/>	
+			<tns:parameter name="zz_ch_quantity" paramValue="211.000000"/>
+			<tns:parameter name="zz_log_chg_qty" paramValue="221249536.000000"/>			
+			<tns:parameter name="zz_domintroam" paramValue="R"/>
+			<tns:parameter name="zz_voicesmsdata" paramValue="D"/>
+			<tns:parameter name="zz_download_val" paramValue="162529280.000000"/>
+			<tns:parameter name="zz_upload_val" paramValue="58720256.000000"/>
+			<tns:parameter name="zz_ch_uom" paramValue="MB"/>
+			<tns:parameter name="zz_log_chg_id" paramValue="PAYG"/>
+			<tns:parameter name="zz_log_full_prc" paramValue="0.267759"/>
+			<tns:parameter name="zz_orig_zone" paramValue="EU"/>
+			<tns:parameter name="zz_orig_country" paramValue="ISL"/>
+			<tns:parameter name="zz_orig_dscr" paramValue="ISLPS"/>
+			<tns:parameter name="zz_orig_zon_sch" paramValue="ZS_DROAM_DFL_1_B2X"/>
+			<tns:parameter name="zz_prc_group" paramValue="PG_DROAM_EMPL_X"/>
+			<tns:parameter name="zz_price_id" paramValue="DRS_ES_1KB_01"/>	
+			<tns:parameter name="zz_roam_prc_type" paramValue="GPRS"/>				
+			<tns:parameter name="zz_tariff" paramValue="0.001269"/>
+			<tns:parameter name="zz_tax_code" paramValue="PVM1"/>			
+			<tns:parameter name="zz_det_inv_digit" paramValue="Y"/>
+			<tns:parameter name="printrel" paramValue="true"/>
+			
+			<!-- validation of properties in different session requests -->
+			<!-- START RATE -->
+			<tns:parameter name="startRate_amountToReserve" paramValue="0.1269"/>
+			<tns:parameter name="startRate_cc_quota" paramValue="104857600"/>
+			<tns:parameter name="startRate_reserved_limit" paramValue="0.1269"/>
+			<tns:parameter name="startRate_reserved_quota" paramValue="100"/>
+			<tns:parameter name="startRate_remaining_limit" paramValue="49.59"/>
+			<!-- General update rate validation -->
+			<tns:parameter name="updateRsvValidationEnabled" paramValue="true"/>
+			<tns:parameter name="updateRate_rsv_limit_id" paramValue="RCC"/>
+			<tns:parameter name="updateCfmValidationEnabled" paramValue="true"/>
+			<tns:parameter name="updateRate_cfm_limit_id" paramValue="RCC"/>
+			<!-- UPDATE RATE 1 -->
+			<tns:parameter name="update1ValidationEnabled" paramValue="true"/>
+			<tns:parameter name="updateRate1_cfm_amount" paramValue="0.1269"/>
+			<tns:parameter name="updateRate1_cfm_accumulatedAmount" paramValue="0.1269"/>
+			<tns:parameter name="updateRate1_cfm_cc_quota" paramValue="104857600"/>
+			<tns:parameter name="updateRate1_cfm_reserved_limit" paramValue="0"/>
+			<tns:parameter name="updateRate1_cfm_reserved_quota" paramValue="0"/>
+			<tns:parameter name="updateRate1_cfm_remaining_limit" paramValue="49.4631"/>
+			
+			<tns:parameter name="updateRate1_rsv_amountToReserve" paramValue="0.1269"/>
+			<tns:parameter name="updateRate1_rsv_cc_quota" paramValue="104857600"/>
+			<tns:parameter name="updateRate1_rsv_reserved_quota" paramValue="100"/>
+			<tns:parameter name="updateRate1_rsv_remaining_limit" paramValue="49.4631"/>
+			<!-- UPDATE RATE 2 -->
+			<tns:parameter name="update2ValidationEnabled" paramValue="true"/>
+			<tns:parameter name="updateRate2_cfm_amount" paramValue="0.095175"/>
+			<tns:parameter name="updateRate2_cfm_accumulatedAmount" paramValue="0.222075"/>
+			<tns:parameter name="updateRate2_cfm_cc_quota" paramValue="78643200"/>
+			<tns:parameter name="updateRate2_cfm_reserved_limit" paramValue="0"/>
+			<tns:parameter name="updateRate2_cfm_reserved_quota" paramValue="0"/>
+			<tns:parameter name="updateRate2_cfm_remaining_limit" paramValue="49.367925"/>
+			
+			<tns:parameter name="updateRate2_rsv_amountToReserve" paramValue="0.1269"/>
+			<tns:parameter name="updateRate2_rsv_cc_quota" paramValue="104857600"/>
+			<tns:parameter name="updateRate2_rsv_reserved_quota" paramValue="100"/>
+			<tns:parameter name="updateRate2_rsv_remaining_limit" paramValue="49.367925"/>
+			<!-- STOP RATE -->
+			<tns:parameter name="stopRate_accumulatedAmount" paramValue="0.267759"/>
+			<tns:parameter name="stopRate_cc_quota" paramValue="37748736"/>
+			<tns:parameter name="stopRate_remaining_limit" paramValue="49.322241"/>
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>2</tns:id>
+            <tns:labels>TELIA_DATA_HOME_USAGE_WITH_CIT_GEN,DATA_SESSION</tns:labels>
+            <tns:parameter name="sessionDefinitionFileList" paramValue="${_TEST_DIR}/templates/02.telia.test.data.ini"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/01-data-session-validation.xml"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<tns:parameter name="validateCitEnabled" paramValue="true"/>
+			
+			<tns:parameter name="bit_amount" paramValue="0.000000"/>			
+			<tns:parameter name="bit_quantity" paramValue="123.000000"/>
+			<tns:parameter name="zz_event_usp" paramValue="GPRS"/>	
+			<tns:parameter name="zz_ch_quantity" paramValue="123.000000"/>
+			<tns:parameter name="zz_log_chg_qty" paramValue="128974848.000000"/>			
+			<tns:parameter name="zz_domintroam" paramValue="D"/>
+			<tns:parameter name="zz_voicesmsdata" paramValue="D"/>
+			<tns:parameter name="zz_download_val" paramValue="92274688.000000"/>
+			<tns:parameter name="zz_upload_val" paramValue="36700160.000000"/>
+			<tns:parameter name="zz_ch_uom" paramValue="MB"/>
+			<tns:parameter name="zz_log_chg_id" paramValue="PAYG"/>
+			<tns:parameter name="zz_log_full_prc" paramValue="0.000000"/>
+			<tns:parameter name="zz_orig_zone" paramValue="HOME"/>
+			<tns:parameter name="zz_orig_country" paramValue="LTU"/>
+			<tns:parameter name="zz_orig_dscr" paramValue="LT_MOB_TELIA"/>
+			<tns:parameter name="zz_orig_zon_sch" paramValue="N/A"/>
+			<tns:parameter name="zz_prc_group" paramValue="PG_DLOC_DEFAULT_X"/>
+			<tns:parameter name="zz_price_id" paramValue="DD_PAYG_100KB_0Y"/>	
+			<tns:parameter name="zz_roam_prc_type" paramValue="GPRS"/>				
+			<tns:parameter name="zz_tariff" paramValue="0.000000"/>
+			<tns:parameter name="zz_tax_code" paramValue="PVM1"/>			
+			<tns:parameter name="zz_det_inv_digit" paramValue="Y"/>
+			<tns:parameter name="printrel" paramValue="true"/>
+			
+			<!-- validation of properties in different session requests -->
+			<!-- START RATE -->
+			<tns:parameter name="startRate_amountToReserve" paramValue="0.00"/>
+			<tns:parameter name="startRate_cc_quota" paramValue="104857600"/>
+			<tns:parameter name="startRate_reserved_limit" paramValue="0"/>
+			<tns:parameter name="startRate_reserved_quota" paramValue="0"/>
+			<tns:parameter name="startRate_remaining_limit" paramValue="0"/>
+			<!-- General update rate validation -->
+			<tns:parameter name="updateRsvValidationEnabled" paramValue="true"/>
+			<tns:parameter name="updateRate_rsv_limit_id" paramValue="N/A"/>
+			<tns:parameter name="updateCfmValidationEnabled" paramValue="true"/>
+			<tns:parameter name="updateRate_cfm_limit_id" paramValue="N/A"/>
+			<!-- UPDATE RATE 1 -->
+			<tns:parameter name="update1ValidationEnabled" paramValue="true"/>
+			<tns:parameter name="updateRate1_cfm_amount" paramValue="0.00"/>
+			<tns:parameter name="updateRate1_cfm_accumulatedAmount" paramValue="0.00"/>
+			<tns:parameter name="updateRate1_cfm_cc_quota" paramValue="100663296"/>
+			<tns:parameter name="updateRate1_cfm_reserved_limit" paramValue="0"/>
+			<tns:parameter name="updateRate1_cfm_reserved_quota" paramValue="0"/>
+			<tns:parameter name="updateRate1_cfm_remaining_limit" paramValue="0"/>
+			
+			<tns:parameter name="updateRate1_rsv_amountToReserve" paramValue="0.00"/>
+			<tns:parameter name="updateRate1_rsv_cc_quota" paramValue="104857600"/>
+			<tns:parameter name="updateRate1_rsv_reserved_quota" paramValue="0"/>
+			<tns:parameter name="updateRate1_rsv_remaining_limit" paramValue="0"/>
+			<!-- STOP RATE -->
+			<tns:parameter name="stopRate_accumulatedAmount" paramValue="0.00"/>
+			<tns:parameter name="stopRate_cc_quota" paramValue="28311552"/>
+			<tns:parameter name="stopRate_remaining_limit" paramValue="0"/>
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>3</tns:id>
+            <tns:labels>SMALL_QUOTA_GRANTED,DATA_SESSION</tns:labels>
+            <tns:parameter name="sessionDefinitionFileList" paramValue="${_TEST_DIR}/templates/03.telia.test.data.ini"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/01-data-session-validation.xml"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<tns:parameter name="validateCitEnabled" paramValue="true"/>
+			
+			<!-- output charged item validations, different from default value specified in testExtension file -->					
+			<tns:parameter name="bit_amount" paramValue="0.007683"/>			
+			<tns:parameter name="bit_quantity" paramValue="6.054687"/>
+			<tns:parameter name="zz_event_usp" paramValue="GPRS_ROAM"/>	
+			<tns:parameter name="zz_ch_quantity" paramValue="6.054687"/>
+			<tns:parameter name="zz_log_chg_qty" paramValue="6348800.000000"/>			
+			<tns:parameter name="zz_domintroam" paramValue="R"/>
+			<tns:parameter name="zz_voicesmsdata" paramValue="D"/>
+			<tns:parameter name="zz_download_val" paramValue="6348800.000000"/>
+			<tns:parameter name="zz_upload_val" paramValue="0.000000"/>
+			<tns:parameter name="zz_ch_uom" paramValue="MB"/>
+			<tns:parameter name="zz_log_chg_id" paramValue="PAYG"/>
+			<tns:parameter name="zz_log_full_prc" paramValue="0.007683"/>
+			<tns:parameter name="zz_orig_zone" paramValue="EU"/>
+			<tns:parameter name="zz_orig_country" paramValue="DEU"/>
+			<tns:parameter name="zz_orig_dscr" paramValue="DEU3G"/>
+			<tns:parameter name="zz_orig_zon_sch" paramValue="ZS_DROAM_DFL_1_B2X"/>
+			<tns:parameter name="zz_prc_group" paramValue="PG_DROAM_EMPL_X"/>
+			<tns:parameter name="zz_price_id" paramValue="DRS_ES_1KB_01"/>	
+			<tns:parameter name="zz_roam_prc_type" paramValue="GPRS"/>				
+			<tns:parameter name="zz_tariff" paramValue="0.001269"/>
+			<tns:parameter name="zz_tax_code" paramValue="PVM1"/>			
+			<tns:parameter name="zz_det_inv_digit" paramValue="Y"/>
+			<tns:parameter name="printrel" paramValue="true"/>
+			
+			<!-- validation of properties in different session requests -->
+			<!-- START RATE -->
+			<tns:parameter name="startRate_amountToReserve" paramValue="0.007683"/>
+			<tns:parameter name="startRate_cc_quota" paramValue="6348800"/>
+			<tns:parameter name="startRate_reserved_limit" paramValue="0.007683"/>
+			<tns:parameter name="startRate_reserved_quota" paramValue="6.054687"/>
+			<tns:parameter name="startRate_remaining_limit" paramValue="0.03"/>
+			<!-- STOP RATE -->
+			<tns:parameter name="stopRate_accumulatedAmount" paramValue="0.007683"/>
+			<tns:parameter name="stopRate_cc_quota" paramValue="6348800"/>
+			<tns:parameter name="stopRate_remaining_limit" paramValue="0.022317"/>
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>4</tns:id>
+            <tns:labels>QUOTA_SMALLER_THAN_SMALL_QUOTA_GRANTED,DATA_SESSION</tns:labels>
+            <tns:parameter name="sessionDefinitionFileList" paramValue="${_TEST_DIR}/templates/04.telia.test.data.ini"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/01-data-session-validation.xml"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<tns:parameter name="validateCitEnabled" paramValue="true"/>
+			
+			<!-- output charged item validations, different from default value specified in testExtension file -->					
+			<tns:parameter name="bit_amount" paramValue="0.005000"/>			
+			<tns:parameter name="bit_quantity" paramValue="3.940109"/>
+			<tns:parameter name="zz_event_usp" paramValue="GPRS_ROAM"/>	
+			<tns:parameter name="zz_ch_quantity" paramValue="3.940109"/>
+			<tns:parameter name="zz_log_chg_qty" paramValue="4131504.000000"/>			
+			<tns:parameter name="zz_domintroam" paramValue="R"/>
+			<tns:parameter name="zz_voicesmsdata" paramValue="D"/>
+			<tns:parameter name="zz_download_val" paramValue="4131504.000000"/>
+			<tns:parameter name="zz_upload_val" paramValue="0.000000"/>
+			<tns:parameter name="zz_ch_uom" paramValue="MB"/>
+			<tns:parameter name="zz_log_chg_id" paramValue="PAYG"/>
+			<tns:parameter name="zz_log_full_prc" paramValue="0.005000"/>
+			<tns:parameter name="zz_orig_zone" paramValue="EU"/>
+			<tns:parameter name="zz_orig_country" paramValue="ISL"/>
+			<tns:parameter name="zz_orig_dscr" paramValue="ISLPS"/>
+			<tns:parameter name="zz_orig_zon_sch" paramValue="ZS_DROAM_DFL_1_B2X"/>
+			<tns:parameter name="zz_prc_group" paramValue="PG_DROAM_EMPL_X"/>
+			<tns:parameter name="zz_price_id" paramValue="DRS_ES_1KB_01"/>	
+			<tns:parameter name="zz_roam_prc_type" paramValue="GPRS"/>				
+			<tns:parameter name="zz_tariff" paramValue="0.001269"/>
+			<tns:parameter name="zz_tax_code" paramValue="PVM1"/>			
+			<tns:parameter name="zz_det_inv_digit" paramValue="Y"/>
+			<tns:parameter name="printrel" paramValue="true"/>
+			
+			<!-- validation of properties in different session requests -->
+			<!-- START RATE -->
+			<tns:parameter name="startRate_amountToReserve" paramValue="0.005"/>
+			<tns:parameter name="startRate_cc_quota" paramValue="4131504"/>
+			<tns:parameter name="startRate_reserved_limit" paramValue="0.005"/>
+			<tns:parameter name="startRate_reserved_quota" paramValue="3.940109"/>
+			<tns:parameter name="startRate_remaining_limit" paramValue="0.005"/>
+			<!-- STOP RATE -->
+			<tns:parameter name="stopRate_accumulatedAmount" paramValue="0.005"/>
+			<tns:parameter name="stopRate_cc_quota" paramValue="4131504"/>
+			<tns:parameter name="stopRate_remaining_limit" paramValue="0.000000"/>
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>5</tns:id>
+            <tns:labels>RESERVATION_DENIED,DATA_SESSION</tns:labels>
+            <tns:parameter name="sessionDefinitionFileList" paramValue="${_TEST_DIR}/templates/05.telia.test.data.ini"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/charging-limit-reached-validation.xml"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<tns:parameter name="validateCitEnabled" paramValue="false"/>
+			<tns:parameter name="fwOnErrorFailTheTest" paramValue="false"/>
+			
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>6</tns:id>
+            <tns:labels>TELIA_DATA_ROAM_80PCT_NOTIF</tns:labels>
+            <tns:parameter name="sessionDefinitionFileList" paramValue="${_TEST_DIR}/templates/06.telia.test.data.ini"/>
+			<tns:parameter name="sapCcApi" paramValue="SSC"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-utr-notif.xml"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			<tns:parameter name="validateCitEnabled" paramValue="false"/>
+			<tns:parameter name="validateNotificationEnabled" paramValue="true"/>
+			
+			<!-- Validation -->
+			<tns:parameter name="utrId" paramValue="RCC"/>
+			<tns:parameter name="billingPeriodUsage" paramValue="40.406326"/>
+			<tns:parameter name="bucketValue" paramValue="49.59"/>
+			<tns:parameter name="validateNotificationEnabled" paramValue="true"/>
+			<tns:parameter name="threshold" paramValue="80"/>
+			
+			<tns:parameter name="startNotifListener" paramValue="true"/>
+            <tns:parameter name="startNotifListenerDelayMills" paramValue="500"/>
+            <tns:parameter name="stopNotifListenerDelayMills" paramValue="1000"/>
+        </tns:test>
+		
+    </tns:testData>
+</tns:testTemplate>

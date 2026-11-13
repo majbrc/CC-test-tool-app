@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+      <!-- $genInfo -->
+<tns:extension xmlns:tns="https://www.w3schools.com"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="https://www.w3schools.com ../templates/test-inputs/test-extension.xsd">
+          <!-- this execution point is executed AFTER the test  -->
+          
+		<tns:executionPoint id="BEFORE">  
+		   <tns:actions>
+			<tns:action id="activateProviderContract" name="Activates provider contract">			
+			<tns:property name="serviceProvider">O2C</tns:property>
+			<tns:property name="subscriberAccountId">${subscriberAccountId}</tns:property>
+			<tns:property name="activateToDate">${activationDate}</tns:property>
+			<tns:validations id="activateValidations">
+                      <tns:validate id="purchaseOrder" name="validate amount etc">
+                          <tns:amount>${amount1}</tns:amount>
+                          <tns:details>
+							  <tns:detail name="parameter.PRODUCT_ID" expectedValue="${product1}"/>  
+							  <tns:detail name="computed.BIT_TYPE" expectedValue="${bittypedeb}"/> 
+							  <tns:detail name="computed.SUBPROCESS" expectedValue="${subprocess}"/>
+							  <tns:detail name="computed.CHARGING_START" expectedValue="${fromDate}"/>
+						      <tns:detail name="computed.CHARGING_END" expectedValue="${toDate}"/>
+                          </tns:details> 
+                      </tns:validate>
+            </tns:validations>
+			</tns:action>
+		  </tns:actions>
+	    </tns:executionPoint>	
+         
+</tns:extension>

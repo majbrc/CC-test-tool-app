@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $genInfo -->
+<tns:testTemplate xmlns:tns="https://www.w3schools.com"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.w3schools.com ../common/xsd/test-inputs.xsd">
+    <tns:header>
+        <tns:constants>
+            <tns:constant name="__META_TITLE__" constValue="Rerating"/>
+            <tns:constant name="__META_DESCRIPTION__" constValue="rerating"/>
+            <tns:constant name="_TEST_COMMON_DIR" constValue="TEST"/>
+            <tns:constant name="_TEST_DIR" constValue="${_TEST_COMMON_DIR}/Rerating_tests"/>
+			<!-- subscriber ID -->
+			<tns:constant name="USER_SERVICE_ID" constValue="9000000027"/>	  
+			
+        </tns:constants>
+        <tns:parameters>
+            <tns:parameter name="wsRequestTemplate" type="string"/>
+            <tns:parameter name="wsEndpointPropertyRef" type="string"/>
+			<tns:parameter name="pcId" type="string"/>
+			<tns:parameter name="subscriberAccountId" type="string"/>
+			<tns:parameter name="ciPropertiesFile" type="string"/>
+			<tns:parameter name="consumptionDate" type="date"/>
+			<tns:parameter name="sapCcApi" type="string"/>
+			<tns:parameter name="testExtension" type="string"/>
+			<tns:parameter name="generateCit" type="string"/>
+					
+			<!-- MCIT input properties -->
+			<tns:parameter name="duration" type="number"/>	
+			<tns:parameter name="billing_party" type="string"/>	
+			<tns:parameter name="called_number" type="string"/>	
+			<tns:parameter name="plmn" type="string"/>	
+			<tns:parameter name="tadig" type="string"/>	
+			<tns:parameter name="fup_code" type="string"/>	
+			<tns:parameter name="cdr_cost" type="number"/>	
+			<tns:parameter name="transaction_type" type="string"/>
+			<tns:parameter name="vkont" type="string"/>
+			<!-- MUSG output properties -->
+			<tns:parameter name="bit_amount" type="number"/>			
+			<tns:parameter name="bit_quantity" type="number"/>
+			<tns:parameter name="bitdate_from" type="date"/>
+			<tns:parameter name="bitdate_to" type="date"/>
+			<tns:parameter name="zz_in_out" type="string"/>
+			<tns:parameter name="zz_voicesmsdata" type="string"/>
+			<tns:parameter name="zz_ch_quantity" type="number"/>
+			<tns:parameter name="zz_ch_uom" type="string"/>
+			<tns:parameter name="zz_log_chg_qty" type="number"/>
+			<tns:parameter name="zz_log_alw_qty" type="number"/>			
+			<tns:parameter name="zz_domintroam" type="string"/>
+			<tns:parameter name="zz_event_usp" type="string"/>
+			<tns:parameter name="zz_orig_zone" type="string"/>
+			<tns:parameter name="zz_dest_zone" type="string"/>
+			<tns:parameter name="zz_orig_country" type="string"/>
+			<tns:parameter name="zz_dest_country" type="string"/>
+			<tns:parameter name="zz_orig_dscr" type="string"/>
+			<tns:parameter name="zz_dest_dscr" type="string"/>
+			<tns:parameter name="zz_orig_zon_sch" type="string"/>
+			<tns:parameter name="zz_dest_zon_sch" type="string"/>
+			<tns:parameter name="zz_prc_group" type="string"/>
+			<tns:parameter name="zz_price_id" type="string"/>
+			<tns:parameter name="zz_roam_prc_type" type="string"/>
+			<tns:parameter name="zz_tariff" type="number"/>
+			<tns:parameter name="zz_tax_code" type="string"/>
+			<tns:parameter name="zz_exem_price" type="number"/>
+			<tns:parameter name="zz_det_inv_digit" type="string"/>
+			<tns:parameter name="printrel" type="string"/>
+			<!-- properties that are not always present in output -->
+			<tns:parameter name="zz_exem_price_present" type="string" defaultValue="true"/>
+			<tns:parameter name="zz_log_alw_qty_present" type="string" defaultValue="true"/>
+        </tns:parameters>
+    </tns:header>
+	
+    <tns:testData>	
+		<tns:test>
+            <tns:id>100</tns:id>
+			<!-- Roaming SMS from non-RLAH zone to Telia mobile	Charged by duration -->
+			<tns:labels>MSG,SMSMO,SMSMO_RLAH</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+						
+			<!-- MCIT input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-06-19T10:26:46"/>	
+			<tns:parameter name="duration" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="90000000000000004"/>				
+			<tns:parameter name="called_number" paramValue="9000000000017"/>
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			<tns:parameter name="vkont" paramValue="900000000001"/>		
+			<tns:parameter name="plmn" paramValue="28604"/>
+			<tns:parameter name="cdr_cost" paramValue="0.005"/>
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>101</tns:id>
+			<!-- Roaming SMS from non-RLAH zone to TELE2 mobile	Charged by duration -->
+			<tns:labels>MSG,SMSMO,SMSMO_RLAH</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                       
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+						
+			<!-- MCIT input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-06-19T10:27:47"/>	
+			<tns:parameter name="duration" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="90000000000000015"/>				
+			<tns:parameter name="billing_party" paramValue="9000000000021"/>	
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			<tns:parameter name="vkont" paramValue="900000000001"/>	
+            <tns:parameter name="plmn" paramValue="28604"/>
+			<tns:parameter name="cdr_cost" paramValue="0.005"/>			
+        </tns:test>	
+		
+		<tns:test>
+            <tns:id>102</tns:id>
+			<!-- Roaming SMS from non-RLAH zone to BITE mobile	Charged by duration -->
+			<tns:labels>MSG,SMSMO,SMSMO_RLAH</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                       
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+						
+			<!-- MCIT input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-06-19T10:28:48"/>	
+			<tns:parameter name="duration" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="90000000000000010"/>				
+			<tns:parameter name="billing_party" paramValue="9000000000008"/>	
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			<tns:parameter name="vkont" paramValue="900000000001"/>	
+            <tns:parameter name="plmn" paramValue="28604"/>
+			<tns:parameter name="cdr_cost" paramValue="0.005"/>     			
+        </tns:test>	
+		
+		<tns:test>
+            <tns:id>103</tns:id>
+			<!-- Roaming SMS from non-RLAH zone to OTHER mobile	Charged by duration -->
+			<tns:labels>MSG,SMSMO,SMSMO_RLAH</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+						
+			<!-- MCIT input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-06-19T10:29:49"/>	
+			<tns:parameter name="duration" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="90000000000000016"/>				
+			<tns:parameter name="billing_party" paramValue="9000000000022"/>	
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			<tns:parameter name="vkont" paramValue="900000000001"/>	
+            <tns:parameter name="plmn" paramValue="28604"/>
+			<tns:parameter name="cdr_cost" paramValue="0.005"/> 			
+        </tns:test>	
+				
+		<tns:test>
+            <tns:id>130</tns:id>
+			<!-- International SMS from non-RLAH zone to NB country -->
+			<tns:labels>MSG,SMSMO,SMSMO_INT</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-06-19T10:26:46"/>	
+			<tns:parameter name="duration" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="9000000000039"/>	
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			<tns:parameter name="vkont" paramValue="900000000001"/>
+			<tns:parameter name="plmn" paramValue="28604"/>
+			<tns:parameter name="cdr_cost" paramValue="0.00"/>
+	    </tns:test>
+		
+		<tns:test>
+            <tns:id>131</tns:id>
+			<!-- International SMS from non-RLAH zone  to EU country -->
+			<tns:labels>MSG,SMSMO,SMSMO_INT</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                                           
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-06-19T10:26:46"/>	
+			<tns:parameter name="duration" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="9000000000036"/>				
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			<tns:parameter name="vkont" paramValue="900000000001"/>	
+			<tns:parameter name="plmn" paramValue="28604"/>
+			<tns:parameter name="cdr_cost" paramValue="0.00"/>
+	    </tns:test>
+		
+		<tns:test>
+            <tns:id>132</tns:id>
+			<!-- International SMS from non-RLAH zone  to other country -->
+			<tns:labels>MSG,SMSMO,SMSMO_INT</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                                           
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-06-19T10:26:46"/>	
+			<tns:parameter name="duration" paramValue="1"/>			
+			<tns:parameter name="billing_party" paramValue="90000000001"/>				
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			<tns:parameter name="vkont" paramValue="900000000001"/>	
+			<tns:parameter name="plmn" paramValue="28604"/>
+			<tns:parameter name="cdr_cost" paramValue="0.00"/>
+	    </tns:test>
+		
+		<tns:test>
+            <tns:id>120</tns:id>
+			<!-- SMS from non-RLAH zone to short code (free)  -->
+			<tns:labels>MSG,SMSMO,SMSMO_SPEC</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-msg.properties"/>                                           
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="false"/>
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="2023-06-19T10:26:46"/>	
+			<tns:parameter name="duration" paramValue="37"/>			
+			<tns:parameter name="billing_party" paramValue="90000001"/>				
+			<tns:parameter name="transaction_type" paramValue="SMSMO"/>
+			<tns:parameter name="vkont" paramValue="900000000001"/>	
+			<tns:parameter name="plmn" paramValue="28604"/>
+			<tns:parameter name="cdr_cost" paramValue="0.00"/>
+	    </tns:test>
+	
+	
+    </tns:testData>
+</tns:testTemplate>

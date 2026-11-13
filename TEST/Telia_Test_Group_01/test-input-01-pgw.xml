@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $genInfo -->
+<tns:testTemplate xmlns:tns="https://www.w3schools.com"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.w3schools.com ../common/xsd/test-inputs.xsd">
+    <tns:header>
+        <tns:constants>
+            <tns:constant name="__META_TITLE__" constValue="Telia test group 01 (Tarnybinis)"/>
+            <tns:constant name="__META_DESCRIPTION__" constValue="Test inputs for Tarnybinis PGW usage scenarios"/>
+            <tns:constant name="_TEST_COMMON_DIR" constValue="TEST"/>
+            <tns:constant name="_TEST_DIR" constValue="${_TEST_COMMON_DIR}/Telia_Test_Group_01"/>
+			<!-- subscriber ID -->
+			<tns:constant name="USER_SERVICE_ID" constValue="9000000046"/>	  
+			<!-- extract current year -->
+			<tns:constant name="CURRENT_YEAR" constValue="$DATE_TIME_NOW_items.Year"/>		
+			
+        </tns:constants>
+        <tns:parameters>
+            <tns:parameter name="wsRequestTemplate" type="string"/>
+            <tns:parameter name="wsEndpointPropertyRef" type="string"/>
+			<tns:parameter name="pcId" type="string"/>
+			<tns:parameter name="subscriberAccountId" type="string"/>
+			<tns:parameter name="ciPropertiesFile" type="string"/>
+			<tns:parameter name="consumptionDate" type="date"/>
+			<tns:parameter name="sapCcApi" type="string"/>
+			<tns:parameter name="testExtension" type="string"/>
+			<tns:parameter name="generateCit" type="string"/>
+					
+			<!-- MCIT input properties  -->
+			<tns:parameter name="billing_party" type="string"/>								
+			<tns:parameter name="transaction_type" type="string"/>
+			<tns:parameter name="vat_included" type="string"/>			
+			<tns:parameter name="cdr_price" type="number"/>						
+			<tns:parameter name="plmn" type="string"/>	
+			<tns:parameter name="tadig" type="string"/>				
+			<!-- MUSG output properties -->
+			<tns:parameter name="bit_amount" type="number"/>			
+			<tns:parameter name="bit_quantity" type="number"/>
+			<tns:parameter name="bitdate_from" type="date"/>
+			<tns:parameter name="bitdate_to" type="date"/>
+			<tns:parameter name="zz_in_out" type="string"/>
+			<tns:parameter name="zz_voicesmsdata" type="string"/>
+			<tns:parameter name="zz_ch_quantity" type="number"/>
+			<tns:parameter name="zz_ch_uom" type="string"/>
+			<tns:parameter name="zz_log_chg_qty" type="number"/>					
+			<tns:parameter name="zz_domintroam" type="string"/>
+			<tns:parameter name="zz_event_usp" type="string"/>
+			<tns:parameter name="zz_dest_zone" type="string"/>
+			<tns:parameter name="zz_dest_country" type="string"/>			
+			<tns:parameter name="zz_dest_dscr" type="string"/>			
+			<tns:parameter name="zz_dest_zon_sch" type="string"/>
+			<tns:parameter name="zz_prc_group" type="string"/>
+			<tns:parameter name="zz_price_id" type="string"/>
+			<tns:parameter name="zz_tariff" type="number"/>
+			<tns:parameter name="zz_tax_code" type="string"/>
+			<tns:parameter name="zz_det_inv_digit" type="string"/>
+			<tns:parameter name="printrel" type="string"/>			
+        </tns:parameters>
+    </tns:header>
+	
+    <tns:testData>	
+		<tns:test>
+            <tns:id>400</tns:id>
+			<!-- PGW order, regular VAT, VAT not included -->
+			<tns:labels>PGW,PGW_ORDER</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-pgw.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-pgw-output.xml"/>
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="${CURRENT_YEAR}-02-04T10:26:46"/>						
+			<tns:parameter name="billing_party" paramValue="0543#PMOK#MOKV"/>				
+			<tns:parameter name="transaction_type" paramValue="ORDER"/>
+			<tns:parameter name="cdr_price" paramValue="2.5"/>
+			<!-- output charged item validations, different from default value specified in testExtension file -->					
+			<tns:parameter name="bit_amount" paramValue="2.500000"/>			
+			<tns:parameter name="bit_quantity" paramValue="1.000000"/>
+			<tns:parameter name="bitdate_from" paramValue="${CURRENT_YEAR}-02-04T10:26:46"/>
+			<tns:parameter name="bitdate_to" paramValue="${CURRENT_YEAR}-02-04T10:26:46"/>			
+			<tns:parameter name="zz_ch_quantity" paramValue="1.000000"/>
+			<tns:parameter name="zz_log_chg_qty" paramValue="0.000000"/>			
+			<tns:parameter name="zz_domintroam" paramValue="D"/>
+			<tns:parameter name="zz_in_out" paramValue="O"/>
+			<tns:parameter name="zz_voicesmsdata" paramValue="O"/>
+			<tns:parameter name="zz_event_usp" paramValue="PGW"/>			
+			<tns:parameter name="zz_dest_zone" paramValue="PGW_PARK_MOK_V21"/>
+			<tns:parameter name="zz_dest_country" paramValue="LTU"/>
+			<tns:parameter name="zz_dest_dscr" paramValue="PGW_PARKING_ID0543"/>
+			<tns:parameter name="zz_dest_zon_sch" paramValue="N/A"/>
+			<tns:parameter name="zz_prc_group" paramValue="PG_VAS_DEFAULT_X"/>
+			<tns:parameter name="zz_price_id" paramValue="VAS_ALL_PRC_V21"/>			
+			<tns:parameter name="zz_tariff" paramValue="0.000000"/>
+			<tns:parameter name="zz_tax_code" paramValue="PVM1"/>			
+			<tns:parameter name="zz_det_inv_digit" paramValue="Y"/>
+			<tns:parameter name="printrel" paramValue="true"/>
+        </tns:test>
+
+		<tns:test>
+            <tns:id>401</tns:id>
+			<!-- PGW order, regular VAT, VAT included -->
+			<tns:labels>PGW,PGW_ORDER</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-pgw.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-pgw-output.xml"/>
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="${CURRENT_YEAR}-02-04T10:26:46"/>						
+			<tns:parameter name="billing_party" paramValue="0543#PMOK#MOKV"/>				
+			<tns:parameter name="transaction_type" paramValue="ORDER"/>
+			<tns:parameter name="cdr_price" paramValue="5"/>
+			<tns:parameter name="vat_included" paramValue="Y"/>
+			<!-- output charged item validations, different from default value specified in testExtension file -->					
+			<tns:parameter name="bit_amount" paramValue="4.132231"/>			
+			<tns:parameter name="bit_quantity" paramValue="1.000000"/>
+			<tns:parameter name="bitdate_from" paramValue="${CURRENT_YEAR}-02-04T10:26:46"/>
+			<tns:parameter name="bitdate_to" paramValue="${CURRENT_YEAR}-02-04T10:26:46"/>			
+			<tns:parameter name="zz_ch_quantity" paramValue="1.000000"/>
+			<tns:parameter name="zz_log_chg_qty" paramValue="0.000000"/>			
+			<tns:parameter name="zz_domintroam" paramValue="D"/>
+			<tns:parameter name="zz_in_out" paramValue="O"/>
+			<tns:parameter name="zz_voicesmsdata" paramValue="O"/>
+			<tns:parameter name="zz_event_usp" paramValue="PGW"/>			
+			<tns:parameter name="zz_dest_zone" paramValue="PGW_PARK_MOK_V21"/>
+			<tns:parameter name="zz_dest_country" paramValue="LTU"/>
+			<tns:parameter name="zz_dest_dscr" paramValue="PGW_PARKING_ID0543"/>
+			<tns:parameter name="zz_dest_zon_sch" paramValue="N/A"/>
+			<tns:parameter name="zz_prc_group" paramValue="PG_VAS_DEFAULT_X"/>
+			<tns:parameter name="zz_price_id" paramValue="VAS_ALL_PRC_V21"/>			
+			<tns:parameter name="zz_tariff" paramValue="0.000000"/>
+			<tns:parameter name="zz_tax_code" paramValue="PVM1"/>			
+			<tns:parameter name="zz_det_inv_digit" paramValue="Y"/>
+			<tns:parameter name="printrel" paramValue="true"/>
+        </tns:test>
+	
+		<tns:test>
+            <tns:id>402</tns:id>
+			<!-- PGW order, VAT 0% -->
+			<tns:labels>PGW,PGW_ORDER</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-pgw.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-pgw-output.xml"/>
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="${CURRENT_YEAR}-02-04T10:26:46"/>						
+			<tns:parameter name="billing_party" paramValue="0542#PARK"/>				
+			<tns:parameter name="transaction_type" paramValue="ORDER"/>
+			<tns:parameter name="cdr_price" paramValue="2.5"/>
+			<!-- output charged item validations, different from default value specified in testExtension file -->					
+			<tns:parameter name="bit_amount" paramValue="2.500000"/>			
+			<tns:parameter name="bit_quantity" paramValue="1.000000"/>
+			<tns:parameter name="bitdate_from" paramValue="${CURRENT_YEAR}-02-04T10:26:46"/>
+			<tns:parameter name="bitdate_to" paramValue="${CURRENT_YEAR}-02-04T10:26:46"/>			
+			<tns:parameter name="zz_ch_quantity" paramValue="1.000000"/>
+			<tns:parameter name="zz_log_chg_qty" paramValue="0.000000"/>			
+			<tns:parameter name="zz_domintroam" paramValue="D"/>
+			<tns:parameter name="zz_in_out" paramValue="O"/>
+			<tns:parameter name="zz_voicesmsdata" paramValue="O"/>
+			<tns:parameter name="zz_event_usp" paramValue="PGW"/>			
+			<tns:parameter name="zz_dest_zone" paramValue="PGW_PARK_V0"/>
+			<tns:parameter name="zz_dest_country" paramValue="LTU"/>
+			<tns:parameter name="zz_dest_dscr" paramValue="PGW_PARKING_ID0542"/>
+			<tns:parameter name="zz_dest_zon_sch" paramValue="N/A"/>
+			<tns:parameter name="zz_prc_group" paramValue="PG_VAS_DEFAULT_X"/>
+			<tns:parameter name="zz_price_id" paramValue="VAS_ALL_PRC_V0"/>			
+			<tns:parameter name="zz_tariff" paramValue="0.000000"/>
+			<tns:parameter name="zz_tax_code" paramValue="PVM100"/>			
+			<tns:parameter name="zz_det_inv_digit" paramValue="Y"/>
+			<tns:parameter name="printrel" paramValue="true"/>
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>410</tns:id>
+			<!-- PGW refund, regular VAT, VAT not included -->
+			<tns:labels>PGW,PGW_REFUND</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-pgw.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-pgw-output.xml"/>
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="${CURRENT_YEAR}-02-04T10:26:46"/>						
+			<tns:parameter name="billing_party" paramValue="0543#PMOK#MOKV"/>				
+			<tns:parameter name="transaction_type" paramValue="REFUND"/>
+			<tns:parameter name="cdr_price" paramValue="-2.5"/>
+			<!-- output charged item validations, different from default value specified in testExtension file -->					
+			<tns:parameter name="bit_amount" paramValue="-2.500000"/>			
+			<tns:parameter name="bit_quantity" paramValue="1.000000"/>
+			<tns:parameter name="bitdate_from" paramValue="${CURRENT_YEAR}-02-04T10:26:46"/>
+			<tns:parameter name="bitdate_to" paramValue="${CURRENT_YEAR}-02-04T10:26:46"/>			
+			<tns:parameter name="zz_ch_quantity" paramValue="1.000000"/>
+			<tns:parameter name="zz_log_chg_qty" paramValue="0.000000"/>			
+			<tns:parameter name="zz_domintroam" paramValue="D"/>
+			<tns:parameter name="zz_in_out" paramValue="O"/>
+			<tns:parameter name="zz_voicesmsdata" paramValue="O"/>
+			<tns:parameter name="zz_event_usp" paramValue="PGW"/>			
+			<tns:parameter name="zz_dest_zone" paramValue="PGW_PARK_MOK_V21"/>
+			<tns:parameter name="zz_dest_country" paramValue="LTU"/>
+			<tns:parameter name="zz_dest_dscr" paramValue="PGW_PARKING_ID0543"/>
+			<tns:parameter name="zz_dest_zon_sch" paramValue="N/A"/>
+			<tns:parameter name="zz_prc_group" paramValue="PG_VAS_DEFAULT_X"/>
+			<tns:parameter name="zz_price_id" paramValue="VAS_ALL_PRC_V21"/>			
+			<tns:parameter name="zz_tariff" paramValue="0.000000"/>
+			<tns:parameter name="zz_tax_code" paramValue="PVM1"/>			
+			<tns:parameter name="zz_det_inv_digit" paramValue="Y"/>
+			<tns:parameter name="printrel" paramValue="true"/>
+        </tns:test>
+		
+		<tns:test>
+            <tns:id>411</tns:id>
+			<!-- PGW refund, regular VAT, VAT included -->
+			<tns:labels>PGW,PGW_REFUND</tns:labels>
+
+            <!-- path to the properties file -->
+            <tns:parameter name="ciPropertiesFile" paramValue="$_TEST_COMMON_DIR/template/telia-mcit-pgw.properties"/>                      
+			<tns:parameter name="sapCcApi" paramValue="WebService"/>
+			<tns:parameter name="generateCit" paramValue="true"/>
+			<tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-pgw-output.xml"/>
+			
+			<!-- input properties specific for test scenario -->
+			<tns:parameter name="consumptionDate" paramValue="${CURRENT_YEAR}-02-04T10:26:46"/>						
+			<tns:parameter name="billing_party" paramValue="0543#PMOK#MOKV"/>				
+			<tns:parameter name="transaction_type" paramValue="ORDER"/>
+			<tns:parameter name="cdr_price" paramValue="-2.5"/>
+			<tns:parameter name="vat_included" paramValue="Y"/>
+			<!-- output charged item validations, different from default value specified in testExtension file -->					
+			<tns:parameter name="bit_amount" paramValue="-2.066116"/>			
+			<tns:parameter name="bit_quantity" paramValue="1.000000"/>
+			<tns:parameter name="bitdate_from" paramValue="${CURRENT_YEAR}-02-04T10:26:46"/>
+			<tns:parameter name="bitdate_to" paramValue="${CURRENT_YEAR}-02-04T10:26:46"/>			
+			<tns:parameter name="zz_ch_quantity" paramValue="1.000000"/>
+			<tns:parameter name="zz_log_chg_qty" paramValue="0.000000"/>			
+			<tns:parameter name="zz_domintroam" paramValue="D"/>
+			<tns:parameter name="zz_in_out" paramValue="O"/>
+			<tns:parameter name="zz_voicesmsdata" paramValue="O"/>
+			<tns:parameter name="zz_event_usp" paramValue="PGW"/>			
+			<tns:parameter name="zz_dest_zone" paramValue="PGW_PARK_MOK_V21"/>
+			<tns:parameter name="zz_dest_country" paramValue="LTU"/>
+			<tns:parameter name="zz_dest_dscr" paramValue="PGW_PARKING_ID0543"/>
+			<tns:parameter name="zz_dest_zon_sch" paramValue="N/A"/>
+			<tns:parameter name="zz_prc_group" paramValue="PG_VAS_DEFAULT_X"/>
+			<tns:parameter name="zz_price_id" paramValue="VAS_ALL_PRC_V21"/>			
+			<tns:parameter name="zz_tariff" paramValue="0.000000"/>
+			<tns:parameter name="zz_tax_code" paramValue="PVM1"/>			
+			<tns:parameter name="zz_det_inv_digit" paramValue="Y"/>
+			<tns:parameter name="printrel" paramValue="true"/>
+        </tns:test>
+
+	
+    </tns:testData>
+</tns:testTemplate>

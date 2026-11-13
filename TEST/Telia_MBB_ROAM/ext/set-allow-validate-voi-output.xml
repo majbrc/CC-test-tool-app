@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+      <!-- $genInfo -->
+      <tns:extension xmlns:tns="https://www.w3schools.com"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="https://www.w3schools.com ../templates/test-inputs/test-extension.xsd">
+          <!-- this execution point is executed before session starts -->
+		  <tns:executionPoint id="BEFORE" >
+			<tns:actions>
+				 <tns:action id="executeCharge" name="set allowance" enabled="true">
+					<tns:property name="ciPropertiesFile">$_TEST_COMMON_DIR/template/telia-change-alw-bucket.properties</tns:property>
+					<tns:property name="_TEST_COMMON_DIR">$_TEST_COMMON_DIR</tns:property>
+					
+					<tns:property name="consumptionDate">${consumptionDate}</tns:property>
+					<tns:property name="USER_SERVICE_ID">${USER_SERVICE_ID}</tns:property>
+					<tns:property name="bucketValue">${newBucketValue}</tns:property>
+					<tns:property name="zz_ext_alw_id">${alwId}</tns:property>					
+					
+				 </tns:action>
+			</tns:actions>
+		  </tns:executionPoint>
+			
+          <tns:executionPoint id="AFTER" >
+         <tns:validations>
+             <tns:validate id="chargedItems" name="validate MOC charged item" enabled="true">
+                 <tns:cits>
+                     <tns:cit name="Charged item validation" expectedNumber="1" classId="MUSG" enabled="true">
+                         <tns:citParameter name="BITTYPE" expectedValue="M300" enabled="true"/>
+						 <tns:citParameter name="BIT_AMOUNT" expectedValue="${bit_amount}" enabled="true"/>
+						 <tns:citParameter name="BIT_QUANTITY" expectedValue="${bit_quantity}" enabled="true"/>
+						 <tns:citParameter name="BIT_QTY_UNIT" expectedValue="S" enabled="true"/>
+						 <tns:citParameter name="BITDATE_FROM" expectedValue="${bitdate_from}" enabled="true"/>
+						 <tns:citParameter name="BITDATE_TO" expectedValue="${bitdate_to}" enabled="true"/>
+						 <tns:citParameter name="ZZ_CH_QUANTITY" expectedValue="${zz_ch_quantity}" enabled="true"/>
+						 <tns:citParameter name="ZZ_LOG_CHG_QTY" expectedValue="${zz_log_chg_qty}" enabled="true"/>
+						 <tns:citParameter name="ZZ_LOG_ALW_QTY" expectedValue="${zz_log_alw_qty}" enabled="${zz_log_alw_qty_present}"/>
+						 <tns:citParameter name="ZZ_CH_UOM" expectedValue="${zz_ch_uom}" enabled="true"/>
+						 <tns:citParameter name="ZZ_IN_OUT" expectedValue="${zz_in_out}" enabled="true"/>
+						 <tns:citParameter name="ZZ_VOICESMSDATA" expectedValue="${zz_voicesmsdata}" enabled="true"/>
+						 <tns:citParameter name="ZZCRM_CALL_TYPE" expectedValue="A" enabled="true"/>
+						 <tns:citParameter name="ZZ_DOMINTROAM" expectedValue="${zz_domintroam}" enabled="true"/>
+						 <tns:citParameter name="ZZ_EVENT_USP" expectedValue="${zz_event_usp}" enabled="true"/>
+						 <tns:citParameter name="ZZ_ORIG_ZONE" expectedValue="${zz_orig_zone}" enabled="true"/>
+                         <tns:citParameter name="ZZ_DEST_ZONE" expectedValue="${zz_dest_zone}" enabled="true"/>
+						 <tns:citParameter name="ZZ_ORIG_COUNTRY" expectedValue="${zz_orig_country}" enabled="true"/>
+                         <tns:citParameter name="ZZ_DEST_COUNTRY" expectedValue="${zz_dest_country}" enabled="true"/>
+						 <tns:citParameter name="ZZ_ORIG_DSCR" expectedValue="${zz_orig_dscr}" enabled="true"/>
+                         <tns:citParameter name="ZZ_DEST_DSCR" expectedValue="${zz_dest_dscr}" enabled="true"/>
+						 <tns:citParameter name="ZZ_ORIG_ZON_SCH" expectedValue="${zz_orig_zon_sch}" enabled="true"/>
+                         <tns:citParameter name="ZZ_DEST_ZON_SCH" expectedValue="${zz_dest_zon_sch}" enabled="true"/>
+						 <tns:citParameter name="ZZ_PRC_GROUP" expectedValue="${zz_prc_group}" enabled="true"/>
+						 <tns:citParameter name="ZZ_PRICE_ID" expectedValue="${zz_price_id}" enabled="true"/>
+						 <tns:citParameter name="ZZ_ROAM_PRC_TYPE" expectedValue="${zz_roam_prc_type}" enabled="true"/>
+						 <tns:citParameter name="ZZ_TARIFF" expectedValue="${zz_tariff}" enabled="true"/>
+						 <tns:citParameter name="ZZ_TAX_CODE" expectedValue="${zz_tax_code}" enabled="true"/>
+						 <tns:citParameter name="ZZ_EXEM_PRICE" expectedValue="${zz_exem_price}" enabled="${zz_exem_price_present}"/>
+						 <tns:citParameter name="ZZ_DET_INV_DIGIT" expectedValue="${zz_det_inv_digit}" enabled="true"/>
+						 <tns:citParameter name="PRINTREL" expectedValue="${printrel}" enabled="true"/>						 
+                     </tns:cit>
+                 </tns:cits>
+			 </tns:validate>
+         </tns:validations>
+     </tns:executionPoint>
+</tns:extension>

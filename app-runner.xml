@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="charging-test-console-runner" basedir="." default="run">
+    <import file="build.xml"/>
+
+    <property name="suite.dir" value=""/>
+    <property name="ccLandscape" value=""/>
+
+    <target name="run">
+        <delete dir="${testng.report.dir}"/>
+        <fileset id="app.suites.to.run" dir="${basedir}/TEST/${suite.dir}">
+            <include name="suite*.xml"/>
+        </fileset>
+        <runMultipleSuites pXmlFilesetRef="app.suites.to.run">
+            <config>
+                <sysproperty key="ccLandscape" value="${ccLandscape}"/>
+            </config>
+        </runMultipleSuites>
+    </target>
+</project>

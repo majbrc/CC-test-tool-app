@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $genInfo ABC -->
+<tns:extension xmlns:tns="https://www.w3schools.com"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.w3schools.com ../templates/test-inputs/test-extension.xsd">
+   
+	<tns:executionPoint id="afterSessionStartRateCallback">
+        <tns:validations>
+            <tns:validate id="startRateResult" name="validate start rate result" enabled="${startRateValidationEnabled}">
+                <tns:amountToReserve>${startRate_amountToReserve}</tns:amountToReserve>
+            </tns:validate>
+        </tns:validations>
+    </tns:executionPoint>
+	
+    <tns:executionPoint id="sessionStopRateErrorHandlerCallback">
+         <tns:validations>
+             <tns:validate id="throwable" name="Validate stop rate was rejected due to overspending">
+                 <tns:details>
+                     <tns:detail name="CLASS" expectedValue="com.highdeal.pnr.hci.ForbiddenChargeException"/>
+                     <tns:detail name="MESSAGE" expectedValue="CONFIRMED_AMOUNT_EXCEEDS_RESERVED">cmpRule:contains</tns:detail>
+                 </tns:details>
+             </tns:validate>
+         </tns:validations>
+     </tns:executionPoint>
+</tns:extension>

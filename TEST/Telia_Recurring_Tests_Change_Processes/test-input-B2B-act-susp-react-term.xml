@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $genInfo -->
+<tns:testTemplate xmlns:tns="https://www.w3schools.com"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.w3schools.com ../common/xsd/test-inputs.xsd">
+    <tns:header>
+        <tns:constants>
+            <tns:constant name="__META_TITLE__" constValue="Activation of recurring fees as change processes happen"/>
+            <tns:constant name="__META_DESCRIPTION__" constValue="Recurring charging + Change Processes"/>
+            <tns:constant name="_TEST_COMMON_DIR" constValue="TEST"/>
+            <tns:constant name="_TEST_DIR" constValue="TEST/Telia_Recurring_Tests_Change_Processes"/>	
+			
+			<tns:constant name="USER_SERVICE_ID" constValue="9000000031"/>
+			<tns:constant name="subscriberAccountId" constValue="900000000000000000000000000019"/>
+			<tns:constant name="CURRENT_YEAR" constValue="$DATE_TIME_NOW_items.Year"/>				
+        </tns:constants>
+		
+        <tns:parameters>
+           <!--framework-->
+			<tns:parameter name="testExtension" type="string"/>
+			<tns:parameter name="startNotifListener" type="string"/>
+			<tns:parameter name="startNotifListenerDelayMills" type="number"/>
+			<tns:parameter name="stopNotifListenerDelayMills" type="number"/>
+			<!--activation-->
+			<tns:parameter name="activationDate" type="date"/>
+			<!--validations-->
+			<tns:parameter name="amount1" type="number"/>
+			<tns:parameter name="amount2" type="number"/>
+			<tns:parameter name="amount3" type="number"/>
+			<tns:parameter name="product1" type="string"/>
+			<tns:parameter name="product2" type="string"/>
+			<tns:parameter name="bittypecre" type="string"/>
+			<tns:parameter name="bittypedeb" type="string"/>
+			<tns:parameter name="subprocess" type="string"/>
+			<tns:parameter name="fromDate" type="date"/>
+			<tns:parameter name="toDate" type="date"/>
+		</tns:parameters>
+    </tns:header>
+	
+	<!-- First prorated fee after activation --> 
+	<tns:testData>
+		<tns:test>		    
+            <tns:id>100</tns:id>
+            <tns:labels>FIRST_MONTH_ACTIVATE_B2B</tns:labels>
+			<!--setup-->
+			<tns:parameter name="startNotifListener" paramValue="true"/> 
+			<tns:parameter name="startNotifListenerDelayMills" paramValue="100"/>
+			<tns:parameter name="stopNotifListenerDelayMills" paramValue="100"/>			
+            <tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-activate-MAIN-VAS-VASDISC.xml"/>
+			<!--test-specific parameters-->
+			<tns:parameter name="activationDate" paramValue="${CURRENT_YEAR}-04-01T00:00:00"/>
+			
+			<tns:parameter name="amount1" paramValue="10.79"/>
+			<tns:parameter name="amount2" paramValue="0.84"/>	
+			<tns:parameter name="amount3" paramValue="-0.84"/>	
+			<tns:parameter name="product1" paramValue="OF000013"/>
+			<tns:parameter name="product2" paramValue="PR000015"/>	
+			<tns:parameter name="bittypedeb" paramValue="M200"/>	
+			<tns:parameter name="bittypecre" paramValue="M201"/>
+			<tns:parameter name="subprocess" paramValue="MOBB"/>			
+			<tns:parameter name="fromDate" paramValue="${CURRENT_YEAR}-03-11T00:00:00"/>
+			<tns:parameter name="toDate" paramValue="${CURRENT_YEAR}-03-31T23:59:59"/>			
+        </tns:test>		
+		
+		<!-- Fee after suspension --> 
+		<tns:test>		     
+            <tns:id>101</tns:id>
+            <tns:labels>ACTIVATE_MIDNIGHT_AFTER_LOCK</tns:labels>
+			<!--setup-->
+			<tns:parameter name="startNotifListener" paramValue="true"/> 
+			<tns:parameter name="startNotifListenerDelayMills" paramValue="100"/>
+			<tns:parameter name="stopNotifListenerDelayMills" paramValue="100"/>	 
+            <tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-activate-MAIN-VAS-VASDISC.xml"/>
+			<!--test-specific parameters-->
+			<tns:parameter name="activationDate" paramValue="${CURRENT_YEAR}-04-06T00:00:00"/>  
+			
+			<tns:parameter name="amount1" paramValue="2.12"/>
+			<tns:parameter name="amount2" paramValue="0.17"/>	
+			<tns:parameter name="amount3" paramValue="-0.17"/>	
+			<tns:parameter name="product1" paramValue="OF000013"/>
+			<tns:parameter name="product2" paramValue="PR000015"/>	
+			<tns:parameter name="bittypedeb" paramValue="M200"/>	
+			<tns:parameter name="bittypecre" paramValue="M201"/>
+			<tns:parameter name="subprocess" paramValue="MOBB"/>			
+			<tns:parameter name="fromDate" paramValue="${CURRENT_YEAR}-04-01T00:00:00"/>
+			<tns:parameter name="toDate" paramValue="${CURRENT_YEAR}-04-04T23:59:59"/>				
+        </tns:test>	
+		
+		<tns:test>		    
+            <tns:id>102</tns:id>
+            <tns:labels>ACTIVATE_AFTER_RESUMPTION</tns:labels>
+			<!--setup-->
+			<tns:parameter name="startNotifListener" paramValue="true"/> 
+			<tns:parameter name="startNotifListenerDelayMills" paramValue="100"/>
+			<tns:parameter name="stopNotifListenerDelayMills" paramValue="100"/>			
+            <tns:parameter name="testExtension" paramValue="$_TEST_DIR/ext/validate-activate-MAIN-VAS-VASDISC.xml"/>
+			<!--test-specific parameters-->
+			<tns:parameter name="activationDate" paramValue="${CURRENT_YEAR}-05-01T00:00:00"/>
+			
+			<tns:parameter name="amount1" paramValue="2.12"/>
+			<tns:parameter name="amount2" paramValue="0.17"/>	
+			<tns:parameter name="amount3" paramValue="-0.17"/>	
+			<tns:parameter name="product1" paramValue="OF000013"/>
+			<tns:parameter name="product2" paramValue="PR000015"/>	
+			<tns:parameter name="bittypedeb" paramValue="M200"/>	
+			<tns:parameter name="bittypecre" paramValue="M201"/>
+			<tns:parameter name="subprocess" paramValue="MOBB"/>			
+			<tns:parameter name="fromDate" paramValue="${CURRENT_YEAR}-04-27T00:00:00"/>
+			<tns:parameter name="toDate" paramValue="${CURRENT_YEAR}-04-30T23:59:59"/>			
+        </tns:test>	
+		
+    </tns:testData>
+</tns:testTemplate>

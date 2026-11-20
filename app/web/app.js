@@ -9,7 +9,10 @@
   var modelFields = {};
   var modelFieldSequence = 0;
   var targetSuiteSelection = {};
-  var expandedEnvironment = null;
+  var previewEnvironment = 0;
+  var environmentSaving = false;
+  var environmentTypeAhead = "";
+  var environmentTypeTime = 0;
   var activeModel = null;
   var activeDefinitionPath = null;
   var activeCommon = null;
@@ -19,10 +22,17 @@
   var timestampRequest = 0;
   var fileRequest = 0;
   var yearRequest = 0;
+  var sourceDestinations = {};
+  var sourceSequence = 0;
+  var sourceRequest = 0;
+  var technicalPanelSequence = 0;
 
   var elements = {
     environmentSelect: document.getElementById("environment-select"),
-    environmentList: document.getElementById("environment-list"),
+    environmentPicker: document.getElementById("environment-picker"),
+    environmentOptions: document.getElementById("environment-options"),
+    environmentPopup: document.getElementById("environment-popup"),
+    environmentSelectedName: document.getElementById("environment-selected-name"),
     environmentDetail: document.getElementById("environment-detail"),
     homeScreen: document.getElementById("home-screen"),
     testsConfigurationScreen: document.getElementById("tests-configuration-screen"),
@@ -175,9 +185,9 @@
               return String(candidate.path).replace(/\\/g, "/") === String(path).replace(/\\/g, "/");
             });
             var oldTypes = entries.map(function (entry) { return entry.editorType; }).filter(Boolean);
-            var oldValues = entries.map(function (entry) { return entry.value; }).filter(function (value) {
+            var oldValues = review.context.replaceValue ? entries.map(function (entry) { return entry.value; }).filter(function (value) {
               return value != null;
-            });
+            }) : [];
             return "<li><code>" + escapeHtml(path) + "</code> · " +
               escapeHtml(oldTypes.join(" / ") || "see XML declaration") + " → " +
               escapeHtml(payload.editorType) +
@@ -251,11 +261,15 @@
 
   function renderScreen() {
     var configurationOpen = window.location.hash === "#tests-configuration";
-    elements.homeScreen.hidden = configurationOpen;
+    var reportOpen = window.location.hash === "#report";
+    closeEnvironmentPicker(false);
+    elements.homeScreen.hidden = configurationOpen || reportOpen;
     elements.testsConfigurationScreen.hidden = !configurationOpen;
+    document.getElementById("report-screen").hidden = !reportOpen;
+    if (reportOpen) { reportView.show(); } else { reportView.hide(); }
     document.title = configurationOpen
-      ? "Tests Configuration · Charging Test Console"
-      : "Charging Test Console";
+      ? "Tests Configuration · Automated Testing Tool"
+      : reportOpen ? "Test report · Automated Testing Tool" : "Automated Testing Tool";
     window.scrollTo(0, 0);
   }
 
@@ -276,45 +290,85 @@
   }
 
   function renderEnvironments() {
-    elements.environmentSelect.innerHTML = state.environments.map(function (environment) {
-      return "<option value=\"" + escapeHtml(environment.name) + "\"" +
-        (environment.name === state.selectedEnvironment ? " selected" : "") + ">" +
-        escapeHtml(environment.name) + "</option>";
-    }).join("");
-
+    elements.environmentSelectedName.textContent = state.selectedEnvironment || "No environments";
+    elements.environmentSelect.disabled = environmentSaving || !state.environments.length;
     elements.shellEnvironment.textContent = state.selectedEnvironment + " environment";
-    elements.environmentList.innerHTML = state.environments.map(function (environment) {
-      var active = environment.name === state.selectedEnvironment;
-      var expanded = environment.name === expandedEnvironment;
-      return "<button class=\"environment-list__item" + (active ? " is-active" : "") +
-        "\" data-environment-details=\"" + escapeHtml(environment.name) + "\" type=\"button\" aria-expanded=\"" +
-        expanded + "\"><span>" + escapeHtml(environment.name) + "</span>" +
-        (active ? "<span class=\"badge\">Active</span>" : "") +
-        "<span class=\"environment-list__arrow\" aria-hidden=\"true\">›</span></button>";
+    elements.environmentOptions.setAttribute("aria-busy", String(environmentSaving));
+    document.getElementById("environment-preview-previous").disabled = environmentSaving;
+    document.getElementById("environment-preview-next").disabled = environmentSaving;
+    elements.environmentOptions.innerHTML = state.environments.map(function (environment, index) {
+      return '<div id="environment-option-' + index + '" role="option" aria-selected="' +
+        (environment.name === state.selectedEnvironment) + '" data-environment-index="' + index +
+        '"><span>' + escapeHtml(environment.name) + '</span>' +
+        (environment.name === state.selectedEnvironment ? '<span class="badge">Active</span>' : "") + "</div>";
     }).join("");
+    if (previewEnvironment >= state.environments.length) { previewEnvironment = 0; }
+    previewEnvironmentDetails(previewEnvironment);
+  }
 
-    var selected = state.environments.filter(function (environment) {
-      return environment.name === expandedEnvironment;
-    })[0];
-    if (!selected) {
-      expandedEnvironment = null;
-      elements.environmentDetail.hidden = true;
-      elements.environmentDetail.innerHTML = "";
-      return;
-    }
-
+  function previewEnvironmentDetails(index) {
+    if (!state || !state.environments[index]) { return; }
+    previewEnvironment = index;
+    var selected = state.environments[index];
+    elements.environmentOptions.setAttribute("aria-activedescendant", "environment-option-" + index);
+    elements.environmentOptions.querySelectorAll("[data-environment-index]").forEach(function (option) {
+      option.classList.toggle("is-previewed", Number(option.getAttribute("data-environment-index")) === index);
+    });
     var allProperties = Object.keys(selected.properties).sort().map(function (key) {
-      return "<dt>" + escapeHtml(label(key)) + "</dt><dd title=\"" + escapeHtml(selected.properties[key]) + "\">" +
-        escapeHtml(selected.properties[key]) + "</dd>";
+      return "<dt>" + escapeHtml(label(key)) + "</dt><dd>" + escapeHtml(selected.properties[key]) + "</dd>";
     }).join("");
     elements.environmentDetail.innerHTML =
-      "<button class=\"environment-detail__close\" data-close-environment-details type=\"button\" " +
-      "aria-label=\"Close environment details\">×</button>" +
-      "<div class=\"environment-detail__header\"><div><p class=\"eyebrow\">Environment details</p><h3>" +
-      escapeHtml(selected.name) + "</h3></div>" +
+      '<p class="eyebrow">Environment details</p><h3>' + escapeHtml(selected.name) + "</h3>" +
       (selected.name === state.selectedEnvironment ? "<span class=\"badge\">Active</span>" : "") +
-      "</div><dl class=\"environment-details properties\">" + allProperties + "</dl>";
-    elements.environmentDetail.hidden = false;
+      '<dl class="environment-picker__properties">' + allProperties + "</dl>";
+  }
+
+  function openEnvironmentPicker() {
+    if (!state || !state.environments.length || environmentSaving) { return; }
+    if (elements.environmentPopup.hidden) {
+      previewEnvironment = Math.max(0, state.environments.findIndex(function (environment) {
+        return environment.name === state.selectedEnvironment;
+      }));
+    }
+    elements.environmentPopup.hidden = false;
+    elements.environmentSelect.setAttribute("aria-expanded", "true");
+    previewEnvironmentDetails(previewEnvironment);
+    elements.environmentOptions.focus();
+  }
+
+  function closeEnvironmentPicker(restoreFocus) {
+    if (!elements.environmentPopup) { return; }
+    var wasOpen = !elements.environmentPopup.hidden;
+    elements.environmentPopup.hidden = true;
+    elements.environmentSelect.setAttribute("aria-expanded", "false");
+    environmentTypeAhead = "";
+    if (restoreFocus && wasOpen) { elements.environmentSelect.focus(); }
+  }
+
+  function environmentPickerKeydown(event) {
+    if (event.key === "Escape") {
+      event.preventDefault(); closeEnvironmentPicker(true); return;
+    }
+    if (event.target !== elements.environmentOptions || environmentSaving || !state.environments.length) { return; }
+    var index = previewEnvironment, length = state.environments.length;
+    if (event.key === "ArrowDown") { index = (index + 1) % length; }
+    else if (event.key === "ArrowUp") { index = (index + length - 1) % length; }
+    else if (event.key === "Home") { index = 0; }
+    else if (event.key === "End") { index = length - 1; }
+    else if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault(); selectEnvironment(state.environments[index].name); return;
+    } else if (event.key.length === 1 && !event.ctrlKey && !event.altKey && !event.metaKey) {
+      var now = Date.now();
+      environmentTypeAhead = (now - environmentTypeTime < 700 ? environmentTypeAhead : "") + event.key.toLowerCase();
+      environmentTypeTime = now;
+      var found = state.environments.findIndex(function (environment) {
+        return environment.name.toLowerCase().indexOf(environmentTypeAhead) === 0;
+      });
+      if (found >= 0) { index = found; }
+    } else { return; }
+    event.preventDefault();
+    previewEnvironmentDetails(index);
+    document.getElementById("environment-option-" + index).scrollIntoView({ block: "nearest" });
   }
 
   function displaySuitePath(path) {
@@ -415,7 +469,7 @@
           return;
         }
         previewOperation({ operation: "year", mode: mode, value: mode === "fixed" ? valueControl.value : undefined },
-          "Review CURRENT_YEAR change", loadYear);
+          "Review CURRENT_YEAR change", function () { loadYear(); if (elements.suiteDialog.open) { refreshSuiteModel(); } });
       });
     }).catch(function (error) {
       if (sequence !== yearRequest) { return; }
@@ -444,17 +498,24 @@
   }
 
   function selectEnvironment(environment) {
+    if (environmentSaving || !state || !state.environments.some(function (item) { return item.name === environment; })) { return; }
+    if (environment === state.selectedEnvironment) { closeEnvironmentPicker(true); return; }
+    environmentSaving = true;
+    renderEnvironments();
     return api("/api/environment", {
       method: "POST",
       body: JSON.stringify({ environment: environment })
     }).then(function () {
       state.selectedEnvironment = environment;
-      renderEnvironments();
       elements.targetEnvironment.value = environment;
+      closeEnvironmentPicker(false);
       showMessage("Active environment changed to " + environment + ".");
     }).catch(function (error) {
-      elements.environmentSelect.value = state.selectedEnvironment;
       showMessage(error.message, true);
+    }).then(function () {
+      environmentSaving = false;
+      renderEnvironments();
+      if (elements.environmentPopup.hidden && !elements.homeScreen.hidden) { elements.environmentSelect.focus(); }
     });
   }
 
@@ -462,10 +523,81 @@
     return state.suites.filter(function (suite) { return suite.name === name; })[0];
   }
 
+  function expressionBacked(raw, display) {
+    return Boolean(display && display.parameterized) ||
+      /\$\{|\$!|\$[A-Za-z_][\w.]*|#(?:if|elseif|else|end|set|foreach|macro|parse|include)\b/.test(String(raw == null ? "" : raw));
+  }
+
+  function safeDisplay(raw, display) {
+    if (/^\s*\$(?:_TEST_DIR|\{_TEST_DIR\})/.test(String(raw == null ? "" : raw))) {
+      return { parameterized: true, status: "raw", value: raw,
+        reason: "_TEST_DIR paths are displayed exactly as stored, without substitution.", sources: [] };
+    }
+    if (display && display.parameterized) { return display; }
+    if (expressionBacked(raw)) {
+      return { parameterized: true, status: "unresolved",
+        reason: "This server did not provide a verified display for this expression. The XML remains unchanged.",
+        sources: [] };
+    }
+    return { parameterized: false, status: "literal", value: raw == null ? "" : String(raw) };
+  }
+
+  function displayValue(raw, metadata) {
+    var display = safeDisplay(raw, metadata);
+    if (display.status === "resolved" || display.status === "preview" || display.status === "raw") {
+      return display.value == null ? "Unable to resolve" : String(display.value);
+    }
+    if (display.status === "runtime") { return "Determined at runtime"; }
+    if (display.status === "unresolved") { return "Unable to resolve"; }
+    return raw == null ? "" : String(raw);
+  }
+
+  function displayDetails(raw, metadata) {
+    var display = safeDisplay(raw, metadata);
+    if (!display.parameterized) { return ""; }
+    return "<span class=\"badge badge--parameterized\">Parameterized</span>" +
+      (display.status === "preview" ? "<span class=\"badge badge--preview\">Preview</span>" : "") +
+      "<details class=\"parameter-details\"><summary>Expression and sources</summary>" +
+      "<p>XML expression: <code>" + escapeHtml(raw) + "</code></p>" +
+      (display.status === "preview" ? "<p>Preview only; execution may use a different instant." +
+        (display.evaluatedAt ? " Evaluated at " + escapeHtml(display.evaluatedAt) : "") +
+        (display.zone ? " (" + escapeHtml(display.zone) + ")" : "") + "</p>" : "") +
+      (display.reason ? "<p>" + escapeHtml(display.reason) + "</p>" : "") +
+      ((display.sources || []).length ? "<ul class=\"parameter-sources\">" + display.sources.map(function (source) {
+        var id = "source-" + (++sourceSequence);
+        sourceDestinations[id] = source;
+        var editable = source.editable && !expressionBacked(source.value) &&
+          source.sourcePath && source.nodePath && source.attribute && source.revision;
+        return "<li><strong>" + escapeHtml(source.name || "Source") + "</strong>" +
+          (source.sourcePath ? " <code>" + escapeHtml(source.sourcePath) + "</code>" : "") +
+          "<span>Source value: <code>" + escapeHtml(source.value) + "</code></span>" +
+          (source.globalYear ? "<button class=\"button\" type=\"button\" data-year-source>" +
+            "Edit shared CURRENT_YEAR configuration</button>" : editable ?
+            "<button class=\"button\" type=\"button\" data-edit-source=\"" + id + "\">Edit source</button>" :
+            "<span class=\"field-help\">No verified editable literal destination; use the raw XML editor if needed.</span>") +
+          "</li>";
+      }).join("") + "</ul>" : "<p>No verified editable literal source is available.</p>") + "</details>";
+  }
+
+  function expressionEditButton(key) {
+    var entry = key && modelFields[key];
+    var field = entry && entry.field;
+    return field && field.sourcePath && field.nodePath && field.attribute && field.revision
+      ? "<button class=\"button\" type=\"button\" data-edit-expression=\"" + key + "\">Edit source value</button>" : "";
+  }
+
+  function resolvedControl(raw, display, id) {
+    return "<div class=\"parameter-value\"><output" + (id ? " id=\"" + escapeHtml(id) + "\"" : "") +
+      ">" + escapeHtml(displayValue(raw, display)) +
+      "</output>" + displayDetails(raw, display) + expressionEditButton(id) + "</div>";
+  }
   function fieldControl(field, key, test) {
     var value = field.value == null ? "" : String(field.value);
     var type = String(field.editorType || field.type || "string").toLowerCase();
     modelFields[key] = { field: field, test: test };
+    if (expressionBacked(value, field.display)) {
+      return resolvedControl(value, field.display, key);
+    }
     if (field.label === "testFilterLabel") {
       return filterLabelControl(field, key, test);
     }
@@ -556,7 +688,7 @@
         }).join("") + "</select></div>" : "";
       var help = options.commonNames && options.commonNames.indexOf(name) !== -1
         ? "<small class=\"field-help\">Type is set for this suite under Common user properties above; " +
-          "this scenario value remains editable.</small>"
+          (expressionBacked(field.value, field.display) ? "edit its verified source instead of replacing this expression.</small>" : "this scenario value remains editable.</small>")
         : field.declaredType && options.shared
           ? "<small class=\"field-help\">Shared input declaration; changing its type affects all referencing tests.</small>"
           : "";
@@ -605,13 +737,29 @@
       "<div class=\"object-panel__header\"><div><h4>" + title + "</h4><p>" + description + "</p></div>" +
       "<span class=\"badge\">" + scenarios.length + " object" + (scenarios.length === 1 ? "" : "s") + "</span></div>" +
       (scenarios.length ? "<div class=\"scenario-stack\">" + scenarios.map(function (scenario) {
+        var fields = (scenario.fields || []).filter(function (field) {
+          return field.label !== "labels" && !(field.attribute === "constValue" &&
+            commonNames.indexOf(field.name || field.label) !== -1);
+        });
+        var technicalNames = ["cipropertiesfile", "sapccapi", "generatecit",
+          "onerrorfailthetest", "testextension", "errormessage"];
+        var technical = fields.filter(function (field) {
+          return technicalNames.indexOf(String(field.name || field.label || "").toLowerCase()) !== -1;
+        });
+        var ordinary = fields.filter(function (field) { return technical.indexOf(field) === -1; });
+        var panelId = technical.length ? "technical-panel-" + (++technicalPanelSequence) : "";
         return "<article class=\"scenario-card\"><h5>" +
           (test.userDefinition ? "User object " : "Test case ") + escapeHtml(scenario.id || "") +
-          (scenario.labels ? " · " + escapeHtml(scenario.labels) : "") + "</h5>" +
-          renderFields((scenario.fields || []).filter(function (field) {
-            return field.label !== "labels" && !(field.attribute === "constValue" &&
-              commonNames.indexOf(field.name || field.label) !== -1);
-          }), test, { shared: true, commonNames: commonNames }) + referenceChips(scenario.references) +
+          (scenario.labels ? " · " + (expressionBacked(scenario.labels) ? "Parameterized labels" :
+            escapeHtml(scenario.labels)) : "") + "</h5>" +
+          (ordinary.length || !technical.length ?
+            renderFields(ordinary, test, { shared: true, commonNames: commonNames }) : "") +
+          (technical.length ? "<div class=\"technical-details\">" +
+            "<button class=\"button technical-details__toggle\" type=\"button\" data-technical-toggle=\"" +
+            panelId + "\" aria-controls=\"" + panelId + "\" aria-expanded=\"false\">Technical Details</button>" +
+            "<div class=\"technical-details__panel\" id=\"" + panelId + "\" hidden>" +
+            renderFields(technical, test, { shared: true, commonNames: commonNames }) + "</div></div>" : "") +
+          referenceChips(scenario.references) +
           renderValidations(scenario.validations, test) + "</article>";
       }).join("") + "</div>" : "<div class=\"empty\">No input object matches label " +
         escapeHtml(test.label || "") + ".</div>") + "</section>";
@@ -622,7 +770,8 @@
     return "<details class=\"test-object\"" + (index === 0 ? " open" : "") + "><summary>" +
       "<span class=\"test-object__title\">" + escapeHtml(test.name) + "</span><span class=\"test-object__meta\">" +
       (test.userDefinition ? "<span class=\"badge\">User</span>" : "<span class=\"badge\">Test</span>") +
-      (test.label ? "<span class=\"reference-chip\">" +
+      (test.label ? expressionBacked(test.label) ? "<span class=\"badge badge--parameterized\">Parameterized filter</span>" :
+        "<span class=\"reference-chip\">" +
         escapeHtml(selectedFilterLabels(test, { value: test.label }).join(", ")) + "</span>" : "") +
       "</span></summary><div class=\"object-body\"><div class=\"test-actions\">" +
       "<button class=\"button\" type=\"button\" data-duplicate-test=\"" + escapeHtml(test.nodePath || "") +
@@ -643,9 +792,18 @@
     if (!properties.length) { return "<p class=\"field-help\">No shared user properties were discovered in this suite.</p>"; }
     return "<div class=\"common-grid\">" + properties.map(function (property, index) {
       var inputId = "common-" + definitionPath.replace(/[^A-Za-z0-9_-]/g, "-") + "-" + index;
-      var values = (property.values || []).map(function (item) { return item.value; });
-      var value = property.mixed ? "" : (values[0] == null ? "" : String(values[0]));
+      var entries = property.values || [];
       var files = property.files || [];
+      var protectedValue = expressionBacked(entries.length ? entries[0].value : "", property.display) ||
+        entries.some(function (item) { return expressionBacked(item.value, item.display); }) ||
+        files.some(function (item) { return expressionBacked(item.value, item.display); });
+      var displayEntries = files.length && files.some(function (item) { return item.display; }) ? files : entries;
+      var displayVariants = displayEntries.map(function (item) {
+        var display = safeDisplay(item.value, item.display);
+        return display.status + "|" + displayValue(item.value, item.display);
+      });
+      var variesByFile = displayVariants.some(function (item) { return item !== displayVariants[0]; });
+      var value = property.mixed ? "" : (entries.length && entries[0].value != null ? String(entries[0].value) : "");
       var filePaths = files.map(function (file) { return file.path; }).filter(function (path, position, paths) {
         return paths.indexOf(path) === position;
       });
@@ -671,9 +829,9 @@
         "<option value=\"\" disabled" + (!selectedType ? " selected" : "") + ">Choose a type for all</option>" +
         typeOptions + "</select><p class=\"field-help\">" + escapeHtml(typeSummary) +
         ". By default, changing type keeps each existing value, including mixed values and expressions.</p>" +
-        "<label class=\"common-replace\"><input type=\"checkbox\" data-common-type-replace=\"" +
-        index + "\"><span>Also replace every matching value with the common value below (including " +
-        "blank if left empty). This includes XML constants, declaration defaults, and scenario values.</span></label>" +
+        "<label class=\"common-replace\"><input type=\"checkbox\" data-common-type-replace=\"" + index +
+        "\"" + (protectedValue ? " disabled" : "") + "><span>Also replace every matching value with the common value above (including blank if left empty). This includes XML constants, declaration defaults, and scenario values.</span></label>" +
+        (protectedValue ? "<p class=\"field-help\">Value replacement is unavailable because at least one XML value is parameterized. Type-only review keeps every expression intact.</p>" : "") +
         "<button class=\"button\" type=\"button\" data-common-type-preview=\"" + index +
         "\" data-common-path=\"" + escapeHtml(definitionPath) +
         "\"" + (!selectedType ? " disabled" : "") + ">Review type for all XMLs</button></div>";
@@ -687,8 +845,8 @@
             " · Effective editor: " + escapeHtml(file.editorType || "unknown") +
             " (" + origin + ")</span></li>";
         }).join("") + "</ul></details>";
-      var timeControl = "<div class=\"common-timestamp\" " + (hasTimestamp ? "" : "hidden ") +
-        "data-common-timestamp-base=\"" + hasTimestamp + "\" data-common-timestamp=\"" +
+      var timeControl = "<div class=\"common-timestamp\" " + (hasTimestamp && !protectedValue ? "" : "hidden ") +
+        "data-common-timestamp-base=\"" + (hasTimestamp && !protectedValue) + "\" data-common-timestamp=\"" +
         escapeHtml(inputId) + "\"><button class=\"button\" type=\"button\" data-common-time-switch=\"" +
         escapeHtml(inputId) + "\">Switch to fixed Vilnius date and time</button><div hidden>" +
         "<label>Local time (seconds and milliseconds)<input data-common-time-local=\"" +
@@ -699,28 +857,49 @@
         "<p data-common-time-preview=\"" + escapeHtml(inputId) + "\" role=\"status\">Choose a local time.</p>" +
         "<button class=\"button\" type=\"button\" data-common-time-use=\"" + escapeHtml(inputId) +
         "\" disabled>Use these milliseconds</button></div></div>";
-      return "<div class=\"common-property\"><strong>" +
-        escapeHtml(label(property.name)) + "</strong>" + typeControl + typeDetails +
+      var valueControl = protectedValue ?
+        (property.mixed || variesByFile ?
+          "<div class=\"parameter-value\"><output>" + (property.mixed ? "Mixed values" : "Varies by XML") +
+            "</output><span class=\"badge badge--parameterized\">Parameterized</span></div>" :
+          resolvedControl(value, property.display ||
+            (entries.length && entries[0].display) || (files.length && files[0].display))) +
+        "<button class=\"button\" type=\"button\" data-expression-files=\"" + escapeHtml(inputId) +
+        "-expressions\">Edit source value</button>" +
+        "<details class=\"parameter-details\" id=\"" + escapeHtml(inputId) +
+        "-expressions\"><summary>Values by XML entry (" +
+        displayEntries.length + ")</summary><ul class=\"parameter-sources\">" +
+        displayEntries.map(function (item) {
+          var key = "field-" + (++modelFieldSequence);
+          if (expressionBacked(item.value, item.display)) { modelFields[key] = { field: item }; }
+          return "<li>" + escapeHtml(item.path || item.sourcePath || item.kind || property.name) +
+            ": <strong>" + escapeHtml(displayValue(item.value, item.display)) + "</strong>" +
+            displayDetails(item.value, item.display) + expressionEditButton(key) + "</li>";
+        }).join("") + "</ul></details>" :
         "<label for=\"" + escapeHtml(inputId) + "\">Common value (optional for type changes)</label>" +
-        "<input id=\"" + escapeHtml(inputId) +
-        "\" type=\"text\" data-common-input=\"" + escapeHtml(definitionPath) + "\" data-common-index=\"" + index +
-        "\" value=\"" + escapeHtml(value) +
-        "\" placeholder=\"" + (property.mixed ? "Mixed values — enter one common value" : "") + "\">" +
-        "<p class=\"field-help\">" + (property.mixed ? "<strong>Mixed values; unchanged by type-only review.</strong> Enter a value to replace them all. " : "") +
-        filePaths.length + " input file(s) · " + (property.tests || []).length +
-        " referencing test(s)" + (values.length ? " · Current: " + escapeHtml(values.join(" / ")) : "") +
-        "</p><p class=\"field-help\">Value-only review changes matching constants; to replace declaration " +
-        "defaults and scenario values too, explicitly select the checkbox under editor type.</p>" + timeControl +
+        "<input id=\"" + escapeHtml(inputId) + "\" type=\"text\" data-common-input=\"" +
+        escapeHtml(definitionPath) + "\" data-common-index=\"" + index + "\" value=\"" + escapeHtml(value) +
+        "\" placeholder=\"" + (property.mixed ? "Mixed values — enter one common value" : "") + "\">";
+      return "<div class=\"common-property\"><strong>" + escapeHtml(label(property.name)) + "</strong>" +
+        valueControl + "<p class=\"field-help\">" +
+        (property.mixed ? "<strong>Mixed raw values; unchanged by type-only review.</strong> " : "") +
+        filePaths.length + " input file(s) · " + (property.tests || []).length + " referencing test(s)" +
+        (!property.mixed && !protectedValue ? " · Current: " + escapeHtml(value) : "") +
+        "</p><p class=\"field-help\">" + (protectedValue ?
+          "Edit a verified literal source above or use the advanced XML editor. Shared value replacement is disabled." :
+          "Value-only review changes matching constants; to replace declaration defaults and scenario values too, select the checkbox under editor type.") +
+        "</p>" + timeControl +
         "<button class=\"button\" type=\"button\" data-common-preview=\"" + index +
         "\" data-common-path=\"" + escapeHtml(definitionPath) + "\"" +
-        (property.mixed ? " disabled" : "") +
-        ">Review common constants value</button></div>";
+        (property.mixed || protectedValue ? " disabled" : "") + ">Review common constants value</button>" +
+        typeControl + typeDetails + "</div>";
     }).join("") + "</div>";
   }
-
   function renderSuiteModel(model, definitionPath, common) {
     modelFields = {};
     modelFieldSequence = 0;
+    technicalPanelSequence = 0;
+    sourceDestinations = {};
+    sourceSequence = 0;
     activeModel = model;
     activeCommon = common;
     var definitions = model.definitions || [];
@@ -800,45 +979,333 @@
     }).then(function (response) {
       if (sequence !== modelRequest || !elements.suiteDialog.open) { return; }
       var drafts = {};
+      var commonDrafts = {};
+      var expressionDrafts = [];
+      Array.prototype.forEach.call(elements.suiteModel.querySelectorAll("[data-expression-editor]"), function (editor) {
+        var entry = modelFields[editor.getAttribute("data-expression-editor")];
+        var input = editor.querySelector("textarea");
+        if (entry && !editor.querySelector("[data-save-expression]").disabled &&
+            input.value !== String(entry.field.value)) {
+          expressionDrafts.push({ field: entry.field, value: input.value, editor: editor.cloneNode(true) });
+        }
+      });
+      var sourceDrafts = [];
+      Array.prototype.forEach.call(elements.suiteModel.querySelectorAll("[data-source-editor]"), function (editor) {
+        var source = sourceDestinations[editor.getAttribute("data-source-editor")];
+        var input = editor.querySelector("input");
+        if (source && input && !editor.querySelector("[data-save-source]").disabled &&
+            input.value !== String(source.value == null ? "" : source.value)) {
+          sourceDrafts.push({ source: source, value: input.value, editor: editor.cloneNode(true) });
+        }
+      });
+      Array.prototype.forEach.call(elements.suiteModel.querySelectorAll("[data-common-input]"), function (input) {
+        var path = input.getAttribute("data-common-input");
+        var index = Number(input.getAttribute("data-common-index"));
+        var property = activeCommon && activeCommon[path] && activeCommon[path].properties[index];
+        var values = property && property.values || [];
+        var initial = property && !property.mixed && values.length ? String(values[0].value == null ? "" : values[0].value) : "";
+        if (input.value !== initial) { commonDrafts[path + "|" + (property && property.name)] = input.value; }
+      });
       Array.prototype.forEach.call(elements.suiteModel.querySelectorAll("[data-model-field]"), function (input) {
         var entry = modelFields[input.getAttribute("data-model-field")];
         if (!entry || input.disabled) { return; }
         var field = entry.field;
         var value = input.type === "checkbox" ? String(input.checked) : input.value;
         if (value !== String(field.value == null ? "" : field.value)) {
-          drafts[field.sourcePath + "|" + field.nodePath + "|" + field.attribute] = value;
+          drafts[field.sourcePath + "|" + field.nodePath + "|" + field.attribute + "|" + field.label] =
+            { value: value, original: field.value, revision: field.revision };
         }
       });
       var opened = Array.prototype.map.call(elements.suiteModel.querySelectorAll(".test-object[open]"), function (node) {
         return node.querySelector(".test-object__title").textContent;
+      });
+      var technicalOpen = {};
+      Array.prototype.forEach.call(elements.suiteModel.querySelectorAll("[data-technical-toggle][aria-expanded='true']"), function (button) {
+        technicalOpen[button.getAttribute("aria-controls")] = true;
       });
       renderSuiteModel(response.model, activeDefinitionPath, response.common);
       Array.prototype.forEach.call(elements.suiteModel.querySelectorAll("[data-model-field]"), function (input) {
         var entry = modelFields[input.getAttribute("data-model-field")];
         if (!entry) { return; }
         var field = entry.field;
-        var key = field.sourcePath + "|" + field.nodePath + "|" + field.attribute;
+        var key = field.sourcePath + "|" + field.nodePath + "|" + field.attribute + "|" + field.label;
         if (!Object.prototype.hasOwnProperty.call(drafts, key)) { return; }
-        if (input.type === "checkbox") { input.checked = drafts[key] === "true"; }
-        else { input.value = drafts[key]; }
+        var draft = drafts[key];
+        if (input.type === "checkbox") { input.checked = draft.value === "true"; }
+        else { input.value = draft.value; }
+        if (field.value !== draft.original) { field.revision = draft.revision; }
+      });
+      Array.prototype.forEach.call(elements.suiteModel.querySelectorAll("[data-common-input]"), function (input) {
+        var path = input.getAttribute("data-common-input");
+        var index = Number(input.getAttribute("data-common-index"));
+        var property = activeCommon && activeCommon[path] && activeCommon[path].properties[index];
+        var draftKey = path + "|" + (property && property.name);
+        if (Object.prototype.hasOwnProperty.call(commonDrafts, draftKey)) {
+          input.value = commonDrafts[draftKey];
+          input.closest(".common-property").querySelector("[data-common-preview]").disabled = false;
+        }
       });
       if (opened.length) {
         Array.prototype.forEach.call(elements.suiteModel.querySelectorAll(".test-object"), function (node) {
           node.open = opened.indexOf(node.querySelector(".test-object__title").textContent) !== -1;
         });
       }
+      Array.prototype.forEach.call(elements.suiteModel.querySelectorAll("[data-technical-toggle]"), function (button) {
+        if (technicalOpen[button.getAttribute("aria-controls")]) {
+          button.setAttribute("aria-expanded", "true");
+          document.getElementById(button.getAttribute("aria-controls")).hidden = false;
+        }
+      });
+      sourceDrafts.forEach(function (draft) {
+        var button = Array.prototype.filter.call(elements.suiteModel.querySelectorAll("[data-edit-source]"), function (candidate) {
+          var source = sourceDestinations[candidate.getAttribute("data-edit-source")];
+          return source && source.sourcePath === draft.source.sourcePath &&
+            source.nodePath === draft.source.nodePath && source.attribute === draft.source.attribute;
+        })[0];
+        if (!button) { return; }
+        var id = button.getAttribute("data-edit-source");
+        var editor = draft.editor;
+        editor.setAttribute("data-source-editor", id);
+        editor.querySelector("[data-save-source]").setAttribute("data-save-source", id);
+        editor.querySelector("input").value = draft.value;
+        if (sourceDestinations[id].value !== draft.source.value) {
+          sourceDestinations[id] = draft.source;
+          var error = editor.querySelector(".field-error");
+          error.textContent = "The source changed while you were editing. Your draft is retained; reload and review before saving.";
+          error.hidden = false;
+        }
+        button.closest("li").appendChild(editor);
+        var owner = button.parentElement;
+        while (owner && owner !== elements.suiteModel) {
+          if (owner.tagName === "DETAILS") { owner.open = true; }
+          owner = owner.parentElement;
+        }
+      });
+      expressionDrafts.forEach(function (draft) {
+        var button = Array.prototype.filter.call(elements.suiteModel.querySelectorAll("[data-edit-expression]"), function (candidate) {
+          var entry = modelFields[candidate.getAttribute("data-edit-expression")];
+          return entry && entry.field.sourcePath === draft.field.sourcePath &&
+            entry.field.nodePath === draft.field.nodePath && entry.field.attribute === draft.field.attribute;
+        })[0];
+        var key = button ? button.getAttribute("data-edit-expression") : "field-" + (++modelFieldSequence);
+        var changed = !button || modelFields[key].field.value !== draft.field.value;
+        if (changed) { modelFields[key] = { field: draft.field }; }
+        var editor = draft.editor;
+        editor.setAttribute("data-expression-editor", key);
+        editor.querySelector("[data-save-expression]").setAttribute("data-save-expression", key);
+        editor.querySelector("textarea").value = draft.value;
+        if (changed) {
+          var error = editor.querySelector(".field-error");
+          error.textContent = "The original XML field changed. Your expression draft is retained; reload and review before saving.";
+          error.hidden = false;
+        }
+        var container = button && (button.closest(".parameter-value") || button.closest("li"));
+        (container || elements.suiteModel).appendChild(editor);
+        var owner = container;
+        while (owner && owner !== elements.suiteModel) {
+          if (owner.tagName === "DETAILS") { owner.open = true; }
+          owner = owner.parentElement;
+        }
+      });
     }).catch(function (error) {
       if (sequence !== modelRequest) { return; }
-      elements.suiteModel.innerHTML = "<div class=\"inline-error\">Unable to load suite configuration: " +
-        escapeHtml(error.message) + "</div>";
+      if (elements.suiteModel.querySelector(".definition-card")) {
+        var refreshError = elements.suiteModel.querySelector("[data-refresh-error]");
+        if (!refreshError) {
+          refreshError = document.createElement("p");
+          refreshError.className = "inline-error";
+          refreshError.setAttribute("data-refresh-error", "");
+          refreshError.setAttribute("role", "alert");
+          elements.suiteModel.insertBefore(refreshError, elements.suiteModel.firstChild);
+        }
+        refreshError.textContent = "Could not refresh values. Your current edits are retained. " + error.message;
+      } else {
+        elements.suiteModel.innerHTML = "<div class=\"inline-error\">Unable to load suite configuration: " +
+          escapeHtml(error.message) + "</div>";
+      }
       showMessage(error.message, true);
     });
   }
 
+  function suiteHasDrafts() {
+    return Array.prototype.some.call(elements.suiteModel.querySelectorAll("[data-common-input]"), function (input) {
+      var path = input.getAttribute("data-common-input");
+      var property = activeCommon && activeCommon[path] &&
+        activeCommon[path].properties[Number(input.getAttribute("data-common-index"))];
+      var values = property && property.values || [];
+      var initial = property && !property.mixed && values.length ? String(values[0].value == null ? "" : values[0].value) : "";
+      return input.value !== initial;
+    }) || Array.prototype.some.call(elements.suiteModel.querySelectorAll("[data-model-field]"), function (input) {
+      var entry = modelFields[input.getAttribute("data-model-field")];
+      return entry && (input.disabled ||
+        (input.type === "checkbox" ? String(input.checked) : input.value) !== String(entry.field.value == null ? "" : entry.field.value));
+    }) || Array.prototype.some.call(elements.suiteModel.querySelectorAll("[data-expression-editor]"), function (editor) {
+      var entry = modelFields[editor.getAttribute("data-expression-editor")];
+      return entry && editor.querySelector("textarea").value !== String(entry.field.value);
+    }) || Array.prototype.some.call(elements.suiteModel.querySelectorAll("[data-source-editor]"), function (editor) {
+      var source = sourceDestinations[editor.getAttribute("data-source-editor")];
+      return source && editor.querySelector("input").value !== String(source.value == null ? "" : source.value);
+    });
+  }
+
+  function editXmlExpression(button) {
+    var key = button.getAttribute("data-edit-expression");
+    var entry = modelFields[key];
+    if (!entry || !expressionBacked(entry.field.value, entry.field.display)) { return; }
+    var container = button.closest(".parameter-value") || button.closest("li");
+    var existing = container.querySelector("[data-expression-editor]");
+    if (existing) { existing.querySelector("textarea").focus(); return; }
+    var editor = document.createElement("div");
+    editor.className = "source-editor";
+    editor.setAttribute("data-expression-editor", key);
+    editor.innerHTML = "<label>Original XML expression<textarea rows=\"3\">" +
+      escapeHtml(entry.field.value) + "</textarea></label>" +
+      "<p class=\"field-help\">Only Save XML expression writes this source value. The resolved preview is never saved. " +
+      "This XML field may be shared by other tests; expression evaluation cannot be checked fully until execution.</p>" +
+      "<button class=\"button\" type=\"button\" data-save-expression=\"" + key + "\">Save XML expression</button>" +
+      "<button class=\"button\" type=\"button\" data-cancel-expression>Cancel</button>" +
+      "<p class=\"field-error\" role=\"alert\" hidden></p>";
+    container.appendChild(editor);
+    editor.querySelector("textarea").focus();
+  }
+
+  function saveXmlExpression(button) {
+    var editor = button.closest("[data-expression-editor]");
+    var entry = modelFields[button.getAttribute("data-save-expression")];
+    if (!editor || !entry) { return; }
+    var field = entry.field;
+    var value = editor.querySelector("textarea").value;
+    var errorLine = editor.querySelector(".field-error");
+    errorLine.hidden = true;
+    if (value === String(field.value)) { editor.remove(); return; }
+    if (!expressionBacked(value)) {
+      errorLine.textContent = "Keep an XML expression here. Use the advanced XML editor to deliberately replace it with a literal.";
+      errorLine.hidden = false;
+      return;
+    }
+    var suiteName = currentSuite && currentSuite.name;
+    button.disabled = true;
+    editor.querySelector("[data-cancel-expression]").disabled = true;
+    api("/api/field", { method: "POST", body: JSON.stringify({
+      sourcePath: field.sourcePath, nodePath: field.nodePath, attribute: field.attribute,
+      value: value, revision: field.revision, editExpression: true
+    }) }).then(function () {
+      editor.remove();
+      if (!elements.suiteDialog.open || !currentSuite || currentSuite.name !== suiteName) { return; }
+      showMessage("XML expression saved; refreshing its display value.");
+      return refreshSuiteModel();
+    }).catch(function (error) {
+      if (!editor.isConnected) { return; }
+      errorLine.textContent = error.message;
+      errorLine.hidden = false;
+      button.disabled = false;
+      editor.querySelector("[data-cancel-expression]").disabled = false;
+    });
+  }
+
+  function editParameterSource(button) {
+    var source = sourceDestinations[button.getAttribute("data-edit-source")];
+    if (!source || !source.editable || expressionBacked(source.value) ||
+        !source.sourcePath || !source.nodePath || !source.attribute || !source.revision) { return; }
+    var listItem = button.closest("li");
+    var existing = listItem.querySelector("[data-source-editor]");
+    if (existing) { existing.querySelector("input").focus(); return; }
+    var commonPath = activeCommon && Object.keys(activeCommon).filter(function (path) {
+      return (activeCommon[path].properties || []).some(function (property) {
+        return property.name === source.name && (property.files || []).some(function (file) {
+          return String(file.path).replace(/\\/g, "/") ===
+            String(source.sourcePath).replace(/\\/g, "/") && file.value === source.value;
+        });
+      });
+    })[0];
+    var common = commonPath && activeCommon[commonPath];
+    var commonProperty = common && common.properties.filter(function (item) {
+      return item.name === source.name;
+    })[0];
+    var commonInput = commonProperty && source.attribute === "constValue" && !commonProperty.mixed &&
+      !(commonProperty.values || []).some(function (item) { return expressionBacked(item.value, item.display); }) &&
+      Array.prototype.filter.call(elements.suiteModel.querySelectorAll("[data-common-input]"), function (input) {
+        return input.getAttribute("data-common-input") === commonPath &&
+          Number(input.getAttribute("data-common-index")) === common.properties.indexOf(commonProperty);
+      })[0];
+    if (commonInput) {
+      commonInput.focus();
+      commonInput.scrollIntoView({ block: "center" });
+      showMessage("Review the shared common value change and its affected tests before applying.");
+      return;
+    }
+    var fieldInput = Array.prototype.filter.call(elements.suiteModel.querySelectorAll("[data-model-field]"), function (input) {
+      var fieldEntry = modelFields[input.getAttribute("data-model-field")];
+      var field = fieldEntry && fieldEntry.field;
+      return field && field.sourcePath === source.sourcePath && field.nodePath === source.nodePath &&
+        field.attribute === source.attribute && !expressionBacked(field.value, field.display);
+    })[0];
+    if (fieldInput) {
+      var owner = fieldInput.parentElement;
+      while (owner && owner !== elements.suiteModel) {
+        if (owner.tagName === "DETAILS") { owner.open = true; }
+        if (owner.classList.contains("technical-details__panel")) {
+          owner.hidden = false;
+          var toggle = elements.suiteModel.querySelector("[data-technical-toggle='" + owner.id + "']");
+          if (toggle) { toggle.setAttribute("aria-expanded", "true"); }
+        }
+        owner = owner.parentElement;
+      }
+      fieldInput.focus();
+      fieldInput.scrollIntoView({ block: "center" });
+      showMessage("Editing this literal source can affect all references to it. Changes use the field revision safeguard.");
+      return;
+    }
+    var editor = document.createElement("div");
+    editor.className = "source-editor";
+    editor.setAttribute("data-source-editor", button.getAttribute("data-edit-source"));
+    editor.innerHTML = "<label>Literal source value<input type=\"text\" value=\"" +
+      escapeHtml(source.value) + "\"></label>" +
+      "<p class=\"field-help\">This source may be shared by other tests. Saving changes only this literal XML leaf; dependent expressions remain unchanged. The file revision is checked before writing.</p>" +
+      "<button class=\"button\" type=\"button\" data-save-source=\"" +
+      escapeHtml(button.getAttribute("data-edit-source")) + "\">Save literal source</button>" +
+      " <button class=\"button\" type=\"button\" data-cancel-source>Cancel</button>" +
+      "<p role=\"alert\" class=\"field-error\" hidden></p>";
+    listItem.appendChild(editor);
+    editor.querySelector("input").focus();
+  }
+
+  function saveParameterSource(button) {
+    var source = sourceDestinations[button.getAttribute("data-save-source")];
+    var editor = button.closest("[data-source-editor]");
+    if (!source || !editor || !source.editable || expressionBacked(source.value) || !source.revision) { return; }
+    var value = editor.querySelector("input").value;
+    var errorLine = editor.querySelector(".field-error");
+    errorLine.hidden = true;
+    if (expressionBacked(value)) {
+      errorLine.textContent = "Edit literal source values here; use the advanced XML editor for expressions.";
+      errorLine.hidden = false;
+      return;
+    }
+    if (value === String(source.value == null ? "" : source.value)) { editor.remove(); return; }
+    var sequence = modelRequest;
+    var request = ++sourceRequest;
+    var suiteName = currentSuite && currentSuite.name;
+    button.disabled = true;
+    api("/api/field", { method: "POST", body: JSON.stringify({
+      sourcePath: source.sourcePath, nodePath: source.nodePath, attribute: source.attribute,
+      value: value, revision: source.revision
+    }) }).then(function () {
+      if (!elements.suiteDialog.open || !currentSuite || currentSuite.name !== suiteName) { return; }
+      editor.remove();
+      showMessage("Literal source saved; refreshing dependent displays.");
+      return refreshSuiteModel();
+    }).catch(function (error) {
+      if (sequence !== modelRequest || request !== sourceRequest || !editor.isConnected) { return; }
+      errorLine.textContent = error.status === 409 ? "Source changed since loading. Refresh and retry. " + error.message : error.message;
+      errorLine.hidden = false;
+      button.disabled = false;
+    });
+  }
   function saveModelField(input, forcedValue) {
     var key = input.getAttribute("data-model-field");
     var entry = modelFields[key];
-    if (!entry) { return; }
+    if (!entry || expressionBacked(entry.field.value, entry.field.display)) { return; }
     var field = entry.field;
     var container = elements.suiteModel.querySelector("[data-model-container='" + key + "']");
     if (!container) { return; }
@@ -873,12 +1340,7 @@
       container.classList.remove("is-saving");
       container.classList.add("is-saved");
       showMessage("Saved " + (field.label || field.attribute) + ".");
-      if (field.label === "xmlTemplateFile" || field.label === "labels") {
-        return refreshSuiteModel();
-      }
-      window.setTimeout(function () {
-        if (sequence === modelRequest) { container.classList.remove("is-saved"); }
-      }, 1800);
+      return refreshSuiteModel();
     }).catch(function (error) {
       if (sequence !== modelRequest) { return; }
       container.classList.remove("is-saving");
@@ -897,7 +1359,7 @@
       container.appendChild(errorLine);
       showMessage(error.message, true);
     }).then(function () {
-      if (sequence === modelRequest) { input.disabled = false; }
+      if (sequence === modelRequest && input.isConnected) { input.disabled = false; }
     });
   }
 
@@ -1275,6 +1737,7 @@
 
   function updateRunStatus() {
     return api("/api/run/status").then(function (run) {
+      document.getElementById("report-run-warning").hidden = !run.running;
       window.clearTimeout(pollTimer);
       if (!run.suite) {
         elements.runBanner.hidden = true;
@@ -1299,25 +1762,46 @@
     });
   }
 
-  elements.environmentSelect.addEventListener("change", function () { selectEnvironment(this.value); });
+  var reportView = window.ChargingReport.create(document.getElementById("report-screen"));
+  elements.environmentSelect.addEventListener("click", function () {
+    if (elements.environmentPopup.hidden) { openEnvironmentPicker(); } else { closeEnvironmentPicker(true); }
+  });
+  elements.environmentSelect.addEventListener("keydown", function (event) {
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") { event.preventDefault(); openEnvironmentPicker(); }
+  });
+  ["previous", "next"].forEach(function (direction) {
+    document.getElementById("environment-preview-" + direction).addEventListener("click", function () {
+      if (!state || environmentSaving || !state.environments.length) { return; }
+      var length = state.environments.length;
+      previewEnvironmentDetails((previewEnvironment + (direction === "next" ? 1 : length - 1)) % length);
+    });
+  });
+  elements.environmentPicker.addEventListener("keydown", environmentPickerKeydown);
+  elements.environmentOptions.addEventListener("pointerover", function (event) {
+    var option = event.target.closest("[data-environment-index]");
+    if (option && !environmentSaving && event.pointerType !== "touch") {
+      previewEnvironmentDetails(Number(option.getAttribute("data-environment-index")));
+    }
+  });
+  elements.environmentOptions.addEventListener("click", function (event) {
+    var option = event.target.closest("[data-environment-index]");
+    if (option) { selectEnvironment(state.environments[Number(option.getAttribute("data-environment-index"))].name); }
+  });
+  elements.environmentPicker.addEventListener("focusout", function () {
+    window.setTimeout(function () {
+      if (!elements.environmentPicker.contains(document.activeElement)) { closeEnvironmentPicker(false); }
+    }, 0);
+  });
+  document.addEventListener("pointerdown", function (event) {
+    if (!elements.environmentPicker.contains(event.target)) { closeEnvironmentPicker(false); }
+  });
   elements.openTestsConfiguration.addEventListener("click", openTestsConfiguration);
   elements.backToHome.addEventListener("click", backToHome);
   window.addEventListener("hashchange", renderScreen);
-  elements.environmentList.addEventListener("click", function (event) {
-    var button = event.target.closest("[data-environment-details]");
-    if (!button) { return; }
-    var environment = button.getAttribute("data-environment-details");
-    expandedEnvironment = expandedEnvironment === environment ? null : environment;
-    renderEnvironments();
-  });
-  elements.environmentDetail.addEventListener("click", function (event) {
-    if (!event.target.closest("[data-close-environment-details]")) { return; }
-    expandedEnvironment = null;
-    renderEnvironments();
-  });
   elements.suiteSearch.addEventListener("input", renderTargets);
   elements.suiteConfigSearch.addEventListener("input", renderSuiteConfiguration);
-  elements.openReport.addEventListener("click", function () { window.open("/api/report", "_blank"); });
+  elements.openReport.addEventListener("click", function () { window.location.hash = "report"; });
+  document.getElementById("report-back").addEventListener("click", backToHome);
   elements.suiteList.addEventListener("click", function (event) {
     var suitePathButton = event.target.closest("[data-suite-path]");
     if (suitePathButton) {
@@ -1361,8 +1845,9 @@
       typeSetting.querySelector("[data-common-type-preview]").disabled = !event.target.value;
       var typeProperty = event.target.closest(".common-property");
       var typeTimestamp = typeProperty.querySelector("[data-common-timestamp]");
-      typeTimestamp.hidden = event.target.value !== "unixTimestamp" &&
-        typeTimestamp.getAttribute("data-common-timestamp-base") !== "true";
+      typeTimestamp.hidden = !typeProperty.querySelector("[data-common-input]") ||
+        (event.target.value !== "unixTimestamp" &&
+        typeTimestamp.getAttribute("data-common-timestamp-base") !== "true");
     } else if (event.target.hasAttribute("data-common-time-local") ||
                event.target.hasAttribute("data-common-time-offset")) {
       previewCommonTimestamp(event.target.getAttribute("data-common-time-local") ||
@@ -1383,6 +1868,52 @@
     }
   });
   elements.suiteModel.addEventListener("click", function (event) {
+    var expressionFiles = event.target.closest("[data-expression-files]");
+    if (expressionFiles) {
+      var fileDetails = document.getElementById(expressionFiles.getAttribute("data-expression-files"));
+      fileDetails.open = true;
+      var fileEditors = fileDetails.querySelectorAll("[data-edit-expression]");
+      if (fileEditors.length === 1) { editXmlExpression(fileEditors[0]); }
+      else { fileDetails.querySelector("summary").focus(); }
+      return;
+    }
+    var expressionEdit = event.target.closest("[data-edit-expression]");
+    if (expressionEdit) { editXmlExpression(expressionEdit); return; }
+    var expressionSave = event.target.closest("[data-save-expression]");
+    if (expressionSave) { saveXmlExpression(expressionSave); return; }
+    var expressionCancel = event.target.closest("[data-cancel-expression]");
+    if (expressionCancel) { expressionCancel.closest("[data-expression-editor]").remove(); return; }
+    var technicalToggle = event.target.closest("[data-technical-toggle]");
+    if (technicalToggle) {
+      var technicalPanel = document.getElementById(technicalToggle.getAttribute("aria-controls"));
+      if (technicalPanel) {
+        technicalPanel.hidden = !technicalPanel.hidden;
+        technicalToggle.setAttribute("aria-expanded", String(!technicalPanel.hidden));
+      }
+      return;
+    }
+    var sourceEdit = event.target.closest("[data-edit-source]");
+    if (sourceEdit) { editParameterSource(sourceEdit); return; }
+    var sourceSave = event.target.closest("[data-save-source]");
+    if (sourceSave) { saveParameterSource(sourceSave); return; }
+    var sourceCancel = event.target.closest("[data-cancel-source]");
+    if (sourceCancel) { sourceCancel.closest("[data-source-editor]").remove(); return; }
+    if (event.target.closest("[data-year-source]")) {
+      if (suiteHasDrafts()) {
+        showMessage("Save or cancel pending suite edits before opening shared CURRENT_YEAR configuration.", true);
+        return;
+      }
+      elements.suiteDialog.close();
+      loadYear().then(function () {
+        var control = document.getElementById("year-mode");
+        if (control) {
+          var panel = control.closest("details");
+          if (panel) { panel.open = true; }
+          control.focus();
+        }
+      });
+      return;
+    }
     var commonTimeSwitch = event.target.closest("[data-common-time-switch]");
     if (commonTimeSwitch) {
       var id = commonTimeSwitch.getAttribute("data-common-time-switch");
@@ -1431,7 +1962,10 @@
         activeCommon[path].properties[index];
       var input = elements.suiteModel.querySelector("[data-common-input='" + path +
         "'][data-common-index='" + index + "']");
-      if (property && input) {
+      if (property && input && !expressionBacked(
+          (property.values || [])[0] && property.values[0].value, property.display) &&
+          !((property.values || []).some(function (item) { return expressionBacked(item.value, item.display); }) ||
+          (property.files || []).some(function (item) { return expressionBacked(item.value, item.display); }))) {
         previewOperation({ operation: "common", suitePath: path, name: property.name,
           value: input.value }, "Review shared " + property.name, refreshSuiteModel);
       }
@@ -1446,7 +1980,9 @@
       var typeCard = commonTypeButton.closest(".common-property");
       var typeSelect = typeCard.querySelector("[data-common-suite-type]");
       if (typeProperty && typeSelect.value) {
-        var replace = typeCard.querySelector("[data-common-type-replace]").checked;
+        var protectedValues = (typeProperty.values || []).some(function (item) { return expressionBacked(item.value, item.display); }) ||
+          (typeProperty.files || []).some(function (item) { return expressionBacked(item.value, item.display); });
+        var replace = !protectedValues && typeCard.querySelector("[data-common-type-replace]").checked;
         var typePayload = { operation: "common-type", suitePath: typePath, name: typeProperty.name,
           editorType: typeSelect.value };
         if (replace) { typePayload.value = typeCard.querySelector("[data-common-input]").value; }
@@ -1478,7 +2014,8 @@
       var keyTime = saveTime.getAttribute("data-timestamp-save");
       var editorTime = timestampEditor(keyTime);
       var epoch = editorTime.getAttribute("data-epoch-millis");
-      if (epoch != null) {
+      if (epoch != null && modelFields[keyTime] &&
+          !expressionBacked(modelFields[keyTime].field.value, modelFields[keyTime].field.display)) {
         var rawTime = editorTime.querySelector("[data-model-field]");
         saveModelField(rawTime, epoch);
       }

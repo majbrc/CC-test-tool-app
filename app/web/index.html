@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Charging Test Console</title>
-  <link rel="stylesheet" href="/styles.css?v=20261112-stacked-targets">
+  <title>Automated Testing Tool</title>
+  <link rel="stylesheet" href="/styles.css?v=20261119-failure-summary-r10">
 </head>
 <body>
   <header class="shell">
@@ -28,7 +28,7 @@
       <section class="hero">
         <div>
           <p class="eyebrow">SAP Convergent Charging</p>
-          <h1>Test workspace</h1>
+          <h1>Automated Testing Tool</h1>
           <p>Choose the target landscape, execute Ant targets, and review the latest results.</p>
         </div>
         <div class="hero__actions">
@@ -44,19 +44,32 @@
       </section>
 
       <section class="section" aria-labelledby="environment-heading">
-        <div class="section__header">
+        <div class="section__header section__header--environments">
           <div>
             <p class="eyebrow">Execution target</p>
             <h2 id="environment-heading">Environments</h2>
           </div>
-          <label class="field environment-picker">
-            <span>Active environment</span>
-            <select id="environment-select" aria-label="Active test environment"></select>
-          </label>
-        </div>
-        <div class="environment-browser">
-          <nav id="environment-list" class="environment-list" aria-label="Configured environments"></nav>
-          <section id="environment-detail" class="environment-detail" aria-live="polite" hidden></section>
+          <div id="environment-picker" class="environment-picker">
+            <span id="environment-picker-label" class="field-help">Active environment</span>
+            <div class="environment-picker__actions">
+              <button id="environment-select" class="button environment-picker__trigger" type="button"
+                aria-haspopup="listbox" aria-expanded="false" aria-controls="environment-options"
+                aria-labelledby="environment-picker-label environment-selected-name" disabled>
+                <span id="environment-selected-name">Loading…</span><span aria-hidden="true">▾</span>
+              </button>
+            </div>
+            <div id="environment-popup" class="environment-picker__popup" hidden>
+              <div id="environment-options" class="environment-picker__options" role="listbox"
+                tabindex="0" aria-label="Choose active environment" aria-describedby="environment-picker-help"></div>
+              <section id="environment-detail" class="environment-picker__detail" aria-label="Environment details" tabindex="0"></section>
+              <div class="environment-picker__preview-actions">
+                <span class="field-help">Preview without selecting</span>
+                <button id="environment-preview-previous" class="button" type="button" aria-label="Preview previous environment">‹</button>
+                <button id="environment-preview-next" class="button" type="button" aria-label="Preview next environment">›</button>
+              </div>
+              <p id="environment-picker-help" class="field-help">Hover or use arrow keys to preview details. Select an option to change environment. Escape closes.</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -83,6 +96,46 @@
           <button id="show-run-log" class="button button--ghost" type="button">View log</button>
         </div>
         <div id="suite-list" class="suite-list" aria-live="polite"></div>
+      </section>
+    </div>
+
+    <div id="report-screen" hidden>
+      <header class="screen-header">
+        <button id="report-back" class="button screen-header__back" type="button">← Back to home</button>
+        <div><p class="eyebrow">Saved execution results</p><h1>Test report</h1>
+          <p>Explore the existing report without running tests or changing configuration.</p></div>
+      </header>
+      <section class="section">
+        <div class="report-toolbar">
+          <button id="report-refresh" class="button" type="button">Refresh report</button>
+          <a id="report-original" class="button" href="/api/report" target="_blank" rel="noopener noreferrer">Open original report ↗</a>
+        </div>
+        <p id="report-message" class="field-help" role="status" aria-live="polite"></p>
+        <p id="report-run-warning" class="inline-warning" role="status" hidden>A test run is in progress. These saved results may be from an earlier run or may be incomplete. Refresh after execution finishes.</p>
+        <section id="report-failures" class="report-failures" aria-label="Failure summary" hidden></section>
+        <div id="report-summary"></div>
+        <div class="report-filters">
+          <label class="field"><span>Search suites and tests</span><input id="report-search" type="search" placeholder="Name"></label>
+          <fieldset id="report-filter" class="report-status-filter" aria-describedby="report-filter-help">
+            <legend>Test outcome</legend>
+            <div class="report-status-buttons">
+              <button type="button" class="button" data-status="passed" aria-pressed="true">Passed</button>
+              <button type="button" class="button" data-status="failed" aria-pressed="true">Failed</button>
+              <button type="button" class="button" data-status="skipped" aria-pressed="true">Skipped</button>
+            </div>
+          </fieldset>
+          <fieldset id="report-scenario-filter" class="report-status-filter" aria-describedby="report-filter-help">
+            <legend>Scenario outcome</legend>
+            <div class="report-status-buttons">
+              <button type="button" class="button" data-status="passed" aria-pressed="true">Passed</button>
+              <button type="button" class="button" data-status="failed" aria-pressed="true">Failed</button>
+              <button type="button" class="button" data-status="skipped" aria-pressed="true">Skipped</button>
+            </div>
+          </fieldset>
+        </div>
+        <p id="report-filter-help" class="field-help">Select one or more statuses in each group; keep at least one selected. Expand a test to view matching scenarios. Charts remain report-wide.</p>
+        <p id="report-result-count" class="field-help" role="status"></p>
+        <div id="report-results"></div>
       </section>
     </div>
 
@@ -256,6 +309,7 @@
     <pre id="run-log" class="run-log">No execution log available.</pre>
   </dialog>
 
-  <script src="/app.js?v=20261112-1400"></script>
+  <script src="/report.js?v=20261119-failure-summary-r10"></script>
+  <script src="/app.js?v=20261117-environment-picker-r4"></script>
 </body>
 </html>

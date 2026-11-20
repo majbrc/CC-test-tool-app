@@ -384,14 +384,19 @@ public final class ChargingTestConsole {
         result.put("suite", suiteName);
         result.put("displayName", suiteName.replace('_', ' '));
         List<Object> definitions = new ArrayList<Object>();
+        java.time.Instant evaluatedAt = java.time.Instant.now();
         for (Path suiteFile : directXmlFiles(suiteDirectory, "suite")) {
-            definitions.add(suiteDefinition(suiteFile));
+            definitions.add(suiteDefinition(suiteFile, evaluatedAt));
         }
         result.put("definitions", definitions);
         return result;
     }
 
     private Map<String, Object> suiteDefinition(Path suiteFile) throws Exception {
+        return suiteDefinition(suiteFile, java.time.Instant.now());
+    }
+
+    private Map<String, Object> suiteDefinition(Path suiteFile, java.time.Instant evaluatedAt) throws Exception {
         Document document = parseXml(suiteFile);
         Element suite = document.getDocumentElement();
         String sourcePath = relativePath(suiteFile);
@@ -403,17 +408,18 @@ public final class ChargingTestConsole {
         addAttributeField(definitionFields, suite, "parallel", sourcePath, "0", null);
         addAttributeField(definitionFields, suite, "preserve-order", sourcePath, "0", null);
         addFieldRevisions(definitionFields, revision(Files.readAllBytes(suiteFile)));
+        addDisplays(definitionFields, new DisplayContext(evaluatedAt));
         definition.put("fields", definitionFields);
 
         List<Object> tests = new ArrayList<Object>();
         for (Element test : directChildren(suite, "test")) {
-            tests.add(testModel(test, sourcePath, elementPath(test)));
+            tests.add(testModel(test, sourcePath, elementPath(test), evaluatedAt));
         }
         definition.put("tests", tests);
         return definition;
     }
 
-    private Map<String, Object> testModel(Element test, String suitePath, String testNodePath) throws Exception {
+    private Map<String, Object> testModel(Element test, String suitePath, String testNodePath, java.time.Instant evaluatedAt) throws Exception {
         Element inputParameter = namedParameter(test, "xmlTemplateFile");
         Element labelParameter = namedParameter(test, "testFilterLabel");
         String inputValue = attribute(inputParameter, "value");
@@ -443,10 +449,11 @@ public final class ChargingTestConsole {
             addAttributeField(fields, labelParameter, "value", suitePath, elementPath(labelParameter), "string");
         }
         addFieldRevisions(fields, revision(Files.readAllBytes(resolveEditableXml(suitePath, true))));
+        addDisplays(fields, new DisplayContext(evaluatedAt));
         boolean userDefinition = isUserTest(inputValue, label, metadata());
         model.put("fields", fields);
         model.put("userDefinition", userDefinition);
-        model.put("scenarios", scenarios(inputValue, label, userDefinition));
+        model.put("scenarios", scenarios(inputValue, label, userDefinition, evaluatedAt));
         try {
             Path input = resolveEditableXml(inputValue, true);
             Document inputDocument = parseXml(input);
@@ -467,6 +474,10 @@ public final class ChargingTestConsole {
     }
 
     private List<Object> scenarios(String inputValue, String filterLabel, boolean userDefinition) throws Exception {
+        return scenarios(inputValue, filterLabel, userDefinition, java.time.Instant.now());
+    }
+
+    private List<Object> scenarios(String inputValue, String filterLabel, boolean userDefinition, java.time.Instant evaluatedAt) throws Exception {
         List<Object> result = new ArrayList<Object>();
         if (inputValue.length() == 0 || filterLabel.length() == 0) return result;
         Path inputFile;
@@ -480,6 +491,7 @@ public final class ChargingTestConsole {
         Map<String, String> constants = headerConstants(rootElement);
         Map<String, String> types = headerParameterTypes(rootElement);
         String sourcePath = relativePath(inputFile);
+        String sourceRevision = revision(Files.readAllBytes(inputFile));
         Element testData = directChild(rootElement, "testData");
         if (testData == null) return result;
         for (Element test : directChildren(testData, "test")) {
@@ -525,7 +537,6 @@ public final class ChargingTestConsole {
             }
             scenario.put("fields", fields);
             Map<String, Object> metadata = metadata();
-            String sourceRevision = revision(Files.readAllBytes(inputFile));
             for (Object item : fields) {
                 @SuppressWarnings("unchecked") Map<String, Object> field = (Map<String, Object>) item;
                 String name = (String) field.get("label");
@@ -538,9 +549,12 @@ public final class ChargingTestConsole {
                         : (name.toUpperCase(Locale.ROOT).contains("MILLIS") ? "unixTimestamp" : field.get("type").toString());
                 field.put("editorType", editor);
             }
+            DisplayContext inputContext = displayContext(document, null, sourcePath, sourceRevision, evaluatedAt);
+            DisplayContext validationContext = displayContext(document, test, sourcePath, sourceRevision, evaluatedAt);
+            addDisplays(fields, inputContext);
             Map<String, Object> references = references(values, constants);
             scenario.put("references", references);
-            scenario.put("validations", validationModels(castStringList(references.get("validationPaths"))));
+            scenario.put("validations", validationModels(castStringList(references.get("validationPaths")), validationContext));
             result.add(scenario);
         }
         return result;
@@ -576,7 +590,7 @@ public final class ChargingTestConsole {
         return result;
     }
 
-    private List<Object> validationModels(List<String> paths) throws Exception {
+    private List<Object> validationModels(List<String> paths, DisplayContext context) throws Exception {
         List<Object> result = new ArrayList<Object>();
         for (String path : paths) {
             Path file = resolveEditableXml(path, true);
@@ -602,6 +616,7 @@ public final class ChargingTestConsole {
                 @SuppressWarnings("unchecked") Map<String, Object> groupMap = (Map<String, Object>) group;
                 @SuppressWarnings("unchecked") List<Object> groupFields = (List<Object>) groupMap.get("fields");
                 addFieldRevisions(groupFields, validationRevision);
+                addDisplays(groupFields, context);
             }
             result.add(validation);
         }
@@ -998,6 +1013,7 @@ public final class ChargingTestConsole {
     }
 
     private Map<String, Object> commonModel(String requestedSuite) throws Exception {
+        java.time.Instant evaluatedAt = java.time.Instant.now();
         Path suite = suitePath(requestedSuite);
         Map<Path, List<String>> inputs = suiteInputs(suite, null);
         Map<Path, List<String>> references = allReferences(null);
@@ -1020,11 +1036,13 @@ public final class ChargingTestConsole {
         for (String name : names) {
             List<Object> files = new ArrayList<Object>();
             Map<String, List<String>> values = new LinkedHashMap<String, List<String>>();
+            Map<String, List<Map<String, Object>>> valueDisplays = new LinkedHashMap<String, List<Map<String, Object>>>();
             Set<String> tests = new LinkedHashSet<String>();
             Set<String> editorTypes = new LinkedHashSet<String>();
             for (Path input : inputs.keySet()) {
                 byte[] bytes = Files.readAllBytes(input);
                 Document doc = parseXml(bytes);
+                DisplayContext context = displayContext(doc, null, relativePath(input), revision(bytes), evaluatedAt);
                 List<Element> occurrences = new ArrayList<Element>();
                 for (Element c : constants(doc)) if (name.equals(c.getAttribute("name")) && c.hasAttribute("constValue"))
                     occurrences.add(c);
@@ -1042,6 +1060,20 @@ public final class ChargingTestConsole {
                     }
                     Map<String, Object> file = new LinkedHashMap<String, Object>();
                     file.put("path", relativePath(input)); file.put("value", value); file.put("revision", revision(bytes));
+                    file.put("sourcePath", relativePath(input)); file.put("nodePath", elementPath(c));
+                    file.put("attribute", attribute); file.put("name", name); file.put("label", name);
+                    if (value != null) {
+                        Map<String, Object> display = context.display(value);
+                        file.put("display", display);
+                        if (!parameter) {
+                            List<Map<String, Object>> displays = valueDisplays.get(value);
+                            if (displays == null) {
+                                displays = new ArrayList<Map<String, Object>>();
+                                valueDisplays.put(value, displays);
+                            }
+                            displays.add(display);
+                        }
+                    }
                     Object savedType = editorMetadata.get("type:" + relativePath(input) + ":" + name);
                     String declared = parameter && c.hasAttribute("type") ? c.getAttribute("type") : null;
                     String editor = savedType instanceof String ? (String) savedType
@@ -1061,7 +1093,9 @@ public final class ChargingTestConsole {
             List<Object> groups = new ArrayList<Object>();
             for (Map.Entry<String, List<String>> entry : values.entrySet()) {
                 Map<String, Object> group = new LinkedHashMap<String, Object>();
-                group.put("value", entry.getKey()); group.put("paths", entry.getValue()); groups.add(group);
+                group.put("value", entry.getKey()); group.put("paths", entry.getValue());
+                group.put("display", aggregateDisplays(valueDisplays.get(entry.getKey())));
+                groups.add(group);
             }
             Map<String, Object> property = new LinkedHashMap<String, Object>();
             property.put("name", name); property.put("values", groups); property.put("mixed", values.size() > 1);
@@ -1087,6 +1121,7 @@ public final class ChargingTestConsole {
             Document doc = changes.document(input);
             boolean changed = false;
             for (Element c : constants(doc)) if (name.equals(c.getAttribute("name")) && c.hasAttribute("constValue")) {
+                protectExpression(c.getAttribute("constValue"), value);
                 Object type = editorMetadata.get("type:" + relativePath(input) + ":" + name);
                 if (type instanceof String) validateTypedValue(value, (String) type, changes, relativePath(input));
                 if (!value.equals(c.getAttribute("constValue"))) { c.setAttribute("constValue", value); changed = true; }
@@ -1133,6 +1168,7 @@ public final class ChargingTestConsole {
                 if (parameter && !element.hasAttribute("type")) throw new HttpError(400, "Missing declared type at " + relativePath(input));
                 String attr = parameter ? "defaultValue" : "constValue";
                 if (element.hasAttribute(attr)) {
+                    if (replace) protectExpression(element.getAttribute(attr), value);
                     recordCommonTypeValue(values, input, element, attr, replace ? value : element.getAttribute(attr));
                     String next = replace ? value : element.getAttribute(attr);
                     validateTypedValue(next, editor, changes, relativePath(input) + " " + attr);
@@ -1143,6 +1179,7 @@ public final class ChargingTestConsole {
                     if (data != null) for (Element test : directChildren(data, "test"))
                         for (Element p : directChildren(test, "parameter"))
                             if (name.equals(p.getAttribute("name")) && p.hasAttribute("paramValue")) {
+                                if (replace) protectExpression(p.getAttribute("paramValue"), value);
                                 recordCommonTypeValue(values, input, p, "paramValue", replace ? value : p.getAttribute("paramValue"));
                                 String next = replace ? value : p.getAttribute("paramValue");
                                 validateTypedValue(next, editor, changes, relativePath(input) + " scenario " + elementPath(p));
@@ -1597,6 +1634,11 @@ public final class ChargingTestConsole {
         String attributeName = requiredString(body, "attribute");
         String value = requiredString(body, "value");
         Path file = resolveEditableXml(sourcePath, true);
+        if (body.containsKey("editExpression") && !(body.get("editExpression") instanceof Boolean))
+            throw new HttpError(400, "editExpression must be a boolean");
+        boolean editExpression = Boolean.TRUE.equals(body.get("editExpression"));
+        if (editExpression && !body.containsKey("revision"))
+            throw new HttpError(400, "Revision is required when editing an XML expression; reload before saving");
         synchronized (xmlWriteLock) {
             byte[] original = Files.readAllBytes(file);
             if (body.containsKey("revision") && !revision(original).equals(requiredString(body, "revision")))
@@ -1614,9 +1656,13 @@ public final class ChargingTestConsole {
                 current = element.getAttribute(attributeName);
             }
             String name = element.getAttribute("name");
+            if (editExpression) {
+                if (!expressionBearing(current) || !expressionBearing(value))
+                    throw new HttpError(400, "Edit source value must retain an XML expression; use advanced XML for a literal replacement");
+            } else protectExpression(current, value);
             String declared = headerParameterTypes(document.getDocumentElement()).get(name);
             Object editor = metadata().get("type:" + relativePath(file) + ":" + name);
-            if (("paramValue".equals(attributeName) || "constValue".equals(attributeName))
+            if (("paramValue".equals(attributeName) || "constValue".equals(attributeName) || "defaultValue".equals(attributeName))
                     && (declared != null || editor instanceof String)) {
                 String type = editor instanceof String ? (String) editor : declared;
                 validateTypedValue(value, type, new ChangeSet(), name);
@@ -2284,6 +2330,210 @@ public final class ChargingTestConsole {
         for (String part : value.split("[|,]")) {
             String path = existingReference(part, constants);
             if (path != null && !result.contains(path)) result.add(path);
+        }
+        return result;
+    }
+
+    private static final Pattern DISPLAY_REFERENCE =
+            Pattern.compile("\\$\\{([A-Za-z_][A-Za-z0-9_]*)\\}|\\$([A-Za-z_][A-Za-z0-9_]*)");
+    private static final Pattern DISPLAY_DIRECTIVE =
+            Pattern.compile("#(?:if|elseif|else|end|set|foreach|macro|parse|include)\\b");
+
+    private static boolean expressionBearing(String value) {
+        return value != null && (value.contains("${") || value.contains("$!")
+                || DISPLAY_REFERENCE.matcher(value).find() || DISPLAY_DIRECTIVE.matcher(value).find());
+    }
+
+    private static void protectExpression(String current, String replacement) {
+        if (expressionBearing(current) && !current.equals(replacement))
+            throw new HttpError(400, "Parameterized values cannot be replaced here; use Edit source value to edit the XML expression");
+    }
+
+    private static final class DisplaySource {
+        final String name, value, path, node, attribute, revision;
+        DisplaySource(Element element, String attribute, String path, String revision) {
+            this.name = element.getAttribute("name"); this.value = element.getAttribute(attribute);
+            this.path = path; this.node = elementPath(element); this.attribute = attribute;
+            this.revision = revision;
+        }
+        Map<String, Object> metadata() {
+            Map<String, Object> result = new LinkedHashMap<String, Object>();
+            result.put("name", name); result.put("sourcePath", path); result.put("nodePath", node);
+            result.put("attribute", attribute); result.put("value", value); result.put("revision", revision);
+            boolean year = "CURRENT_YEAR".equals(name);
+            result.put("editable", Boolean.valueOf(!year && !expressionBearing(value)));
+            if (year) result.put("globalYear", Boolean.TRUE);
+            return result;
+        }
+    }
+
+    private static final class DisplayContext {
+        final java.time.Instant instant;
+        final Map<String, DisplaySource> constants = new LinkedHashMap<String, DisplaySource>();
+        final Map<String, DisplaySource> parameters = new LinkedHashMap<String, DisplaySource>();
+        final Set<String> ambiguousConstants = new LinkedHashSet<String>();
+        final Set<String> ambiguousParameters = new LinkedHashSet<String>();
+        boolean validation;
+        DisplayContext(java.time.Instant instant) { this.instant = instant; }
+
+        void put(Map<String, DisplaySource> map, Set<String> ambiguous, DisplaySource source) {
+            if (map.containsKey(source.name)) ambiguous.add(source.name);
+            else map.put(source.name, source);
+        }
+
+        Map<String, Object> display(String value) {
+            Map<String, Object> result = new LinkedHashMap<String, Object>();
+            boolean parameterized = expressionBearing(value);
+            result.put("parameterized", Boolean.valueOf(parameterized));
+            List<Map<String, Object>> sources = new ArrayList<Map<String, Object>>();
+            result.put("sources", sources);
+            if (value.trim().startsWith("$_TEST_DIR") || value.trim().startsWith("${_TEST_DIR}")) {
+                result.put("status", "raw"); result.put("value", value);
+                result.put("reason", "_TEST_DIR paths are displayed exactly as stored, without substitution.");
+                return result;
+            }
+            if (!parameterized) {
+                result.put("status", "literal"); result.put("value", value); result.put("reason", "");
+                return result;
+            }
+            DisplayEvaluation evaluation = new DisplayEvaluation(this, sources);
+            String resolved = evaluation.resolve(value, validation, new LinkedHashSet<String>(), 0);
+            if (evaluation.reason != null) {
+                result.put("status", evaluation.runtime ? "runtime" : "unresolved");
+                result.put("reason", evaluation.reason);
+            } else {
+                result.put("status", evaluation.preview ? "preview" : "resolved");
+                result.put("value", resolved);
+                result.put("reason", evaluation.preview
+                        ? evaluation.conceptual
+                            ? "Preview substitutes constant expressions for readability; the input template is rendered in one pass and the runner may not make these substitutions."
+                            : "Clock preview in the server timezone; the runner may use another timezone or instant."
+                        : "");
+                if (evaluation.clockPreview) {
+                    result.put("evaluatedAt", instant.toString());
+                    result.put("zone", java.time.ZoneId.systemDefault().getId());
+                }
+            }
+            return result;
+        }
+    }
+
+    private static final class DisplayEvaluation {
+        final DisplayContext context;
+        final List<Map<String, Object>> sources;
+        final Set<String> seen = new LinkedHashSet<String>();
+        int work;
+        boolean preview, runtime, conceptual, clockPreview;
+        String reason;
+        DisplayEvaluation(DisplayContext context, List<Map<String, Object>> sources) {
+            this.context = context; this.sources = sources;
+        }
+        String fail(String message, boolean runtimeValue) {
+            if (reason == null || (runtime && !runtimeValue)) {
+                reason = message; runtime = runtimeValue;
+            }
+            return "";
+        }
+        String resolve(String raw, boolean validation, Set<String> active, int depth) {
+            if (depth > 24 || ++work > 256 || raw.length() > 65536)
+                return fail("Expression exceeds the safe resolution limit.", false);
+            if ("$DATE_TIME_NOW_items.Year".equals(raw)) {
+                clockPreview = true;
+                preview = true;
+                return Integer.toString(context.instant.atZone(java.time.ZoneId.systemDefault()).getYear());
+            }
+            if (DISPLAY_DIRECTIVE.matcher(raw).find())
+                return fail("Velocity directives are not evaluated.", false);
+            Matcher matcher = DISPLAY_REFERENCE.matcher(raw);
+            StringBuffer output = new StringBuffer();
+            while (matcher.find()) {
+                if (++work > 256) return fail("Expression exceeds the safe resolution limit.", false);
+                String name = matcher.group(1) != null ? matcher.group(1) : matcher.group(2);
+                if (matcher.group(1) == null && matcher.end() < raw.length()
+                        && ".([".indexOf(raw.charAt(matcher.end())) >= 0)
+                    return fail("Object properties and method expressions are determined at runtime.", true);
+                boolean useParameter = validation && context.parameters.containsKey(name);
+                Set<String> ambiguous = useParameter ? context.ambiguousParameters : context.ambiguousConstants;
+                DisplaySource source = useParameter ? context.parameters.get(name) : context.constants.get(name);
+                if (ambiguous.contains(name)) return fail("Ambiguous source: " + name, false);
+                if (source == null) return fail("Unknown reference: " + name, false);
+                String key = source.path + ":" + source.node + ":" + source.attribute;
+                if (seen.add(key)) sources.add(source.metadata());
+                if (!active.add(key)) return fail("Cyclic reference: " + name, false);
+                String replacement;
+                if (!validation && expressionBearing(source.value)) {
+                    conceptual = true;
+                    preview = true;
+                    replacement = resolve(source.value, false, active, depth + 1);
+                } else if (validation && expressionBearing(source.value)) {
+                    replacement = resolve(source.value, false, active, depth + 1);
+                } else replacement = source.value;
+                active.remove(key);
+                if (reason != null) return "";
+                if (output.length() + replacement.length() > 65536)
+                    return fail("Resolved value exceeds the safe limit.", false);
+                matcher.appendReplacement(output, Matcher.quoteReplacement(replacement));
+            }
+            matcher.appendTail(output);
+            String value = output.toString();
+            if (expressionBearing(value)) return fail("Unsupported or unresolved Velocity expression.", false);
+            if (value.length() > 65536) return fail("Resolved value exceeds the safe limit.", false);
+            return value;
+        }
+    }
+
+    private static DisplayContext displayContext(Document doc, Element scenario, String path,
+            String revision, java.time.Instant instant) {
+        DisplayContext result = new DisplayContext(instant);
+        Element header = directChild(doc.getDocumentElement(), "header");
+        if (header != null) {
+            for (Element constant : descendants(header, "constant"))
+                if (constant.hasAttribute("name") && constant.hasAttribute("constValue"))
+                    result.put(result.constants, result.ambiguousConstants,
+                            new DisplaySource(constant, "constValue", path, revision));
+            if (scenario != null) for (Element parameter : descendants(header, "parameter"))
+                if (parameter.hasAttribute("name") && parameter.hasAttribute("defaultValue"))
+                    result.put(result.parameters, result.ambiguousParameters,
+                            new DisplaySource(parameter, "defaultValue", path, revision));
+        }
+        if (scenario != null) {
+            result.validation = true;
+            Set<String> overrides = new LinkedHashSet<String>();
+            for (Element parameter : directChildren(scenario, "parameter")) {
+                if (!parameter.hasAttribute("name") || !parameter.hasAttribute("paramValue")) continue;
+                String name = parameter.getAttribute("name");
+                if (overrides.add(name)) {
+                    result.parameters.remove(name); result.ambiguousParameters.remove(name);
+                }
+                result.put(result.parameters, result.ambiguousParameters,
+                        new DisplaySource(parameter, "paramValue", path, revision));
+            }
+        }
+        return result;
+    }
+
+    private static void addDisplays(List<Object> fields, DisplayContext context) {
+        for (Object item : fields) {
+            @SuppressWarnings("unchecked") Map<String, Object> field = (Map<String, Object>) item;
+            Object value = field.get("value");
+            if (value instanceof String) field.put("display", context.display((String) value));
+        }
+    }
+
+    private static Map<String, Object> aggregateDisplays(List<Map<String, Object>> displays) {
+        Map<String, Object> result = new LinkedHashMap<String, Object>(displays.get(0));
+        List<Object> sources = new ArrayList<Object>();
+        boolean disagreement = false;
+        for (Map<String, Object> display : displays) {
+            sources.addAll((List<?>) display.get("sources"));
+            if (!result.get("status").equals(display.get("status"))
+                    || !java.util.Objects.equals(result.get("value"), display.get("value"))) disagreement = true;
+        }
+        result.put("sources", sources);
+        if (disagreement) {
+            result.put("status", "unresolved"); result.remove("value");
+            result.remove("evaluatedAt"); result.remove("zone");
+            result.put("reason", "This raw value resolves differently across files; inspect each file.");
         }
         return result;
     }

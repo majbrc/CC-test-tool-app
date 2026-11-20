@@ -17,3 +17,10 @@ build/configuration files. This confirmation does not cover the omitted vendor c
 The legal notices retained under doc and __doc relate to Oracle documentation; they do not
 establish rights for the framework configuration or this project's fixtures.
 Do not commit restored credentials, production identifiers, or raw execution reports.
+
+The application includes SAP-colour neumorphism, environment previews, expression editing,
+and an integrated report viewer with outcome charts, multi-status filters, expandable
+diagnostics, CIT mismatch highlighting, and a report-wide failure summary.
+The integrated viewer requires native detailed reports generated locally. Bundled numeric-only
+sanitized summaries remain available through Open original report; their omitted diagnostics
+cannot be reconstructed. Browser regression tests use synthetic report data.

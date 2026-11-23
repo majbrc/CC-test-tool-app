@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Automated Testing Tool</title>
-  <link rel="stylesheet" href="/styles.css?v=20261119-failure-summary-r10">
+  <link rel="stylesheet" href="/styles.css?v=20261123-search-panel-r13">
 </head>
 <body>
   <header class="shell">
@@ -112,28 +112,33 @@
         </div>
         <p id="report-message" class="field-help" role="status" aria-live="polite"></p>
         <p id="report-run-warning" class="inline-warning" role="status" hidden>A test run is in progress. These saved results may be from an earlier run or may be incomplete. Refresh after execution finishes.</p>
-        <section id="report-failures" class="report-failures" aria-label="Failure summary" hidden></section>
         <div id="report-summary"></div>
+        <details id="report-failures" class="report-failures" hidden></details>
         <div class="report-filters">
-          <label class="field"><span>Search suites and tests</span><input id="report-search" type="search" placeholder="Name"></label>
+          <fieldset class="report-status-filter report-search-panel">
+            <legend><label for="report-search">Search suites and tests</label></legend>
+            <input id="report-search" type="search" placeholder="Name">
+          </fieldset>
           <fieldset id="report-filter" class="report-status-filter" aria-describedby="report-filter-help">
             <legend>Test outcome</legend>
             <div class="report-status-buttons">
-              <button type="button" class="button" data-status="passed" aria-pressed="true">Passed</button>
-              <button type="button" class="button" data-status="failed" aria-pressed="true">Failed</button>
-              <button type="button" class="button" data-status="skipped" aria-pressed="true">Skipped</button>
+              <button type="button" class="button" data-status="all" aria-pressed="true">All</button>
+              <button type="button" class="button" data-status="passed" aria-pressed="false">Passed</button>
+              <button type="button" class="button" data-status="failed" aria-pressed="false">Failed</button>
+              <button type="button" class="button" data-status="skipped" aria-pressed="false">Skipped</button>
             </div>
           </fieldset>
           <fieldset id="report-scenario-filter" class="report-status-filter" aria-describedby="report-filter-help">
             <legend>Scenario outcome</legend>
             <div class="report-status-buttons">
-              <button type="button" class="button" data-status="passed" aria-pressed="true">Passed</button>
-              <button type="button" class="button" data-status="failed" aria-pressed="true">Failed</button>
-              <button type="button" class="button" data-status="skipped" aria-pressed="true">Skipped</button>
+              <button type="button" class="button" data-status="all" aria-pressed="true">All</button>
+              <button type="button" class="button" data-status="passed" aria-pressed="false">Passed</button>
+              <button type="button" class="button" data-status="failed" aria-pressed="false">Failed</button>
+              <button type="button" class="button" data-status="skipped" aria-pressed="false">Skipped</button>
             </div>
           </fieldset>
         </div>
-        <p id="report-filter-help" class="field-help">Select one or more statuses in each group; keep at least one selected. Expand a test to view matching scenarios. Charts remain report-wide.</p>
+        <p id="report-filter-help" class="field-help">All outcomes are shown initially. Click a status to show only that outcome, then add others as needed. All resets the group; deselecting the last status also shows all. Expand a test to view matching scenarios. Charts remain report-wide.</p>
         <p id="report-result-count" class="field-help" role="status"></p>
         <div id="report-results"></div>
       </section>
@@ -309,7 +314,7 @@
     <pre id="run-log" class="run-log">No execution log available.</pre>
   </dialog>
 
-  <script src="/report.js?v=20261119-failure-summary-r10"></script>
+  <script src="/report.js?v=20261123-scenario-links-r15"></script>
   <script src="/app.js?v=20261117-environment-picker-r4"></script>
 </body>
 </html>

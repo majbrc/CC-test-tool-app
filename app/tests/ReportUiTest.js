@@ -32,6 +32,7 @@
       "</table></div>";
   }
   var detail = '<div id="_TEST-FAILED-1"><p>method [param set id: 42]</p>' +
+    '<button id="log_btn_1" onclick="window.open(\'./scenario/930_42.htm\')">FAILED</button>' +
     '<div id="_DESCRIPTION-1-DETAIL">Example &lt;value&gt;</div>' +
     '<div id="_STACKTRACE-1-DETAIL">Stacktrace:<br>AssertionError<br>expected &lt;1&gt; but found 0' +
     '<br>Validation failed for<br>validation item: Charged item validation;<br>expected number of CIT(s): 1, but found: 0' +
@@ -67,6 +68,23 @@
       "Preserve reported suite status without the suite classification warning");
     check(report.suites[0].tests[1].links[0] === location.origin + "/report/example/second.htm", "Resolve literal detail links");
     var rows = ChargingReport.parseDetails(detail);
+    var flowRows = ChargingReport.parseDetails(detail, location.origin + "/report/example/second.htm");
+    check(flowRows[0].flowUrl === location.origin + "/report/example/scenario/930_42.htm",
+      "Resolve the exact scenario flow link relative to its detail page");
+    ["https://example.invalid/flow.htm", "../other/flow.htm", "./%2e%2e/flow.htm", "./scenario/file.xml",
+      "javascript:alert(1)"].forEach(function (path) {
+      var row = ChargingReport.parseDetails(detail.replace("./scenario/930_42.htm", path),
+        location.origin + "/report/example/second.htm")[0];
+      check(!row.flowUrl && !!row.flowError, "Reject unsafe scenario flow link " + path);
+    });
+    var missingFlow = ChargingReport.parseDetails('<div id="_TEST-FAILED-1"><p>No flow</p></div>',
+      location.origin + "/report/example/second.htm")[0];
+    check(!missingFlow.flowUrl && missingFlow.flowError.includes("No scenario flow"),
+      "Missing scenario flow is explicit instead of falling back to the suite report");
+    var twoPages = ["one", "two"].map(function (folder) {
+      return ChargingReport.parseDetails(detail, location.origin + "/report/example/" + folder + "/details.htm")[0].flowUrl;
+    });
+    check(twoPages[0] !== twoPages[1], "Scenario links retain their own source directory across detail pages");
     check(rows[0].diagnostics.response.indexOf("AssertionError\nexpected <1>") >= 0, "Preserve response line breaks as text");
     check(rows[0].diagnostics.citFilter === "classId equals <MUSG> AND\namount equals 1", "Separate CIT filter properties from response");
     check(rows[0].diagnostics.tables[0][0].length === 8 && rows[0].diagnostics.tables[0][0][5] === "0",
@@ -201,12 +219,27 @@
     d.body.dispatchEvent(new w.PointerEvent("pointerdown", {bubbles:true}));
     check(d.getElementById("environment-popup").hidden, "Outside pointer dismisses picker");
     w.__detailHtml = detail +
-      '<div id="_TEST-PASSED-2"><p>Passed scenario</p></div>' +
-      '<div id="_TEST-SKIPPED-3"><p>Skipped scenario</p></div>';
+      '<div id="_TEST-PASSED-2"><p>Passed scenario</p><button id="log_btn_2" onclick="window.open(\'./scenario/930_43.htm\')">Log</button></div>' +
+      '<div id="_TEST-SKIPPED-3"><p>Skipped scenario</p><button id="log_btn_3" onclick="window.open(\'./scenario/930_44.htm\')">Log</button></div>';
     d.getElementById("open-report").click();
     await until(function () { return d.querySelectorAll(".report-chart svg").length === 2; }, "Report screen did not load");
     await until(function () { return !!d.querySelector(".report-failure-scenario"); }, "Automatic failure summary did not load");
     var failureSummary = d.getElementById("report-failures"), summaryContent = failureSummary.textContent;
+    var flowLink = failureSummary.querySelector(".report-failure-scenario a");
+    check(flowLink && flowLink.href === location.origin + "/report/example/scenario/930_42.htm" &&
+      flowLink.textContent === "Open scenario flow report" && flowLink.target === "_blank" &&
+      !failureSummary.querySelector('a[href$="/second.htm"]'),
+      "Summary links directly from the failed scenario to its flow report, not the test report");
+    var summaryToggle = failureSummary.querySelector("summary");
+    check(failureSummary.tagName === "DETAILS" && !failureSummary.open &&
+      summaryToggle.textContent === "Summary" &&
+      d.getElementById("report-summary").nextElementSibling === failureSummary,
+      "Summary is collapsed below the report charts with the requested title");
+    summaryToggle.click();
+    check(failureSummary.open && parseFloat(w.getComputedStyle(summaryToggle.querySelector("h2")).fontSize) >= 28,
+      "Clicking the prominent Summary title expands the summary");
+    summaryToggle.click();
+    check(!failureSummary.open, "Clicking Summary again collapses it");
     check(summaryContent.includes("Second") && summaryContent.includes("Suite & example") &&
       summaryContent.includes("param set id: 42") && summaryContent.includes("Charged item validation failed: expected 1 CIT(s), but found 0."),
       "Automatic summary groups the failed test, suite, scenario and recorded validation reason");
@@ -221,19 +254,26 @@
     var filter = d.getElementById("report-filter");
     var scenarioFilter = d.getElementById("report-scenario-filter");
     function chooseStatuses(group, statuses) {
-      var buttons = Array.from(group.querySelectorAll("button[data-status]"));
-      buttons.forEach(function (button) {
-        if (statuses.indexOf(button.dataset.status) >= 0 && button.getAttribute("aria-pressed") !== "true") { button.click(); }
-      });
-      buttons.forEach(function (button) {
-        if (statuses.indexOf(button.dataset.status) < 0 && button.getAttribute("aria-pressed") === "true") { button.click(); }
-      });
+      group.querySelector('[data-status="all"]').click();
+      if (statuses.length < 3) {
+        statuses.forEach(function (status) { group.querySelector('[data-status="' + status + '"]').click(); });
+      }
     }
     var combinations = [["passed"], ["failed"], ["skipped"], ["passed", "failed"],
       ["passed", "skipped"], ["failed", "skipped"], ["passed", "failed", "skipped"]];
     check(!filter.querySelector("select") && !scenarioFilter.querySelector("select") &&
-      d.querySelectorAll('.report-status-filter button[aria-pressed="true"]').length === 6,
-      "Both outcome groups default to all three status buttons selected");
+      d.querySelectorAll('.report-status-filter button[aria-pressed="true"]').length === 2 &&
+      filter.querySelector('[data-status="all"]').getAttribute("aria-pressed") === "true" &&
+      scenarioFilter.querySelector('[data-status="all"]').getAttribute("aria-pressed") === "true",
+      "Both outcome groups default to All");
+    filter.querySelector('[data-status="failed"]').click();
+    check(d.querySelectorAll(".report-test").length === 1 &&
+      d.querySelector(".report-test .report-status--failed"), "One click on Failed isolates failed tests from All");
+    filter.querySelector('[data-status="skipped"]').click();
+    check(filter.querySelector('[data-status="failed"]').getAttribute("aria-pressed") === "true" &&
+      filter.querySelector('[data-status="skipped"]').getAttribute("aria-pressed") === "true" &&
+      filter.querySelector('[data-status="all"]').getAttribute("aria-pressed") === "false",
+      "A second status click adds to the test selection");
     combinations.forEach(function (statuses) {
       chooseStatuses(filter, statuses);
       var shown = Array.from(d.querySelectorAll(".report-test > summary .report-status")).map(function (badge) {
@@ -244,9 +284,9 @@
     });
     chooseStatuses(filter, ["failed"]);
     filter.querySelector('[data-status="failed"]').click();
-    check(filter.querySelector('[data-status="failed"]').getAttribute("aria-disabled") === "true" &&
-      filter.querySelectorAll('[aria-pressed="true"]').length === 1,
-      "Test buttons keep at least one status selected");
+    check(filter.querySelector('[data-status="all"]').getAttribute("aria-pressed") === "true" &&
+      d.querySelectorAll(".report-test").length === 2, "Deselecting the last test status restores All");
+    filter.querySelector('[data-status="failed"]').click();
     check(d.querySelectorAll(".report-test").length === 1 && d.querySelector(".report-chart__total").textContent.indexOf("2") >= 0, "Filtering leaves charts report-wide");
     var beforeExpansion = w.__requests.length;
     chooseStatuses(scenarioFilter, ["failed"]);
@@ -270,6 +310,14 @@
     check(d.querySelector(".report-cit-table td:last-child").textContent === "<img src=x onerror=alert(1)>" &&
       !d.querySelector(".report-cit-table img") && !d.querySelector(".report-scenarios").textContent.includes("org.example"),
       "Table values are escaped and Java stack frames are absent");
+    var scenarioLinks = Array.from(d.querySelectorAll(".report-scenario .report-scenario-link a"));
+    check(scenarioLinks.length === 3 && scenarioLinks.every(function (link, index) {
+      return link.href === location.origin + "/report/example/scenario/930_" + (42 + index) + ".htm" &&
+        link.target === "_blank" && link.rel.includes("noopener");
+    }), "Each scenario outcome has its own safe flow report link");
+    check(diagnosticSections[1].nextElementSibling.classList.contains("report-scenario-link") &&
+      diagnosticSections[1].nextElementSibling.nextElementSibling === diagnosticSections[2],
+      "Scenario flow link sits below Response Details and above CIT filter");
     check(!d.querySelector("#report-results script"), "Report data does not introduce scripts");
     var citRows = d.querySelectorAll(".report-cit-table tbody tr");
     citComparisons.forEach(function (item, index) {
@@ -288,12 +336,23 @@
     });
     check(w.__requests.length === requestsBeforeFilter && d.querySelector(".report-chart__total").textContent.indexOf("2") >= 0,
       "Scenario filtering neither refetches nor changes report-wide charts");
+    scenarioFilter.querySelector('[data-status="all"]').click();
+    check(d.querySelectorAll(".report-scenario:not([hidden])").length === 3, "All restores every scenario");
+    scenarioFilter.querySelector('[data-status="failed"]').click();
+    check(d.querySelectorAll(".report-scenario:not([hidden])").length === 1 &&
+      d.querySelector(".report-scenario:not([hidden])").dataset.scenarioStatus === "failed",
+      "One click on Failed isolates failed scenarios from All");
+    scenarioFilter.querySelector('[data-status="skipped"]').click();
+    check(d.querySelectorAll(".report-scenario:not([hidden])").length === 2 &&
+      d.querySelector('.report-scenario[data-scenario-status="passed"]').hidden,
+      "Clicking Failed then Skipped shows both scenario outcomes");
     check(failureSummary.textContent === summaryContent, "Summary remains unchanged by test and scenario status filters");
     chooseStatuses(scenarioFilter, ["skipped"]);
     scenarioFilter.querySelector('[data-status="skipped"]').click();
-    check(scenarioFilter.querySelectorAll('[aria-pressed="true"]').length === 1 &&
-      d.querySelector(".report-scenario:not([hidden])").dataset.scenarioStatus === "skipped",
-      "Scenario buttons keep at least one status selected");
+    check(scenarioFilter.querySelector('[data-status="all"]').getAttribute("aria-pressed") === "true" &&
+      d.querySelectorAll(".report-scenario:not([hidden])").length === 3,
+      "Deselecting the last scenario status restores All");
+    scenarioFilter.querySelector('[data-status="skipped"]').click();
     check(filter.querySelectorAll('[aria-pressed="true"]').length === 1 &&
       filter.querySelector('[data-status="failed"]').getAttribute("aria-pressed") === "true",
       "Test and scenario status choices are independent");
@@ -470,6 +529,7 @@
     await until(function () { return failureSummary.querySelectorAll(".report-failure-scenario").length === 4; },
       "Queued failure summaries did not finish");
     check(w.__maxActiveDetails <= 2 && w.__maxActiveDetails > 0, "Automatic failure loading is bounded to two concurrent detail reads");
+    failureSummary.querySelector("summary").click();
     [390, 1280].forEach(function (width) {
       frame.style.width = width + "px";
       check(d.documentElement.scrollWidth <= w.innerWidth, width + "px populated failure summary fits the viewport");

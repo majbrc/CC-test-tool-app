@@ -321,16 +321,18 @@ select:disabled, input:disabled, textarea:disabled, .model-field input:disabled,
 .dialog__footer-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
 
 .report-toolbar, .report-filters { display: flex; align-items: end; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0; }
+.report-filters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; }
+.report-search-panel input { width: 100%; min-width: 0; min-height: 2.75rem; }
 .report-toolbar a { display: inline-flex; align-items: center; text-decoration: none; }
-.report-status-filter { min-width: 0; margin: 0; padding: 0; border: 0; }
-.report-status-filter legend { margin-bottom: .25rem; padding: 0; color: var(--muted); font-size: .75rem; font-weight: 600; }
+.report-status-filter { min-width: 0; margin: 0; padding: 1rem; border: .0625rem solid var(--control-border); border-radius: 1rem; background: var(--surface); box-shadow: var(--shadow-small); }
+.report-status-filter legend { padding: 0 .5rem; color: var(--text); font-size: 1rem; font-weight: 700; }
 .report-status-buttons { display: flex; flex-wrap: wrap; gap: .5rem; }
 .report-status-buttons .button { min-height: 2.75rem; }
 .report-status-buttons .button[aria-pressed="true"] { color: #fff; background: var(--accent-hover); border-color: var(--accent-hover); box-shadow: inset .125rem .125rem .375rem #064c94; }
 .report-status-buttons .button[aria-pressed="true"]:hover { background: #064c94; }
-.report-status-buttons .button[aria-disabled="true"] { cursor: default; }
 .report-failures { margin: 1.5rem 0; padding: 1.5rem; border: .0625rem solid var(--border); border-radius: 1.375rem; background: var(--surface); box-shadow: var(--shadow); overflow-wrap: anywhere; }
-.report-failures h2 { font-size: 1.25rem; }
+.report-failures > summary { cursor: pointer; color: var(--accent-hover); border-radius: .25rem; }
+.report-failures > summary > h2 { display: inline; margin: 0; font-size: 1.75rem; font-weight: 700; line-height: 1.3; }
 .report-failure-test { margin-top: 1rem; padding-top: 1rem; border-top: .0625rem solid var(--border); }
 .report-failure-test h3 { margin: 0; font-size: 1rem; }
 .report-failure-test > p { font-size: .8125rem; color: var(--muted); }
@@ -406,7 +408,7 @@ select:disabled, input:disabled, textarea:disabled, .model-field input:disabled,
   .report-charts { grid-template-columns: 1fr; }
   .report-chart, .report-suite { padding: 1rem; }
   .report-failures { padding: 1rem; }
-  .report-filters { align-items: stretch; flex-direction: column; }
+  .report-filters { grid-template-columns: 1fr; }
   .report-filters input { width: 100%; }
   .report-test > summary, .report-scenario > summary { flex-wrap: wrap; }
   .suite-row { grid-template-columns: 1fr; padding: 1.2rem; }

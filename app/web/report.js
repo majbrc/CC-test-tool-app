@@ -219,13 +219,16 @@
           }).join("") + "</ul>" +
           (differences.length > 20 ? '<p class="field-help">Showing 20 of ' + differences.length +
             " differing rows. See full scenario details for the remainder.</p>" : "") : "") +
-        "</section>";
+        scenarioFlowLink(row) + "</section>";
     }).join("") + (failed.length > 50 ? '<p class="field-help">Showing 50 of ' + failed.length +
       " failed scenarios. Open the original detail report for the remainder.</p>" : "") :
-      '<p class="inline-warning">The overview reports a failure, but no failed scenario details were recorded. The reason is unavailable.</p>') +
-      '<p class="report-originals">' + data.links.map(function (url) {
-        return originalLink(url, "Open original detail report");
-      }).join(" · ") + "</p>";
+      '<p class="inline-warning">The overview reports a failure, but no failed scenario details were recorded. The reason is unavailable.</p>');
+  }
+
+  function scenarioFlowLink(row) {
+    return '<p class="report-originals report-scenario-link">' + (row.flowUrl ?
+      originalLink(row.flowUrl, "Open scenario flow report") :
+      '<span class="field-help">' + escape(row.flowError) + "</span>") + "</p>";
   }
 
   function parseResponse(node) {
@@ -283,6 +286,7 @@
     }
     var response = row.diagnostics;
     return disclosure("Description", row.description) + disclosure("Response Details", response.response) +
+      scenarioFlowLink(row) +
       disclosure("CIT filter", response.citFilter) + warningsHtml(response.warnings) +
       response.tables.map(function (rows, index) {
         return '<section class="report-cit-section"><h3>CIT validation results' +
@@ -300,7 +304,17 @@
       (!response.response && !response.citFilter && !response.tables.length ?
         '<p class="field-help">' + (row.status === "failed" ? "No failure diagnostics were included." : "No run error text reported.") + "</p>" : "");
   }
-  function parseDetails(html) {
+  function scenarioFlow(node, index, pageUrl) {
+    var buttons = node.querySelectorAll('[id="log_btn_' + index + '"]');
+    if (!buttons.length) { return { error: "No scenario flow report link was recorded." }; }
+    try {
+      if (buttons.length !== 1) { throw new Error("Ambiguous scenario flow report links."); }
+      var call = (buttons[0].getAttribute("onclick") || "").match(/^\s*window\.open\(\s*(['"])([^'"]+)\1\s*\)\s*;?\s*$/);
+      if (!call || !pageUrl) { throw new Error("Unsupported scenario flow report link."); }
+      return { url: safeLink(call[2], pageUrl, new URL(".", pageUrl).href) };
+    } catch (error) { return { error: "Scenario flow report unavailable: " + error.message }; }
+  }
+  function parseDetails(html, pageUrl) {
     var dom = documentFor(html), seen = {};
     var nodes = Array.from(dom.querySelectorAll("div[id]")).filter(function (node) {
       return /^_TEST-(PASSED|FAILED|SKIPPED)-\d+$/.test(node.id);
@@ -311,7 +325,9 @@
       if (seen[node.id]) { throw new Error("Duplicate scenario identifiers in detail report."); }
       seen[node.id] = true;
       var index = node.id.match(/(\d+)$/)[1];
+      var flow = scenarioFlow(node, index, pageUrl);
       return { id: node.id, status: node.id.match(/^_TEST-(\w+)-/)[1].toLowerCase(),
+        flowUrl: flow.url || "", flowError: flow.error || "",
         name: compact(node.querySelector("p")) || "Scenario " + index,
         description: diagnostic(node.querySelector('[id="_DESCRIPTION-' + index + '-DETAIL"]')),
         diagnostics: parseResponse(node.querySelector('[id="_STACKTRACE-' + index + '-DETAIL"]')) };
@@ -391,27 +407,26 @@
     var failures = screen.querySelector("#report-failures");
     var refresh = screen.querySelector("#report-refresh");
     function selectedStatuses(group) {
+      if (group.querySelector('[data-status="all"]').getAttribute("aria-pressed") === "true") { return outcomes; }
       return Array.from(group.querySelectorAll('button[aria-pressed="true"]')).map(function (button) {
         return button.getAttribute("data-status");
       });
     }
     function bindStatusButtons(group, onChange) {
       var buttons = group.querySelectorAll("button[data-status]");
-      function updateAvailability() {
-        var single = selectedStatuses(group).length === 1;
-        buttons.forEach(function (button) {
-          button.setAttribute("aria-disabled", String(single && button.getAttribute("aria-pressed") === "true"));
-        });
-      }
+      var all = group.querySelector('[data-status="all"]');
       buttons.forEach(function (button) {
         button.addEventListener("click", function () {
-          if (button.getAttribute("aria-disabled") === "true") { return; }
-          button.setAttribute("aria-pressed", String(button.getAttribute("aria-pressed") !== "true"));
-          updateAvailability();
+          if (button === all) {
+            buttons.forEach(function (item) { item.setAttribute("aria-pressed", String(item === all)); });
+          } else {
+            all.setAttribute("aria-pressed", "false");
+            button.setAttribute("aria-pressed", String(button.getAttribute("aria-pressed") !== "true"));
+            if (!selectedStatuses(group).length) { all.setAttribute("aria-pressed", "true"); }
+          }
           onChange();
         });
       });
-      updateAvailability();
     }
     function filterScenarios(target) {
       var rows = target.querySelectorAll("[data-scenario-status]"), shown = 0, statuses = selectedStatuses(scenarioFilter);
@@ -464,7 +479,7 @@
         var rows = [], links = [], issue = test.warnings.slice();
         for (var link of test.links) {
           var page = await readHtml(link, signal, selectedModel.root);
-          rows = rows.concat(parseDetails(page.html));
+          rows = rows.concat(parseDetails(page.html, page.url));
           if (rows.length > maxItems) { throw new Error("Too many scenarios to display. Open the original report."); }
           links.push(page.url);
         }
@@ -527,8 +542,8 @@
         });
       });
       failures.hidden = false;
-      failures.innerHTML = '<h2>Failure summary</h2><p class="field-help">Report-wide; unaffected by status filters or search.</p>' +
-        (model.warnings.length ? '<p class="inline-warning">Report totals are incomplete or inconsistent. Available failure entries are shown; see report warnings below.</p>' : "") +
+      failures.innerHTML = '<summary><h2>Summary</h2></summary><p class="field-help">Report-wide; unaffected by status filters or search.</p>' +
+        (model.warnings.length ? '<p class="inline-warning">Report totals are incomplete or inconsistent. Available failure entries are shown; see report warnings above.</p>' : "") +
         (candidates.length ? candidates.map(function (item) {
           return '<section class="report-failure-test"><h3>' + escape(item.test.name) + "</h3><p>" +
             escape(item.suite.name) + " · Reported test status: " + statusBadge(item.test.status) +
@@ -550,7 +565,7 @@
       controller = new AbortController();
       var current = ++sequence;
       model = null; cache.clear(); pending.clear(); summary.innerHTML = ""; results.innerHTML = "";
-      failures.innerHTML = ""; failures.hidden = true;
+      failures.innerHTML = ""; failures.hidden = true; failures.open = false;
       screen.querySelector("#report-result-count").textContent = "";
       message.className = "field-help"; message.textContent = "Loading existing report…";
       refresh.disabled = true; source.href = "/api/report";

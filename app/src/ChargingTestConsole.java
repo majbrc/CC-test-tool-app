@@ -1118,15 +1118,12 @@ public final class ChargingTestConsole {
         @SuppressWarnings("unchecked") List<Map<String, Object>> props = (List<Map<String, Object>>) model.get("properties");
         for (Map<String, Object> property : props) if (name.equals(property.get("name"))) found = true;
         if (!found) throw new HttpError(400, "Not a suite user property");
-        Map<String, Object> editorMetadata = metadata(changes);
         Map<Path, List<String>> references = allReferences(changes);
         for (Path input : suiteInputs(suite, changes).keySet()) {
             Document doc = changes.document(input);
             boolean changed = false;
             for (Element c : constants(doc)) if (name.equals(c.getAttribute("name")) && c.hasAttribute("constValue")) {
                 protectExpression(c.getAttribute("constValue"), value);
-                Object type = editorMetadata.get("type:" + relativePath(input) + ":" + name);
-                if (type instanceof String) validateTypedValue(value, (String) type, changes, relativePath(input));
                 if (!value.equals(c.getAttribute("constValue"))) { c.setAttribute("constValue", value); changed = true; }
             }
             if (changed) {

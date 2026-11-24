@@ -2,6 +2,29 @@
   "use strict";
 
   var state = null;
+  var commonValueOptions = {
+    CUSTOMER_TYPE: ["B2B", "B2C"],
+    // CP_USG_MOBILE_T02.xml, MT_RATE_PLAN_T03: rows valid on 2026-11-24.
+    RATE_PLAN: [
+      "4GMOB_S_MHS_C", "4GMOB_XS_MHS_C", "4GNES_25GB_MBB_C", "4GNES_75GB_MBB_C",
+      "4GNES_UNL_MBB_C", "5GM_DISN_UNL_MHS_C", "5GM_NETF_UNL_MHS_C", "5GMOB_L_MHS_C",
+      "5GMOB_M_MHS_C", "5GMOB_XL_MHS_C", "5GMOB_XXL_MHS_C", "5GN_DISN_UNL_MBB_C",
+      "5GN_NETF_UNL_MBB_C", "5GNES_25GB_MBB_C", "5GNES_750GB_MBB_C", "5GNES_75GB_MBB_C",
+      "5GNES_UNL_MBB_C", "BAZINIS_M_MHS_C", "FAMILY5_50GB_MHS_C", "GO_10GB_MBB_C",
+      "GO_FREE_UNL_MBB_C", "GO_L_240GB_MBB_C", "GO_M_120GB_MBB_C", "GO_S_60GB_MBB_C",
+      "GO_XL_UNL_MBB_C", "GO_XS_30GB_MBB_C", "ISMANUS_2GB_MHS_C", "ISMANUS_UNL_MHS_C",
+      "LAIKROD_UNL_MHS_C", "MANO_200_MHS_C", "MINIM_300MB_MHS_C", "MINIM_750MB_MHS_C",
+      "MOB_10GB_MHS_C", "MOB_1GB_MHS_C", "MOB_5GB_MHS_C", "MOB_FLEXI12_MHS_C",
+      "MOB_FLEXI20_MHS_C", "MOB_FLEXI4_MHS_C", "MOB_FLEXI40_MHS_C", "MOB_FLEXI8_MHS_C",
+      "MOB_START1_MHS_C", "MOB5G_20GB_MHS_C", "MOB5G_50GB_MHS_C", "MOB5G_UNL_MHS_C",
+      "NES5G_500GB_MBB_C", "NES5G_EU_UNL_MBB_C", "NESIO4G_UNL_MBB_C", "NESIO5G_UNL_MBB_C",
+      "NESIOJ_0GB_MBB_C", "NESIOJ_100GB_MBB_C", "NESIOJ_150GB_MBB_C", "NESIOJ_25GB_MBB_C",
+      "NESIOJ_50GB_MBB_C", "PARTNER_25GB_MHS", "POKALB_500MB_MHS_C", "SAUGA_100MB_M2M_C",
+      "SAUGA_50MB_M2M_C", "SPECIALUS_30_MHS_C", "SPECIALUS_50_MHS_C", "TARNYBINIS_MHS",
+      "TARNYBINIS_UNL_MBB", "TEL_FAM_30GB_MHS_C", "TEL_FAM_UNL_MBB_C", "TELE_100MB_M2M_C",
+      "TELE_200MB_M2M_C", "TELE_300MB_M2M_C", "TELEM_300MB_M2M_C", "TEST_PLAN"
+    ]
+  };
   var currentSuite = null;
   var currentTarget = null;
   var currentFile = null;
@@ -815,7 +838,13 @@
     }
     var properties = common.properties || [];
     if (!properties.length) { return "<p class=\"field-help\">No shared user properties were discovered in this suite.</p>"; }
-    return "<div class=\"common-grid\">" + properties.map(function (property, index) {
+    return "<div class=\"common-table-scroll\" role=\"region\" aria-label=\"Common user properties\" tabindex=\"0\">" +
+      "<table class=\"common-table\"><thead><tr><th scope=\"col\">Property Name</th>" +
+      "<th scope=\"col\">Value</th><th scope=\"col\">Edit Parameter</th></tr></thead><tbody>" +
+      properties.map(function (property, index) {
+      var options = Object.prototype.hasOwnProperty.call(commonValueOptions, property.name) ?
+        commonValueOptions[property.name] : null;
+      var optionsLabel = label(property.name) + " options";
       var inputId = "common-" + definitionPath.replace(/[^A-Za-z0-9_-]/g, "-") + "-" + index;
       var entries = property.values || [];
       var files = property.files || [];
@@ -829,49 +858,10 @@
       });
       var variesByFile = displayVariants.some(function (item) { return item !== displayVariants[0]; });
       var value = property.mixed ? "" : (entries.length && entries[0].value != null ? String(entries[0].value) : "");
-      var filePaths = files.map(function (file) { return file.path; }).filter(function (path, position, paths) {
-        return paths.indexOf(path) === position;
-      });
-      var type = property.mixedType ? "" : (property.editorType || "");
-      var supportedTypes = ["string", "number", "date", "unixTimestamp"];
-      var selectedType = supportedTypes.filter(function (option) {
-        return option.toLowerCase() === String(type).toLowerCase();
-      })[0] || "";
       var hasTimestamp = /MILLIS/i.test(property.name) ||
         files.some(function (file) { return String(file.editorType).toLowerCase() === "unixtimestamp"; });
-      var typeSummary = property.mixedType ? "Mixed editor types across input XMLs" :
-        (type ? "Current editor type: " + (type === "unixTimestamp" ? "Unix timestamp (ms)" : label(type))
-          : "No editor type reported");
-      if (type && !selectedType) { typeSummary += " (choose a supported editor type)"; }
-      var typeOptions = supportedTypes.map(function (option) {
-        return "<option value=\"" + option + "\"" +
-          (option === selectedType ? " selected" : "") + ">" +
-          (option === "unixTimestamp" ? "Unix timestamp (ms)" : label(option)) + "</option>";
-      }).join("");
-      var typeControl = "<div class=\"common-type-setting\"><label for=\"" + escapeHtml(inputId) +
-        "-type\">Editor type for all matching input XMLs</label><select id=\"" + escapeHtml(inputId) +
-        "-type\" data-common-suite-type=\"" + index + "\">" +
-        "<option value=\"\" disabled" + (!selectedType ? " selected" : "") + ">Choose a type for all</option>" +
-        typeOptions + "</select><p class=\"field-help\">" + escapeHtml(typeSummary) +
-        ". By default, changing type keeps each existing value, including mixed values and expressions.</p>" +
-        "<label class=\"common-replace\"><input type=\"checkbox\" data-common-type-replace=\"" + index +
-        "\"" + (protectedValue ? " disabled" : "") + "><span>Also replace every matching value with the common value above (including blank if left empty). This includes XML constants, declaration defaults, and scenario values.</span></label>" +
-        (protectedValue ? "<p class=\"field-help\">Value replacement is unavailable because at least one XML value is parameterized. Type-only review keeps every expression intact.</p>" : "") +
-        "<button class=\"button\" type=\"button\" data-common-type-preview=\"" + index +
-        "\" data-common-path=\"" + escapeHtml(definitionPath) +
-        "\"" + (!selectedType ? " disabled" : "") + ">Review type for all XMLs</button></div>";
-      var typeDetails = "<details class=\"common-type-details\"><summary>Type by XML entry (" + files.length +
-        ")</summary><ul class=\"common-type-list\">" + files.map(function (file) {
-          var origin = file.typeSource === "metadata" ? "saved GUI setting" :
-            file.typeSource === "declared" ? "XML declaration" : "inferred";
-          return "<li><code>" + escapeHtml(file.path) + "</code><span>" +
-            escapeHtml(file.kind === "parameter" ? "Parameter declaration" : "Constant") +
-            " · XML declared: " + escapeHtml(file.declaredType || "none") +
-            " · Effective editor: " + escapeHtml(file.editorType || "unknown") +
-            " (" + origin + ")</span></li>";
-        }).join("") + "</ul></details>";
       var timeControl = "<div class=\"common-timestamp\" " + (hasTimestamp && !protectedValue ? "" : "hidden ") +
-        "data-common-timestamp-base=\"" + (hasTimestamp && !protectedValue) + "\" data-common-timestamp=\"" +
+        "data-common-timestamp=\"" +
         escapeHtml(inputId) + "\"><button class=\"button\" type=\"button\" data-common-time-switch=\"" +
         escapeHtml(inputId) + "\">Switch to fixed Vilnius date and time</button><div hidden>" +
         "<label>Local time (seconds and milliseconds)<input data-common-time-local=\"" +
@@ -882,12 +872,7 @@
         "<p data-common-time-preview=\"" + escapeHtml(inputId) + "\" role=\"status\">Choose a local time.</p>" +
         "<button class=\"button\" type=\"button\" data-common-time-use=\"" + escapeHtml(inputId) +
         "\" disabled>Use these milliseconds</button></div></div>";
-      var valueControl = protectedValue ?
-        (property.mixed || variesByFile ?
-          "<div class=\"parameter-value\"><output>" + (property.mixed ? "Mixed values" : "Varies by XML") +
-            "</output><span class=\"badge badge--parameterized\">Parameterized</span></div>" :
-          resolvedControl(value, property.display ||
-            (entries.length && entries[0].display) || (files.length && files[0].display))) +
+      var expressionActions = protectedValue ?
         "<button class=\"button\" type=\"button\" data-expression-files=\"" + escapeHtml(inputId) +
         "-expressions\">Edit source value</button>" +
         "<details class=\"parameter-details\" id=\"" + escapeHtml(inputId) +
@@ -899,26 +884,110 @@
           return "<li>" + escapeHtml(item.path || item.sourcePath || item.kind || property.name) +
             ": <strong>" + escapeHtml(displayValue(item.value, item.display)) + "</strong>" +
             displayDetails(item.value, item.display) + expressionEditButton(key) + "</li>";
-        }).join("") + "</ul></details>" :
-        "<label for=\"" + escapeHtml(inputId) + "\">Common value (optional for type changes)</label>" +
+        }).join("") + "</ul></details>" : "";
+      var valueControl = protectedValue ?
+        (property.mixed || variesByFile ?
+          "<div class=\"parameter-value\"><output>" + (property.mixed ? "Mixed values" : "Varies by XML") +
+            "</output><span class=\"badge badge--parameterized\">Parameterized</span></div>" :
+          resolvedControl(value, property.display ||
+            (entries.length && entries[0].display) || (files.length && files[0].display))) :
+        "<label class=\"sr-only\" for=\"" + escapeHtml(inputId) + "\">Value for " +
+        escapeHtml(label(property.name)) + "</label>" +
+        (options ? "<div class=\"common-combobox\">" : "") +
         "<input id=\"" + escapeHtml(inputId) + "\" type=\"text\" data-common-input=\"" +
         escapeHtml(definitionPath) + "\" data-common-index=\"" + index + "\" value=\"" + escapeHtml(value) +
-        "\" placeholder=\"" + (property.mixed ? "Mixed values — enter one common value" : "") + "\">";
-      return "<div class=\"common-property\"><strong>" + escapeHtml(label(property.name)) + "</strong>" +
-        valueControl + "<p class=\"field-help\">" +
-        (property.mixed ? "<strong>Mixed raw values; unchanged by type-only review.</strong> " : "") +
-        filePaths.length + " input file(s) · " + (property.tests || []).length + " referencing test(s)" +
-        (!property.mixed && !protectedValue ? " · Current: " + escapeHtml(value) : "") +
-        "</p><p class=\"field-help\">" + (protectedValue ?
-          "Edit a verified literal source above or use the advanced XML editor. Shared value replacement is disabled." :
-          "Value-only review changes matching constants; to replace declaration defaults and scenario values too, select the checkbox under editor type.") +
-        "</p>" + timeControl +
-        "<button class=\"button\" type=\"button\" data-common-preview=\"" + index +
-        "\" data-common-path=\"" + escapeHtml(definitionPath) + "\"" +
-        (property.mixed || protectedValue ? " disabled" : "") + ">Review common constants value</button>" +
-        typeControl + typeDetails + "</div>";
-    }).join("") + "</div>";
+        "\" placeholder=\"" + (property.mixed ? "Mixed values — enter one common value" : "") + "\"" +
+        (options ? " role=\"combobox\" aria-expanded=\"false\" aria-autocomplete=\"none\" aria-controls=\"" +
+          escapeHtml(inputId) + "-options\" autocomplete=\"off\"" : "") + ">" +
+        (options ? "<button class=\"button\" type=\"button\" data-common-toggle " +
+          "aria-label=\"Show " + escapeHtml(optionsLabel) + "\" tabindex=\"-1\">&#9662;</button>" +
+          "<div class=\"common-options\" id=\"" + escapeHtml(inputId) +
+          "-options\" role=\"listbox\" tabindex=\"-1\" aria-label=\"" + escapeHtml(optionsLabel) + "\" hidden>" +
+          options.map(function (option) {
+            return "<button type=\"button\" role=\"option\" aria-selected=\"false\" tabindex=\"-1\" data-common-option=\"" +
+              escapeHtml(option) + "\" id=\"" + escapeHtml(inputId) + "-" + escapeHtml(option) + "\">" + escapeHtml(option) + "</button>";
+          }).join("") + "</div></div>" : "");
+      return "<tr class=\"common-property\"><th scope=\"row\">" + escapeHtml(label(property.name)) + "</th><td>" +
+        valueControl +
+        (property.mixed ? "<p class=\"field-help\" data-common-mixed><strong>Mixed values across XML constants.</strong></p>" : "") +
+        "</td><td><div class=\"common-edit-actions\">" + expressionActions +
+        (protectedValue ? "" : timeControl +
+        "<p class=\"field-help\" data-common-status role=\"status\"></p>" +
+        "<p class=\"field-error\" data-common-error role=\"alert\" hidden></p>") +
+        "</div></td></tr>";
+    }).join("") + "</tbody></table></div>";
   }
+  function showCommonOptions(input, open, activeIndex) {
+    var container = input.closest(".common-combobox");
+    if (!container) { return; }
+    container.querySelector("[role='listbox']").hidden = !open;
+    input.setAttribute("aria-expanded", String(open));
+    input.removeAttribute("aria-activedescendant");
+    container.querySelectorAll("[data-common-option]").forEach(function (option, index) {
+      var active = open && index === activeIndex;
+      option.setAttribute("aria-selected", String(active));
+      if (active) {
+        input.setAttribute("aria-activedescendant", option.id);
+        option.scrollIntoView({ block: "nearest" });
+      }
+    });
+  }
+  function chooseCommonOption(input, value) {
+    input.value = value;
+    input.setAttribute("data-common-dirty", "true");
+    showCommonOptions(input, false);
+    input.focus();
+    saveCommonValue(input);
+  }
+  function saveCommonValue(input) {
+    if (input.disabled || input.getAttribute("data-common-dirty") !== "true") { return; }
+    var path = input.getAttribute("data-common-input"), index = Number(input.getAttribute("data-common-index"));
+    var property = activeCommon && activeCommon[path] && activeCommon[path].properties[index];
+    if (!property || (property.files || []).some(function (file) { return expressionBacked(file.value, file.display); })) { return; }
+    if (!property.mixed && input.value === input.defaultValue) {
+      input.removeAttribute("data-common-dirty");
+      var unchangedRow = input.closest(".common-property");
+      unchangedRow.querySelector("[data-common-error]").hidden = true;
+      unchangedRow.querySelector("[data-common-status]").textContent = "";
+      return;
+    }
+    var row = input.closest(".common-property"), errorLine = row.querySelector("[data-common-error]");
+    var status = row.querySelector("[data-common-status]");
+    var controls = Array.from(row.querySelectorAll("button, input, select"));
+    var disabled = controls.map(function (control) { return control.disabled; });
+    var payload = { operation: "common", suitePath: path, name: property.name, value: input.value };
+    errorLine.hidden = true;
+    controls.forEach(function (control) { control.disabled = true; });
+    status.textContent = "Saving...";
+    api("/api/config/preview", { method: "POST", body: JSON.stringify(payload) }).then(function (preview) {
+      return api("/api/config/commit", { method: "POST",
+        body: JSON.stringify(Object.assign({}, payload, { revisions: preview.revisions })) });
+    }).then(function () {
+      property.mixed = false;
+      property.values = [{ value: payload.value }];
+      (property.files || []).forEach(function (file) {
+        if (file.attribute === "constValue" || file.kind === "constant") { file.value = payload.value; }
+      });
+      input.defaultValue = payload.value;
+      input.removeAttribute("data-common-dirty");
+      var mixed = row.querySelector("[data-common-mixed]");
+      if (mixed) { mixed.remove(); }
+      status.textContent = "Saved";
+      if (expressionBacked(payload.value) && row.isConnected && elements.suiteDialog.open) {
+        return refreshSuiteModel();
+      }
+    }).catch(function (error) {
+      var message = "Unable to save " + property.name + ": " + error.message;
+      if (row.isConnected) {
+        errorLine.textContent = message;
+        errorLine.hidden = false;
+        status.textContent = "Not saved. Leave the field or press Enter to retry.";
+      } else { showMessage(message, true); }
+    }).then(function () {
+      controls.forEach(function (control, index) { control.disabled = disabled[index]; });
+    });
+  }
+
   function renderSuiteModel(model, definitionPath, common) {
     modelFields = {};
     modelFieldSequence = 0;
@@ -941,7 +1010,7 @@
         renderFields((definition.fields || []).filter(function (field) {
           return field.attribute !== "parallel" && field.attribute !== "preserve-order";
         })) + "</section><section class=\"common-panel\"><div class=\"object-panel__header\"><div>" +
-        "<h4>Common user properties</h4><p>Set shared values once at the top; review every affected test before applying.</p>" +
+        "<h4>Common user properties</h4><p>Values save when you leave the field or press Enter.</p>" +
         "</div></div>" +         renderCommon(common && common[definition.path], definition.path) + "</section>" +
         "<div class=\"definition-card__tests\"><div class=\"definition-card__test-header\"><h4>Tests in this definition</h4>" +
         "<button class=\"button button--emphasized\" type=\"button\" data-add-test=\"" +
@@ -1067,7 +1136,7 @@
         var draftKey = path + "|" + (property && property.name);
         if (Object.prototype.hasOwnProperty.call(commonDrafts, draftKey)) {
           input.value = commonDrafts[draftKey];
-          input.closest(".common-property").querySelector("[data-common-preview]").disabled = false;
+          input.setAttribute("data-common-dirty", "true");
         }
       });
       if (opened.length) {
@@ -1913,14 +1982,6 @@
       saveModelField(event.target);
     } else if (event.target.hasAttribute("data-type-field")) {
       previewType(event.target.getAttribute("data-type-field"), event.target);
-    } else if (event.target.hasAttribute("data-common-suite-type")) {
-      var typeSetting = event.target.closest(".common-type-setting");
-      typeSetting.querySelector("[data-common-type-preview]").disabled = !event.target.value;
-      var typeProperty = event.target.closest(".common-property");
-      var typeTimestamp = typeProperty.querySelector("[data-common-timestamp]");
-      typeTimestamp.hidden = !typeProperty.querySelector("[data-common-input]") ||
-        (event.target.value !== "unixTimestamp" &&
-        typeTimestamp.getAttribute("data-common-timestamp-base") !== "true");
     } else if (event.target.hasAttribute("data-common-time-local") ||
                event.target.hasAttribute("data-common-time-offset")) {
       previewCommonTimestamp(event.target.getAttribute("data-common-time-local") ||
@@ -1937,10 +1998,74 @@
     } else if (event.target.hasAttribute("data-common-time-local")) {
       previewCommonTimestamp(event.target.getAttribute("data-common-time-local"));
     } else if (event.target.hasAttribute("data-common-input")) {
-      event.target.closest(".common-property").querySelector("[data-common-preview]").disabled = false;
+      event.target.setAttribute("data-common-dirty", "true");
+      showCommonOptions(event.target, false);
+    }
+  });
+  elements.suiteModel.addEventListener("focusout", function (event) {
+    var combo = event.target.closest(".common-combobox");
+    if (combo && event.relatedTarget && combo.contains(event.relatedTarget)) { return; }
+    var input = combo ? combo.querySelector("[data-common-input]") : event.target;
+    if (input.hasAttribute("data-common-input")) {
+      showCommonOptions(input, false);
+      saveCommonValue(input);
+    }
+  });
+  elements.suiteModel.addEventListener("keydown", function (event) {
+    var input = event.target;
+    if (input.classList.contains("common-options") && event.key === "Escape") {
+      event.preventDefault(); event.stopPropagation();
+      var valueInput = input.closest(".common-combobox").querySelector("input");
+      valueInput.focus();
+      showCommonOptions(valueInput, false);
+      return;
+    }
+    if (input.getAttribute("role") === "combobox" && !event.isComposing) {
+      var open = input.getAttribute("aria-expanded") === "true";
+      var options = Array.from(input.closest(".common-combobox").querySelectorAll("[data-common-option]"));
+      var active = options.findIndex(function (option) { return option.id === input.getAttribute("aria-activedescendant"); });
+      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        event.preventDefault();
+        showCommonOptions(input, true, open && active >= 0 ?
+          (active + (event.key === "ArrowDown" ? 1 : options.length - 1)) % options.length :
+          (event.key === "ArrowDown" ? 0 : options.length - 1));
+        return;
+      }
+      if (event.key === "Escape" && open) {
+        event.preventDefault(); event.stopPropagation();
+        showCommonOptions(input, false);
+        return;
+      }
+      if (event.key === "Enter" && open && active >= 0) {
+        event.preventDefault();
+        chooseCommonOption(input, options[active].getAttribute("data-common-option"));
+        return;
+      }
+    }
+    if (event.key === "Enter" && !event.isComposing && event.target.hasAttribute("data-common-input")) {
+      event.preventDefault();
+      saveCommonValue(event.target);
+    }
+  });
+  elements.suiteModel.addEventListener("pointerdown", function (event) {
+    if (event.target.closest("[data-common-toggle], [data-common-option]")) { event.preventDefault(); }
+    else if (event.target.classList.contains("common-options")) {
+      event.target.focus({ preventScroll: true });
     }
   });
   elements.suiteModel.addEventListener("click", function (event) {
+    var optionControl = event.target.closest("[data-common-toggle], [data-common-option]");
+    if (optionControl) {
+      var optionInput = optionControl.closest(".common-combobox").querySelector("input");
+      if (optionInput.disabled) { return; }
+      if (optionControl.hasAttribute("data-common-option")) {
+        chooseCommonOption(optionInput, optionControl.getAttribute("data-common-option"));
+      } else {
+        optionInput.focus();
+        showCommonOptions(optionInput, optionInput.getAttribute("aria-expanded") !== "true");
+      }
+      return;
+    }
     var expressionFiles = event.target.closest("[data-expression-files]");
     if (expressionFiles) {
       var fileDetails = document.getElementById(expressionFiles.getAttribute("data-expression-files"));
@@ -2021,47 +2146,10 @@
       if (millis != null) {
         var valueInput = elements.suiteModel.querySelector("[id='" + commonId + "']");
         valueInput.value = millis;
-        valueInput.closest(".common-property").querySelector("[data-common-preview]").disabled = false;
+        valueInput.setAttribute("data-common-dirty", "true");
         commonEditor.querySelector("[data-common-time-preview]").textContent =
-          "Entered " + millis + " milliseconds. Review and apply to all affected tests to save.";
-      }
-      return;
-    }
-    var commonButton = event.target.closest("[data-common-preview]");
-    if (commonButton) {
-      var path = commonButton.getAttribute("data-common-path");
-      var index = Number(commonButton.getAttribute("data-common-preview"));
-      var property = activeCommon && activeCommon[path] &&
-        activeCommon[path].properties[index];
-      var input = elements.suiteModel.querySelector("[data-common-input='" + path +
-        "'][data-common-index='" + index + "']");
-      if (property && input && !expressionBacked(
-          (property.values || [])[0] && property.values[0].value, property.display) &&
-          !((property.values || []).some(function (item) { return expressionBacked(item.value, item.display); }) ||
-          (property.files || []).some(function (item) { return expressionBacked(item.value, item.display); }))) {
-        previewOperation({ operation: "common", suitePath: path, name: property.name,
-          value: input.value }, "Review shared " + property.name, refreshSuiteModel);
-      }
-      return;
-    }
-    var commonTypeButton = event.target.closest("[data-common-type-preview]");
-    if (commonTypeButton) {
-      var typePath = commonTypeButton.getAttribute("data-common-path");
-      var typeIndex = Number(commonTypeButton.getAttribute("data-common-type-preview"));
-      var typeProperty = activeCommon && activeCommon[typePath] &&
-        activeCommon[typePath].properties[typeIndex];
-      var typeCard = commonTypeButton.closest(".common-property");
-      var typeSelect = typeCard.querySelector("[data-common-suite-type]");
-      if (typeProperty && typeSelect.value) {
-        var protectedValues = (typeProperty.values || []).some(function (item) { return expressionBacked(item.value, item.display); }) ||
-          (typeProperty.files || []).some(function (item) { return expressionBacked(item.value, item.display); });
-        var replace = !protectedValues && typeCard.querySelector("[data-common-type-replace]").checked;
-        var typePayload = { operation: "common-type", suitePath: typePath, name: typeProperty.name,
-          editorType: typeSelect.value };
-        if (replace) { typePayload.value = typeCard.querySelector("[data-common-input]").value; }
-        previewOperation(typePayload, "Review shared " + typeProperty.name +
-          " type across all XMLs", refreshSuiteModel,
-          { files: typeProperty.files || [], replaceValue: replace });
+          "Entered " + millis + " milliseconds.";
+        saveCommonValue(valueInput);
       }
       return;
     }

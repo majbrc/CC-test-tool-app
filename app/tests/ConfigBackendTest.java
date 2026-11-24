@@ -366,6 +366,28 @@ public final class ConfigBackendTest {
         check(Boolean.FALSE.equals(property.get("mixedType")) && "unixTimestamp".equals(property.get("editorType")),
                 "common metadata applied across files");
         check(read("TEST/B/test-input-other.xml").contains("type=\"number\""), "timestamp uses schema-compatible number");
+        String metadataBeforeValue = read("app/config-metadata.json");
+        String parametersBeforeValue = read("TEST/B/test-input-other.xml");
+        for (String value : Arrays.asList("text & <value>", "", "${USER_DEFINED_VALUE}")) {
+            Map<String, Object> valueChange = map("operation", "common", "suitePath", "TEST/B/suite-main.xml",
+                    "name", "USER_SERVICE_ID", "value", value);
+            Map<String, Object> valuePreview = preview(valueChange);
+            commit(valueChange, valuePreview);
+            Method parse = ChargingTestConsole.class.getDeclaredMethod("parseXml", Path.class);
+            parse.setAccessible(true);
+            org.w3c.dom.Document document = (org.w3c.dom.Document) parse.invoke(null, root.resolve("TEST/B/test-input-user.xml"));
+            check(value.equals(((org.w3c.dom.Element) document.getElementsByTagNameNS("*", "constant").item(0)).getAttribute("constValue")),
+                    "Common constant accepts XML text regardless of saved timestamp type: " + value);
+            check(metadataBeforeValue.equals(read("app/config-metadata.json")) &&
+                    parametersBeforeValue.equals(read("TEST/B/test-input-other.xml")),
+                    "Common value save preserves type metadata, parameter defaults, declared types and scenario expressions");
+        }
+        Map<String, Object> replaceExpression = map("operation", "common", "suitePath", "TEST/B/suite-main.xml",
+                "name", "USER_SERVICE_ID", "value", "literal");
+        try { preview(replaceExpression); throw new AssertionError("common expression replaced with literal"); }
+        catch (InvocationTargetException ex) {
+            check(ex.getCause().getMessage().contains("Parameterized"), "Untyped common save still protects existing expressions");
+        }
     }
 
     private static void testDisplayResolution() throws Exception {

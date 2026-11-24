@@ -174,8 +174,16 @@
         { name: "A", properties: { host: "alpha.example.invalid" } },
         { name: "B", properties: { host: "beta.example.invalid" } },
         { name: "C", properties: { host: "gamma.example.invalid" } }
-      ], targets: [{name:"example",description:"Example target",environment:"Default",suites:[]},
-        {name:"second",description:"Second target",environment:"B",suites:[]}], suites: [], reportAvailable: true };
+      ], targets: [{name:"example",description:"Example target",environment:"Default",suites:["TEST/example/suite.xml"]},
+        {name:"second",description:"Second target",environment:"B",suites:[]}],
+        suites: [{name:"example",displayName:"Example",files:{suites:["TEST/example/suite.xml"],inputs:[],templates:[],validations:[]}}],
+        reportAvailable: true };
+      window.__common = {properties:[
+        {name:"START_MILLIS",mixed:true,values:[{value:"1"},{value:"2"}],files:[{path:"input.xml",value:"1",editorType:"unixTimestamp"}],tests:["first"]},
+        {name:"EXPRESSION",values:[{value:"${BASE}"}],files:[{path:"input.xml",sourcePath:"input.xml",
+          nodePath:"0/0/0",attribute:"constValue",revision:"fixture",value:"${BASE}",
+          display:{parameterized:true,status:"unresolved",sources:[]}}],tests:["first"]}
+      ]};
       window.fetch = async function (input, options) {
         var path = new URL(input, document.baseURI).pathname;
         var method = options && options.method || "GET", body = {}, status = 200, type = "application/json";
@@ -183,6 +191,26 @@
         if (path === "/api/state") { body = state; }
         else if (path === "/api/report-suite-order") { body = window.__suiteOrder; status = window.__suiteOrderStatus; }
         else if (path === "/api/config/year") { body = { mode: "automatic", files: [] }; }
+        else if (path === "/api/suite/model") { body = {definitions:[{path:"TEST/example/suite.xml",name:"Example",fields:[],tests:[]}]}; }
+        else if (path === "/api/config/common") { body = window.__common; }
+        else if (path === "/api/config/preview") { body = {changes:[{path:"input.xml",action:"update"}],impact:["first"],warnings:[],revisions:{"input.xml":"fixture"}}; }
+        else if (path === "/api/config/commit") {
+          await new Promise(function (resolve) { setTimeout(resolve, 40); });
+          if (window.__commonSaveError) { status = 409; body = {error:"Synthetic stale file"}; }
+          else {
+            var commonPayload = JSON.parse(options.body);
+            window.__common.properties[0].values = [{value:commonPayload.value}];
+            window.__common.properties[0].mixed = false;
+            window.__common.properties[0].files[0].value = commonPayload.value;
+            body = {saved:true};
+          }
+        }
+        else if (path === "/api/field") {
+          var fieldPayload = JSON.parse(options.body);
+          window.__common.properties[1].values[0].value = fieldPayload.value;
+          window.__common.properties[1].files[0].value = fieldPayload.value;
+          body = {saved:true};
+        }
         else if (path === "/api/run/status") { body = window.__run; }
         else if (path === "/api/run") {
           await new Promise(function (resolve) { setTimeout(resolve, 60); });
@@ -753,6 +781,165 @@
     await until(function () { return !runSelected.disabled && posts().length === beforeRun + 1; }, "Rejected batch did not recover");
     check(JSON.parse(posts()[beforeRun].body).targets.join() === "second" &&
       d.querySelector('[data-select-target="second"]').checked, "Single-target batch rejection retains selection for retry");
+    d.querySelector('[data-suite-path="TEST/example/suite.xml"]').click();
+    await until(function () { return d.querySelectorAll(".common-property").length === 2; }, "Common properties did not load");
+    check(!d.querySelector("[data-common-suite-type], [data-common-type-preview], .common-type-details") &&
+      !d.querySelector(".common-panel").textContent.includes("Editor type"),
+      "Common property cards expose value editing without type controls");
+    check(Array.from(d.querySelectorAll(".common-table thead th")).map(function (cell) { return cell.textContent; }).join("|") ===
+      "Property Name|Value|Edit Parameter" &&
+      d.querySelector(".common-property > th").getAttribute("scope") === "row" &&
+      d.querySelector(".common-property > td [data-common-input]") &&
+      d.querySelector(".common-property > td:last-child [data-common-status]") &&
+      d.querySelector(".common-property:last-child > td:last-child [data-edit-expression]"),
+      "Common table places names, values and edit actions in the requested columns");
+    var commonInput = d.querySelector("[data-common-input]");
+    check(!d.querySelector("[data-common-save]") && !d.querySelector("[data-common-timestamp]").hidden,
+      "Mixed values wait for input while optional timestamp help remains available");
+    var beforeCommonSave = posts().length;
+    commonInput.dispatchEvent(new w.FocusEvent("focusout", {bubbles:true}));
+    check(posts().length === beforeCommonSave, "Untouched mixed values are not saved as blank");
+    commonInput.value = "not a number";
+    commonInput.dispatchEvent(new w.Event("input", {bubbles:true}));
+    check(posts().length === beforeCommonSave, "Typing a common value does not save partial edits");
+    commonInput.dispatchEvent(new w.FocusEvent("focusout", {bubbles:true}));
+    commonInput.dispatchEvent(new w.FocusEvent("focusout", {bubbles:true}));
+    check(commonInput.disabled, "Autosave prevents duplicate submissions and value edits while saving");
+    await until(function () { return !commonInput.disabled && d.querySelector("[data-common-status]").textContent === "Saved"; },
+      "Common value autosave did not finish");
+    var valueRequest = JSON.parse(posts().filter(function (request) { return request.path === "/api/config/preview"; }).slice(-1)[0].body);
+    check(valueRequest.operation === "common" && valueRequest.value === "not a number" &&
+      !Object.prototype.hasOwnProperty.call(valueRequest, "editorType"),
+      "Common save prepares only a value change without type metadata");
+    var commonCommits = posts().filter(function (request) { return request.path === "/api/config/commit"; });
+    check(commonCommits.length === 1 && JSON.parse(commonCommits[0].body).revisions["input.xml"] === "fixture" &&
+      !d.getElementById("review-dialog").open && d.querySelector("[data-common-input]").value === "not a number",
+      "Autosave commits once with file revisions without a review dialog or replacing the focused table");
+    beforeCommonSave = posts().length;
+    commonInput.dispatchEvent(new w.FocusEvent("focusout", {bubbles:true}));
+    check(posts().length === beforeCommonSave, "Leaving an unchanged saved value does not write again");
+    w.__commonSaveError = true;
+    commonInput = d.querySelector("[data-common-input]");
+    commonInput.value = "retain after failure";
+    commonInput.dispatchEvent(new w.Event("input", {bubbles:true}));
+    commonInput.dispatchEvent(new w.KeyboardEvent("keydown", {key:"Enter",bubbles:true}));
+    await until(function () { return !d.querySelector("[data-common-error]").hidden &&
+      !commonInput.disabled; }, "Save failure was not exposed");
+    check(commonInput.value === "retain after failure" &&
+      d.querySelector("[data-common-error]").textContent.includes("Synthetic stale file"),
+      "Save errors retain the user's value and enable retry");
+    w.__commonSaveError = false;
+    commonInput.dispatchEvent(new w.FocusEvent("focusout", {bubbles:true}));
+    await until(function () { return !commonInput.disabled && d.querySelector("[data-common-status]").textContent === "Saved"; },
+      "Autosave retry did not finish");
+    check(commonInput.defaultValue === "retain after failure" && d.querySelector("[data-common-error]").hidden,
+      "Leaving the field retries a failed save without losing the edit");
+    commonInput.value = "";
+    commonInput.dispatchEvent(new w.Event("input", {bubbles:true}));
+    beforeCommonSave = posts().length;
+    commonInput.dispatchEvent(new w.KeyboardEvent("keydown", {key:"Enter",isComposing:true,bubbles:true}));
+    check(posts().length === beforeCommonSave, "IME confirmation does not save an unfinished common value");
+    commonInput.dispatchEvent(new w.KeyboardEvent("keydown", {key:"Enter",bubbles:true}));
+    await until(function () { return !commonInput.disabled && commonInput.defaultValue === ""; }, "Explicit blank autosave did not finish");
+    check(w.__common.properties[0].values[0].value === "", "An intentionally cleared value saves on Enter");
+    var timeHelper = d.querySelector("[data-common-timestamp]");
+    timeHelper.setAttribute("data-epoch-millis", "123456");
+    var useTime = timeHelper.querySelector("[data-common-time-use]");
+    useTime.disabled = false;
+    useTime.click();
+    await until(function () { return !commonInput.disabled && commonInput.defaultValue === "123456"; },
+      "Timestamp helper value did not autosave");
+    check(w.__common.properties[0].values[0].value === "123456",
+      "Explicitly accepting timestamp helper output saves the completed value");
+    d.querySelector("[data-expression-files]").click();
+    d.querySelector(".common-panel [data-edit-expression]").click();
+    var expressionEditor = d.querySelector("[data-expression-editor]");
+    expressionEditor.querySelector("textarea").value = "${UPDATED_BASE}";
+    expressionEditor.querySelector("[data-save-expression]").click();
+    await until(function () { return !d.querySelector("[data-expression-editor]"); }, "Expression edit did not complete");
+    var expressionRequest = JSON.parse(posts().filter(function (request) { return request.path === "/api/field"; }).slice(-1)[0].body);
+    check(expressionRequest.value === "${UPDATED_BASE}" && expressionRequest.editExpression === true &&
+      expressionRequest.revision === "fixture" && expressionRequest.attribute === "constValue",
+      "Common parameterized values retain explicit source editing with revision protection");
+    check(d.querySelector(".common-panel").scrollWidth <= d.querySelector(".common-panel").clientWidth + 1,
+      "Value-only common cards fit the narrow configuration layout");
+    w.__common.properties[0].name = "CUSTOMER_TYPE";
+    w.__common.properties[0].values = [{value:"B2B"}];
+    w.__common.properties[0].files[0].value = "B2B";
+    d.querySelector('[data-close-dialog="suite-dialog"]').click();
+    d.querySelector('[data-suite-path="TEST/example/suite.xml"]').click();
+    await until(function () { return d.querySelector(".common-combobox"); }, "Customer combobox did not render");
+    var customerInput = d.querySelector(".common-combobox input"), customerToggle = d.querySelector("[data-common-toggle]");
+    beforeCommonSave = posts().length;
+    customerToggle.click();
+    check(customerInput.value === "B2B" && customerInput.getAttribute("aria-expanded") === "true" &&
+      !d.querySelector(".common-options").hidden &&
+      Array.from(d.querySelectorAll("[data-common-option]")).map(function (button) { return button.textContent; }).join("|") === "B2B|B2C",
+      "Dropdown arrow always displays both customer types even with B2B already entered");
+    check(posts().length === beforeCommonSave, "Opening the customer dropdown does not save or change a value");
+    d.querySelector('[data-common-option="B2C"]').click();
+    await until(function () { return !customerInput.disabled && customerInput.defaultValue === "B2C"; }, "Customer choice was not saved");
+    check(customerInput.getAttribute("aria-expanded") === "false" && w.__common.properties[0].values[0].value === "B2C",
+      "Choosing a customer type closes the dropdown and autosaves it");
+    customerInput.value = "Other customer";
+    customerInput.dispatchEvent(new w.Event("input", {bubbles:true}));
+    customerToggle.click();
+    check(!d.querySelector(".common-options").hidden && d.querySelectorAll("[data-common-option]").length === 2,
+      "Custom typed values do not filter out the two standard choices");
+    customerInput.dispatchEvent(new w.KeyboardEvent("keydown", {key:"Escape",bubbles:true}));
+    check(customerInput.value === "Other customer" && d.querySelector(".common-options").hidden,
+      "Escape dismisses choices without replacing a custom value");
+    customerInput.dispatchEvent(new w.FocusEvent("focusout", {bubbles:true}));
+    await until(function () { return !customerInput.disabled && customerInput.defaultValue === "Other customer"; }, "Custom customer value did not save");
+    customerInput.dispatchEvent(new w.KeyboardEvent("keydown", {key:"ArrowDown",bubbles:true}));
+    check(customerInput.getAttribute("aria-activedescendant") === d.querySelector('[data-common-option="B2B"]').id,
+      "Keyboard navigation exposes the active customer option");
+    customerInput.dispatchEvent(new w.KeyboardEvent("keydown", {key:"Enter",bubbles:true}));
+    await until(function () { return !customerInput.disabled && customerInput.defaultValue === "B2B"; }, "Keyboard customer selection failed");
+    check(w.__common.properties[0].values[0].value === "B2B", "Enter accepts and saves a keyboard-selected customer type");
+    w.__common.properties[0].name = "RATE_PLAN";
+    w.__common.properties[0].values = [{value:"TARNYBINIS_MHS"}];
+    w.__common.properties[0].files[0].value = "TARNYBINIS_MHS";
+    d.querySelector('[data-close-dialog="suite-dialog"]').click();
+    d.querySelector('[data-suite-path="TEST/example/suite.xml"]').click();
+    await until(function () {
+      var heading = d.querySelector(".common-property > th");
+      return heading && heading.textContent.includes("RATE PLAN");
+    }, "Rate Plan row did not load");
+    var rateInput = d.querySelector(".common-combobox input");
+    d.querySelector("[data-common-toggle]").click();
+    var rateOptions = Array.from(d.querySelectorAll("[data-common-option]"));
+    check(rateOptions.length === 68 && new Set(rateOptions.map(function (option) { return option.textContent; })).size === 68 &&
+      !rateOptions.some(function (option) { return option.textContent === "TELIA_FAM_30GB_MHS_C"; }) &&
+      !d.querySelector(".common-options").hidden,
+      "Rate Plan dropdown exposes all 68 current unique plans without filtering against the entered value");
+    check(d.querySelector(".common-options").scrollHeight > d.querySelector(".common-options").clientHeight,
+      "Large rate-plan list scrolls within a bounded dropdown");
+    var scrollList = d.querySelector(".common-options");
+    var beforeScroll = posts().length;
+    var scrollbarPress = new w.PointerEvent("pointerdown", {bubbles:true,cancelable:true});
+    scrollList.dispatchEvent(scrollbarPress);
+    rateInput.dispatchEvent(new w.FocusEvent("focusout", {bubbles:true,relatedTarget:scrollList}));
+    scrollList.scrollTop = scrollList.scrollHeight;
+    check(!scrollbarPress.defaultPrevented && !scrollList.hidden && scrollList.scrollTop > 0 &&
+      rateInput.getAttribute("aria-expanded") === "true" && posts().length === beforeScroll,
+      "Scrollbar interaction keeps the list open, permits native scrolling and does not save");
+    scrollList.dispatchEvent(new w.KeyboardEvent("keydown", {key:"Escape",bubbles:true}));
+    check(scrollList.hidden && rateInput.getAttribute("aria-expanded") === "false",
+      "Escape from the scrollable list dismisses the dropdown");
+    d.querySelector("[data-common-toggle]").click();
+    rateInput.dispatchEvent(new w.FocusEvent("focusout", {bubbles:true,relatedTarget:scrollList}));
+    scrollList.dispatchEvent(new w.FocusEvent("focusout", {bubbles:true,relatedTarget:d.getElementById("suite-search")}));
+    check(scrollList.hidden, "Leaving the entire dropdown still closes its options");
+    d.querySelector("[data-common-toggle]").click();
+    d.querySelector('[data-common-option="5GMOB_L_MHS_C"]').click();
+    await until(function () { return !rateInput.disabled && rateInput.defaultValue === "5GMOB_L_MHS_C"; }, "Rate Plan choice was not saved");
+    rateInput.value = "CUSTOM_RATE_PLAN";
+    rateInput.dispatchEvent(new w.Event("input", {bubbles:true}));
+    rateInput.dispatchEvent(new w.KeyboardEvent("keydown", {key:"Enter",bubbles:true}));
+    await until(function () { return !rateInput.disabled && rateInput.defaultValue === "CUSTOM_RATE_PLAN"; }, "Custom Rate Plan was not saved");
+    check(w.__common.properties[0].values[0].value === "CUSTOM_RATE_PLAN",
+      "Rate-plan selection and arbitrary typed values both autosave");
   } catch (error) { failures.push(error.stack || String(error)); }
   finally {
     if (frame) { frame.remove(); }

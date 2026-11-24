@@ -105,6 +105,12 @@ select:disabled, input:disabled, textarea:disabled, .model-field input:disabled,
 .suite-row p { margin: 0; color: var(--muted); font-size: .8125rem; }
 .suite-row__actions { display: flex; gap: .5rem; }
 .target-card { grid-template-columns: minmax(0, 1fr); align-items: start; }
+.batch-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem; margin-bottom: 1rem; border: 1px solid var(--border); border-radius: .75rem; }
+.batch-toolbar > div:first-child { flex: 1 1 18rem; }
+.batch-toolbar .field-help { margin: .4rem 0 0; }
+.target-selection { display: flex; align-items: center; gap: .6rem; min-height: 2.75rem; margin-bottom: .4rem; font-weight: 600; cursor: pointer; }
+.target-selection input { width: 1.15rem; height: 1.15rem; accent-color: #0070b1; }
+.target-card:has([data-select-target]:checked) { outline: 2px solid #0070b1; outline-offset: -2px; }
 .target-card__identity h3 { margin-bottom: .35rem; font-size: 1.0625rem; font-weight: 600; }
 .target-card__technical-name { font-size: .7rem !important; }
 .target-card__technical-name code { color: #475b6d; font: .7rem Consolas, monospace; }
@@ -321,7 +327,7 @@ select:disabled, input:disabled, textarea:disabled, .model-field input:disabled,
 .dialog__footer-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
 
 .report-toolbar, .report-filters { display: flex; align-items: end; flex-wrap: wrap; gap: 1rem; margin: 1.5rem 0; }
-.report-filters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; }
+.report-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; }
 .report-search-panel input { width: 100%; min-width: 0; min-height: 2.75rem; }
 .report-toolbar a { display: inline-flex; align-items: center; text-decoration: none; }
 .report-status-filter { min-width: 0; margin: 0; padding: 1rem; border: .0625rem solid var(--control-border); border-radius: 1rem; background: var(--surface); box-shadow: var(--shadow-small); }
@@ -342,7 +348,7 @@ select:disabled, input:disabled, textarea:disabled, .model-field input:disabled,
 .report-failure-differences { display: grid; gap: .75rem; padding-left: 1.25rem; font-size: .8125rem; }
 .report-failure-differences code { white-space: pre-wrap; }
 .report-metadata { overflow-wrap: anywhere; }
-.report-charts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; margin: 1.5rem 0 2rem; }
+.report-charts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; margin: 1.5rem 0 2rem; }
 .report-chart, .report-suite { min-width: 0; padding: 1.5rem; border: .0625rem solid rgba(255,255,255,.6); border-radius: 1.375rem; background: var(--surface); box-shadow: var(--shadow); }
 .report-chart h2 { font-size: 1.25rem; }
 .report-chart svg { display: block; width: min(100%, 14rem); margin: .75rem auto; }

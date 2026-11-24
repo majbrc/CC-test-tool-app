@@ -165,6 +165,9 @@ public final class ChargingTestConsole {
         server.createContext("/api/report", new SafeHandler() {
             protected void handleSafely(HttpExchange exchange) throws Exception { redirectReport(exchange); }
         });
+        server.createContext("/api/report-suite-order", api("GET", new ApiAction() {
+            public Object run(HttpExchange exchange) throws Exception { return reportSuiteOrder(); }
+        }));
         server.createContext("/report/", new SafeHandler() {
             protected void handleSafely(HttpExchange exchange) throws Exception { serveReport(exchange); }
         });
@@ -1690,8 +1693,29 @@ public final class ChargingTestConsole {
 
     private Object startRun(HttpExchange exchange) throws Exception {
         Map<String, Object> body = readObject(exchange);
+        if (body.size() == 1 && body.containsKey("targets")) {
+            synchronized (runLock) {
+                if (runState.running) throw new HttpError(409, "A test run is already in progress");
+                final RunState next = prepareBatch(body.get("targets"));
+                runState = next;
+                Thread runner = new Thread(new Runnable() {
+                    public void run() { executeBatch(next, new BatchExecutor() {
+                        public int run(Path build, String target, Path output, Path log) throws Exception {
+                            List<String> command = antCommand(build.toString(), target);
+                            command.add("-Dtest.log.dir.path=" + output);
+                            command.add("-Dtestng.report.dir=" + output.resolve(System.getProperty("user.name", "")));
+                            return new ProcessBuilder(command).directory(root.toFile()).redirectErrorStream(true)
+                                    .redirectOutput(ProcessBuilder.Redirect.appendTo(log.toFile())).start().waitFor();
+                        }
+                    }); }
+                }, "test-batch-runner");
+                runner.setDaemon(true);
+                runner.start();
+            }
+            return runStatus();
+        }
         if (body.size() != 1 || !body.containsKey("target")) {
-            throw new HttpError(400, "Request must contain only target");
+            throw new HttpError(400, "Request must contain only target or targets");
         }
         final String targetName = requiredString(body, "target");
         selectedEnvironment = readSelectedEnvironment();
@@ -1719,6 +1743,183 @@ public final class ChargingTestConsole {
             runner.start();
         }
         return runStatus();
+    }
+
+    private static List<String> antCommand(String build, String target) {
+        List<String> command = new ArrayList<String>();
+        if (System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("win")) {
+            command.add(System.getenv("ComSpec") == null ? "cmd.exe" : System.getenv("ComSpec"));
+            command.add("/c");
+        }
+        command.add("ant");
+        command.add("-f");
+        command.add(build);
+        command.add(target);
+        return command;
+    }
+
+    private RunState prepareBatch(Object selection) throws Exception {
+        if (!(selection instanceof List) || ((List<?>) selection).isEmpty() || ((List<?>) selection).size() > 100) {
+            throw new HttpError(400, "Select between 1 and 100 targets");
+        }
+        Set<String> names = new LinkedHashSet<String>();
+        for (Object name : (List<?>) selection) {
+            if (!(name instanceof String) || !names.add((String) name)) {
+                throw new HttpError(400, "Target names must be unique strings");
+            }
+        }
+        synchronized (xmlWriteLock) {
+            byte[] original = Files.readAllBytes(testFile);
+            List<TargetDefinition> targets = runnableTargets(parseXml(original));
+            for (String name : names) {
+                if (findTarget(targets, name) == null) throw new HttpError(400, "Unknown or non-runnable target: " + name);
+            }
+            RunState next = new RunState();
+            next.environment = readSelectedEnvironment();
+            String landscape = landscapeValue(next.environment);
+            String id = "batch-" + java.util.UUID.randomUUID();
+            next.batchReport = reportsRoot.resolve(id);
+            next.work = root.resolve(Paths.get("target", "app-runs", id));
+            next.log = next.work.resolve("batch.log");
+            Files.createDirectories(next.work);
+            Files.write(next.log, ("Batch environment: " + next.environment + System.lineSeparator()).getBytes(UTF8));
+            Document framework = parseXml(root.resolve("build.xml"));
+            for (int i = 0; i < framework.getElementsByTagName("testng").getLength(); i++) {
+                Element testng = (Element) framework.getElementsByTagName("testng").item(i);
+                testng.setAttribute("failureProperty", "app.batch.failed");
+            }
+            Path frameworkFile = next.work.resolve("build.xml");
+            Files.write(frameworkFile, serializeXml(framework, new byte[0]));
+            for (TargetDefinition target : targets) {
+                if (!names.contains(target.name)) continue;
+                BatchTarget item = new BatchTarget();
+                item.name = target.name;
+                item.output = next.batchReport.resolve(Paths.get("targets", String.valueOf(next.batch.size() + 1)));
+                item.build = next.work.resolve("target-" + (next.batch.size() + 1) + ".xml");
+                for (String suite : target.suites) {
+                    item.suites.add(parseXml(resolveSuiteXml(suite)).getDocumentElement().getAttribute("name"));
+                }
+                Document document = parseXml(original);
+                document.getDocumentElement().setAttribute("basedir", root.toString());
+                for (Element imported : directChildren(document.getDocumentElement(), "import")) {
+                    String file = imported.getAttribute("file");
+                    imported.setAttribute("file", "build.xml".equals(file) ? frameworkFile.toString() : root.resolve(file).toString());
+                }
+                NodeList runs = document.getElementsByTagName("runMultipleSuites");
+                for (int i = 0; i < runs.getLength(); i++) {
+                    Element run = (Element) runs.item(i);
+                    run.setAttribute("pTestLogDir", item.output.toString());
+                    run.setAttribute("pTestNgReportDir", item.output.resolve(System.getProperty("user.name", "")).toString());
+                    Element config = directChild(run, "config");
+                    if (config == null) { config = document.createElement("config"); run.appendChild(config); }
+                    for (Element property : directChildren(config, "sysproperty")) {
+                        if ("ccLandscape".equals(property.getAttribute("key"))) config.removeChild(property);
+                    }
+                    Element property = document.createElement("sysproperty");
+                    property.setAttribute("key", "ccLandscape");
+                    property.setAttribute("value", landscape);
+                    config.appendChild(property);
+                }
+                TargetDefinition selected = findTarget(runnableTargets(document), item.name);
+                Element fail = document.createElement("fail");
+                fail.setAttribute("if", "app.batch.failed");
+                fail.setAttribute("message", "One or more tests failed.");
+                selected.targetElement.appendChild(fail);
+                Files.write(item.build, serializeXml(document, original));
+                next.batch.add(item);
+            }
+            next.suite = "Selected targets";
+            next.running = true;
+            writeBatchReport(next);
+            return next;
+        }
+    }
+
+    private interface BatchExecutor {
+        int run(Path build, String target, Path output, Path log) throws Exception;
+    }
+
+    private void executeBatch(RunState state, BatchExecutor executor) {
+        int result = 0;
+        try {
+            for (BatchTarget item : state.batch) {
+                synchronized (runLock) { state.target = item.name; item.status = "running"; }
+                appendBatchLog(state, "Starting " + item.name + " using " + state.environment);
+                writeBatchReport(state);
+                int code;
+                try {
+                    code = executor.run(item.build, item.name, item.output, state.log);
+                    item.report = findReportIn(item.output);
+                    if (item.report == null) {
+                        item.error = "No report was generated.";
+                        if (code == 0) code = -1;
+                    }
+                } catch (Exception ex) {
+                    code = -1;
+                    item.error = safeMessage(ex);
+                }
+                synchronized (runLock) {
+                    item.exitCode = code;
+                    item.status = code == 0 ? "completed" : "failed";
+                    state.completed++;
+                }
+                if (code != 0) result = 1;
+                appendBatchLog(state, "Finished " + item.name + ": exit code " + code +
+                        (item.error.isEmpty() ? "" : " - " + item.error));
+                writeBatchReport(state);
+            }
+        } catch (Exception ex) {
+            result = -1;
+            state.error = "Batch infrastructure failure: " + safeMessage(ex);
+        } finally {
+            synchronized (runLock) { state.exitCode = result; }
+            try {
+                writeBatchReport(state);
+                for (BatchTarget item : state.batch) Files.deleteIfExists(item.build);
+                Files.deleteIfExists(state.work.resolve("build.xml"));
+            } catch (Exception ex) {
+                state.error = "Unable to finalize batch: " + safeMessage(ex);
+                state.exitCode = -1;
+            }
+            synchronized (runLock) { state.running = false; }
+        }
+    }
+
+    private static void appendBatchLog(RunState state, String message) throws IOException {
+        Files.write(state.log, (System.lineSeparator() + message + System.lineSeparator()).getBytes(UTF8),
+                java.nio.file.StandardOpenOption.APPEND);
+    }
+
+    private void writeBatchReport(RunState state) throws Exception {
+        StringBuilder html = new StringBuilder("<!doctype html><html><head><meta charset=\"utf-8\"><title>Batch results</title></head><body>");
+        html.append("<h1>Batch results</h1><p>Environment: ").append(reportText(state.environment))
+                .append("</p><p>Open this report in the app for combined charts, filters and scenario details.</p>")
+                .append("<ol id=\"app-batch-report\" data-environment=\"").append(reportText(state.environment))
+                .append("\" data-created=\"").append(state.created).append("\">");
+        for (BatchTarget item : state.batch) {
+            html.append("<li data-batch-target=\"").append(reportText(item.name)).append("\" data-status=\"")
+                    .append(item.status).append("\" data-exit-code=\"").append(item.exitCode == null ? "" : item.exitCode)
+                    .append("\"><strong>").append(reportText(item.name)).append("</strong>: ").append(item.status);
+            if (item.report != null) {
+                String relative = state.batchReport.relativize(item.report).toString().replace('\\', '/');
+                html.append(" <a href=\"").append(reportText(new URI(null, null, relative, null).toASCIIString()))
+                        .append("\">Original target report</a>");
+            }
+            html.append("<p data-batch-error>").append(reportText(item.error)).append("</p><ul hidden>");
+            for (String suite : item.suites) html.append("<li data-batch-suite>").append(reportText(suite)).append("</li>");
+            html.append("</ul></li>");
+        }
+        html.append("</ol><p>").append(reportText(state.error)).append("</p></body></html>");
+        Files.createDirectories(state.batchReport);
+        Path temporary = Files.createTempFile(state.batchReport, "report-", ".tmp");
+        try {
+            Files.write(temporary, html.toString().getBytes(UTF8));
+            moveReplace(temporary, state.batchReport.resolve("Report.htm"));
+        } finally { Files.deleteIfExists(temporary); }
+    }
+
+    private static String reportText(String value) {
+        return value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
     }
 
     private void executeRun(RunState state) {
@@ -1764,6 +1965,20 @@ public final class ChargingTestConsole {
         result.put("target", current.target);
         result.put("suite", current.suite);
         result.put("environment", current.environment);
+        result.put("completed", current.completed);
+        result.put("error", current.error);
+        List<Object> batch = new ArrayList<Object>();
+        synchronized (runLock) {
+            for (BatchTarget item : current.batch) {
+                Map<String, Object> entry = new LinkedHashMap<String, Object>();
+                entry.put("target", item.name);
+                entry.put("status", item.status);
+                entry.put("exitCode", item.exitCode);
+                entry.put("error", item.error);
+                batch.add(entry);
+            }
+        }
+        result.put("batch", batch);
         result.put("log", current.log == null ? "" : readTail(current.log));
         return result;
     }
@@ -1836,6 +2051,34 @@ public final class ChargingTestConsole {
             result.add(suite);
         }
         return result;
+    }
+
+    private List<Object> reportSuiteOrder() throws Exception {
+        synchronized (xmlWriteLock) {
+            List<Object> result = new ArrayList<Object>();
+            Map<String, String> names = new LinkedHashMap<String, String>();
+            for (TargetDefinition target : readRunnableTargets()) {
+                List<Object> ordered = new ArrayList<Object>();
+                for (String path : target.suites) {
+                    if (!names.containsKey(path)) {
+                        Element suite = parseXml(resolveSuiteXml(path)).getDocumentElement();
+                        if (!"suite".equals(suite.getTagName()) || suite.getAttribute("name").trim().isEmpty()) {
+                            throw new IOException("Cannot identify suite name for report ordering: " + path);
+                        }
+                        names.put(path, suite.getAttribute("name"));
+                    }
+                    Map<String, Object> entry = new LinkedHashMap<String, Object>();
+                    entry.put("path", path);
+                    entry.put("name", names.get(path));
+                    ordered.add(entry);
+                }
+                Map<String, Object> item = new LinkedHashMap<String, Object>();
+                item.put("target", target.name);
+                item.put("suites", ordered);
+                result.add(item);
+            }
+            return result;
+        }
     }
 
     private List<TargetDefinition> readRunnableTargets() throws Exception {
@@ -2027,9 +2270,21 @@ public final class ChargingTestConsole {
     private Path findReport() throws IOException {
         if (!Files.isDirectory(reportsRoot)) return null;
         Path userReport = reportsRoot.resolve(System.getProperty("user.name", "")).resolve("Report.htm");
-        if (Files.isRegularFile(userReport)) return userReport;
+        Path latest = Files.isRegularFile(userReport) ? userReport : null;
+        try (DirectoryStream<Path> batches = Files.newDirectoryStream(reportsRoot, "batch-*")) {
+            for (Path batch : batches) {
+                Path report = batch.resolve("Report.htm");
+                if (Files.isRegularFile(report) && (latest == null ||
+                        Files.getLastModifiedTime(report).compareTo(Files.getLastModifiedTime(latest)) > 0)) latest = report;
+            }
+        }
+        return latest == null ? findReportIn(reportsRoot) : latest;
+    }
+
+    private Path findReportIn(Path directory) throws IOException {
+        if (!Files.isDirectory(directory)) return null;
         final List<Path> reports = new ArrayList<Path>();
-        Files.walkFileTree(reportsRoot, new java.nio.file.SimpleFileVisitor<Path>() {
+        Files.walkFileTree(directory, new java.nio.file.SimpleFileVisitor<Path>() {
             public java.nio.file.FileVisitResult visitFile(Path file, java.nio.file.attribute.BasicFileAttributes attrs) {
                 if ("Report.htm".equalsIgnoreCase(file.getFileName().toString())) reports.add(file);
                 return java.nio.file.FileVisitResult.CONTINUE;
@@ -2953,10 +3208,27 @@ public final class ChargingTestConsole {
     private static final class RunState {
         volatile boolean running;
         volatile Integer exitCode;
-        String target;
+        volatile String target;
         String suite;
         String environment;
         Path log;
+        Path work;
+        Path batchReport;
+        volatile int completed;
+        volatile String error = "";
+        final String created = java.time.Instant.now().toString();
+        final List<BatchTarget> batch = new ArrayList<BatchTarget>();
+    }
+
+    private static final class BatchTarget {
+        String name;
+        Path build;
+        Path output;
+        Path report;
+        volatile String status = "pending";
+        volatile Integer exitCode;
+        volatile String error = "";
+        final List<String> suites = new ArrayList<String>();
     }
 
     private static final class TargetDefinition {

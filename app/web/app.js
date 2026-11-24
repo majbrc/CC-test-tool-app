@@ -9,6 +9,9 @@
   var modelFields = {};
   var modelFieldSequence = 0;
   var targetSuiteSelection = {};
+  var selectedTargets = new Set();
+  var runBusy = true;
+  var runSubmitting = false;
   var previewEnvironment = 0;
   var environmentSaving = false;
   var environmentTypeAhead = "";
@@ -387,6 +390,9 @@
   }
 
   function renderTargets() {
+    selectedTargets.forEach(function (name) {
+      if (!targetByName(name)) { selectedTargets.delete(name); }
+    });
     var query = elements.suiteSearch.value.trim().toLowerCase();
     var targets = (state.targets || []).filter(function (target) {
       return target.name.toLowerCase().indexOf(query) !== -1 ||
@@ -407,7 +413,10 @@
           escapeHtml(environment.name) + "</option>";
       }).join("");
       return "<article class=\"suite-row target-card\" data-target=\"" + escapeHtml(target.name) + "\">" +
-        "<div class=\"target-card__identity\"><h3>" + escapeHtml(target.description || target.name) + "</h3>" +
+        "<div class=\"target-card__identity\"><label class=\"target-selection\"><input type=\"checkbox\" data-select-target=\"" +
+        escapeHtml(target.name) + "\" aria-label=\"Select " + escapeHtml(target.name) + " for batch\"" +
+        (selectedTargets.has(target.name) ? " checked" : "") + "><span>Select for batch</span></label><h3>" +
+        escapeHtml(target.description || target.name) + "</h3>" +
         "<p class=\"target-card__technical-name\">Ant target: <code>" + escapeHtml(target.name) + "</code></p></div>" +
         "<div class=\"suite-row__actions target-card__actions\">" +
         "<label class=\"target-environment-field\"><span>Environment</span>" +
@@ -418,6 +427,20 @@
         (target.suites || []).length + ")</span><ul class=\"target-card__suites\">" + suiteLinks +
         "</ul></div></div></article>";
     }).join("") : "<div class=\"empty\">No Ant test targets match your search.</div>";
+    updateRunControls();
+  }
+
+  function updateRunControls() {
+    var busy = runBusy || runSubmitting;
+    document.getElementById("batch-selection-count").textContent = selectedTargets.size + " targets selected";
+    document.getElementById("batch-environment-hint").textContent = "Run sequentially on " +
+      (state ? state.selectedEnvironment : "the active environment") +
+      ", ignoring saved target overrides. Continue after failures and combine results in one report.";
+    document.getElementById("run-selected-targets").disabled = busy || environmentSaving || !selectedTargets.size;
+    document.getElementById("clear-target-selection").disabled = busy || !selectedTargets.size;
+    elements.suiteList.querySelectorAll("[data-select-target], [data-action='run-target']").forEach(function (control) {
+      control.disabled = busy || environmentSaving;
+    });
   }
 
   function renderSuiteConfiguration() {
@@ -501,6 +524,7 @@
     if (environmentSaving || !state || !state.environments.some(function (item) { return item.name === environment; })) { return; }
     if (environment === state.selectedEnvironment) { closeEnvironmentPicker(true); return; }
     environmentSaving = true;
+    updateRunControls();
     renderEnvironments();
     return api("/api/environment", {
       method: "POST",
@@ -514,6 +538,7 @@
       showMessage(error.message, true);
     }).then(function () {
       environmentSaving = false;
+      updateRunControls();
       renderEnvironments();
       if (elements.environmentPopup.hidden && !elements.homeScreen.hidden) { elements.environmentSelect.focus(); }
     });
@@ -1634,6 +1659,7 @@
   }
 
   function runTarget(name) {
+    if (runBusy || runSubmitting || environmentSaving) { return; }
     var target = targetByName(name);
     var environmentLabel = target.environment === "Default"
       ? "Default configuration (" + state.selectedEnvironment + ")"
@@ -1641,13 +1667,32 @@
     if (!window.confirm("Run Ant target " + target.name + " using " + environmentLabel + "?")) {
       return;
     }
+    submitRun({ target: name });
+  }
+
+  function runSelectedTargets() {
+    if (runBusy || runSubmitting || environmentSaving || !selectedTargets.size) { return; }
+    var targets = state.targets.filter(function (target) { return selectedTargets.has(target.name); })
+      .map(function (target) { return target.name; });
+    if (!window.confirm("Run " + targets.length + " selected target(s) sequentially using " +
+        state.selectedEnvironment + "? Saved target overrides will be ignored. Remaining targets continue after failures.")) { return; }
+    submitRun({ targets: targets });
+  }
+
+  function submitRun(payload) {
+    runSubmitting = true;
+    updateRunControls();
     api("/api/run", {
       method: "POST",
-      body: JSON.stringify({ target: name })
-    }).then(function () {
-      showMessage("Started target " + target.name + " using " + environmentLabel + ".");
-      updateRunStatus();
-    }).catch(function (error) { showMessage(error.message, true); });
+      body: JSON.stringify(payload)
+    }).then(function (run) {
+      runBusy = true;
+      showMessage("Started " + (payload.targets ? "selected targets" : payload.target) + " using " + run.environment + ".");
+      return updateRunStatus();
+    }).catch(function (error) {
+      showMessage(error.message, true);
+      return updateRunStatus();
+    }).then(function () { runSubmitting = false; updateRunControls(); });
   }
 
   function updateTargetEnvironment(targetName, environment, select) {
@@ -1737,6 +1782,8 @@
 
   function updateRunStatus() {
     return api("/api/run/status").then(function (run) {
+      runBusy = Boolean(run.running);
+      updateRunControls();
       document.getElementById("report-run-warning").hidden = !run.running;
       window.clearTimeout(pollTimer);
       if (!run.suite) {
@@ -1750,15 +1797,32 @@
         (run.exitCode === 0 ? "Test execution completed" : "Test execution failed");
       elements.runSubtitle.textContent = (run.target || run.suite) + " · " + run.environment +
         (run.running ? "" : " · Exit code " + run.exitCode);
+      var batch = run.batch || [], batchResults = document.getElementById("batch-run-results");
+      batchResults.hidden = !batch.length;
+      batchResults.innerHTML = batch.map(function (item) {
+        return "<li>" + escapeHtml(item.target) + ": " + escapeHtml(item.status) +
+          (item.exitCode == null ? "" : " (exit " + item.exitCode + ")") +
+          (item.error ? " — " + escapeHtml(item.error) : "") + "</li>";
+      }).join("");
+      if (batch.length) {
+        elements.runTitle.textContent = run.running ? "Batch execution in progress" :
+          (run.exitCode === 0 ? "Batch completed" : "Batch completed with failures");
+        elements.runSubtitle.textContent = (run.completed || 0) + " of " + batch.length + " targets completed · " +
+          run.environment + (run.running ? " · Running " + run.target : "") + (run.error ? " · " + run.error : "");
+      }
       elements.runLog.textContent = run.log || "No output yet.";
       if (run.running) {
         pollTimer = window.setTimeout(updateRunStatus, 1500);
       } else {
-        state.reportAvailable = run.exitCode === 0 || state.reportAvailable;
+        state.reportAvailable = batch.length > 0 || run.exitCode === 0 || state.reportAvailable;
         renderReport();
       }
     }).catch(function (error) {
+      runBusy = true;
+      updateRunControls();
       showMessage("Unable to read run status: " + error.message, true);
+      window.clearTimeout(pollTimer);
+      pollTimer = window.setTimeout(updateRunStatus, 3000);
     });
   }
 
@@ -1799,6 +1863,10 @@
   elements.backToHome.addEventListener("click", backToHome);
   window.addEventListener("hashchange", renderScreen);
   elements.suiteSearch.addEventListener("input", renderTargets);
+  document.getElementById("run-selected-targets").addEventListener("click", runSelectedTargets);
+  document.getElementById("clear-target-selection").addEventListener("click", function () {
+    selectedTargets.clear(); renderTargets();
+  });
   elements.suiteConfigSearch.addEventListener("input", renderSuiteConfiguration);
   elements.openReport.addEventListener("click", function () { window.location.hash = "report"; });
   document.getElementById("report-back").addEventListener("click", backToHome);
@@ -1816,6 +1884,11 @@
     if (action === "run-target") { runTarget(targetName); }
   });
   elements.suiteList.addEventListener("change", function (event) {
+    if (event.target.hasAttribute("data-select-target")) {
+      var name = event.target.getAttribute("data-select-target");
+      if (event.target.checked) { selectedTargets.add(name); } else { selectedTargets.delete(name); }
+      updateRunControls();
+    }
     if (event.target.hasAttribute("data-target-environment")) {
       updateTargetEnvironment(
         event.target.closest(".suite-row").getAttribute("data-target"),

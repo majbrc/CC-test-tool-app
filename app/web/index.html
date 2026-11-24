@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Automated Testing Tool</title>
-  <link rel="stylesheet" href="/styles.css?v=20261123-search-panel-r13">
+  <link rel="stylesheet" href="/styles.css?v=20261124-target-batches-r19">
 </head>
 <body>
   <header class="shell">
@@ -87,11 +87,20 @@
             <button id="create-target" class="button button--emphasized" type="button">Create target</button>
           </div>
         </div>
+        <div class="batch-toolbar">
+          <div><strong id="batch-selection-count" role="status">0 targets selected</strong>
+            <p id="batch-environment-hint" class="field-help">Selected targets run sequentially on the active environment. Results are combined in one report.</p></div>
+          <div class="section__actions">
+            <button id="clear-target-selection" class="button" type="button" disabled>Clear selection</button>
+            <button id="run-selected-targets" class="button button--emphasized" type="button" disabled>Run selected</button>
+          </div>
+        </div>
         <div id="run-banner" class="run-banner" hidden>
           <div>
             <span class="spinner" aria-hidden="true"></span>
             <strong id="run-title">Test execution in progress</strong>
             <p id="run-subtitle"></p>
+            <ul id="batch-run-results" class="field-help" hidden></ul>
           </div>
           <button id="show-run-log" class="button button--ghost" type="button">View log</button>
         </div>
@@ -119,6 +128,15 @@
             <legend><label for="report-search">Search suites and tests</label></legend>
             <input id="report-search" type="search" placeholder="Name">
           </fieldset>
+          <fieldset id="report-suite-filter" class="report-status-filter" aria-describedby="report-filter-help">
+            <legend>Suite outcome</legend>
+            <div class="report-status-buttons">
+              <button type="button" class="button" data-status="all" aria-pressed="true">All</button>
+              <button type="button" class="button" data-status="passed" aria-pressed="false">Passed</button>
+              <button type="button" class="button" data-status="failed" aria-pressed="false">Failed</button>
+              <button type="button" class="button" data-status="skipped" aria-pressed="false">Skipped</button>
+            </div>
+          </fieldset>
           <fieldset id="report-filter" class="report-status-filter" aria-describedby="report-filter-help">
             <legend>Test outcome</legend>
             <div class="report-status-buttons">
@@ -140,6 +158,7 @@
         </div>
         <p id="report-filter-help" class="field-help">All outcomes are shown initially. Click a status to show only that outcome, then add others as needed. All resets the group; deselecting the last status also shows all. Expand a test to view matching scenarios. Charts remain report-wide.</p>
         <p id="report-result-count" class="field-help" role="status"></p>
+        <p id="report-order-note" class="field-help" role="status"></p>
         <div id="report-results"></div>
       </section>
     </div>
@@ -314,7 +333,7 @@
     <pre id="run-log" class="run-log">No execution log available.</pre>
   </dialog>
 
-  <script src="/report.js?v=20261123-scenario-links-r15"></script>
-  <script src="/app.js?v=20261117-environment-picker-r4"></script>
+  <script src="/report.js?v=20261124-target-batches-r19"></script>
+  <script src="/app.js?v=20261124-target-batches-r19"></script>
 </body>
 </html>

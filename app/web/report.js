@@ -169,7 +169,39 @@
       });
     });
     if (!sameCounts(aggregate, model.scenarios)) { warnings.push("Scenario counts in test rows do not match the overview totals."); }
+    var reliableSuiteCounts = validCounts(model.suiteCounts) &&
+      sameCounts(outcomeCounts(model.suites), model.suiteCounts);
+    model.suites.forEach(function (suite) {
+      if (suite.tests.some(function (test) { return test.status === "failed"; })) { suite.status = "failed"; }
+      else if (suite.tests.length) {
+        suite.status = suite.tests.every(function (test) { return test.status === "skipped"; }) ? "skipped" : "passed";
+      }
+    });
+    model.suiteCounts = reliableSuiteCounts ? outcomeCounts(model.suites) : counts(null, null, null, null);
     return model;
+  }
+
+  function orderSuites(model, targets) {
+    function name(value) { return value.replace(/\s+/g, " ").trim(); }
+    var names = model.suites.map(function (suite) { return name(suite.name); });
+    if (new Set(names).size !== names.length) { throw new Error("Duplicate suite names prevent an unambiguous match to test.xml."); }
+    var candidates = targets.map(function (target) {
+      var matching = target.suites.map(function (suite) { return name(suite.name); }).filter(function (value) {
+        return names.indexOf(value) >= 0;
+      });
+      return { target: target.target, names: matching };
+    }).filter(function (target) {
+      return target.names.length === names.length && new Set(target.names).size === names.length;
+    });
+    if (!names.length) { return "No executed suites to order."; }
+    if (!candidates.length) { throw new Error("No target in test.xml uniquely matches all reported suite names."); }
+    var order = candidates[0].names;
+    if (candidates.some(function (target) { return JSON.stringify(target.names) !== JSON.stringify(order); })) {
+      throw new Error("Matching targets in test.xml specify different suite orders.");
+    }
+    model.suites.sort(function (a, b) { return order.indexOf(name(a.name)) - order.indexOf(name(b.name)); });
+    return "Suite display follows the current test.xml include order (" +
+      candidates.map(function (target) { return target.target; }).join(", ") + ").";
   }
 
   function diagnostic(node) {
@@ -397,6 +429,73 @@
     return { url: finalUrl, html: content };
   }
 
+  async function readBatch(page, signal) {
+    var dom = documentFor(page.html), manifest = dom.querySelector("#app-batch-report");
+    if (!manifest) { return null; }
+    var entries = Array.from(manifest.children), root = new URL(".", sourceUrl(page.url)).href;
+    if (!entries.length || entries.length > 100) { throw new Error("Invalid batch report target count."); }
+    var model = { url: page.url, root: root, suites: [], tests: counts(0, 0, 0, 0),
+      scenarios: counts(0, 0, 0, 0), suiteCounts: counts(0, 0, 0, 0), warnings: [],
+      created: manifest.getAttribute("data-created") || "Not reported",
+      environment: manifest.getAttribute("data-environment") || "Not reported", duration: "Not reported", batch: true, targets: [] };
+    var seconds = 0, knownDuration = true, incomplete = false, totalTests = 0;
+    for (var i = 0; i < entries.length; i++) {
+      var entry = entries[i], name = entry.getAttribute("data-batch-target");
+      var state = entry.getAttribute("data-status"), link = entry.querySelector("a[href]");
+      if (!name || ["pending", "running", "completed", "failed"].indexOf(state) < 0) {
+        throw new Error("Invalid batch target entry.");
+      }
+      model.targets.push(name + ": " + state);
+      try {
+        if (state === "pending" || state === "running") { throw new Error("Target is " + state + "; refresh after the batch completes."); }
+        if (!link) { throw new Error("No report was generated. " + compact(entry.querySelector("[data-batch-error]"))); }
+        var targetUrl = safeLink(link.getAttribute("href"), page.url, root);
+        var source = await readHtml(targetUrl, signal, root);
+        var target = parseOverview(source.html, source.url);
+        try {
+          orderSuites(target, [{ target: name, suites: Array.from(entry.querySelectorAll("[data-batch-suite]"))
+            .map(function (suite) { return { name: compact(suite) }; }) }]);
+        } catch (error) { model.warnings.push(name + ": " + error.message + " Original suite order retained."); }
+        totalTests += target.suites.reduce(function (sum, suite) { return sum + suite.tests.length; }, 0);
+        if (totalTests > maxItems || model.suites.length + target.suites.length > maxItems) {
+          throw new Error("Combined report exceeds the display limit.");
+        }
+        target.suites.forEach(function (suite) {
+          suite.id = "batch-" + i + "-" + suite.id;
+          suite.name = name + " / " + suite.name;
+          suite.tests.forEach(function (test) {
+            test.id = "batch-" + i + "-" + test.id;
+            test.overview = source;
+          });
+        });
+        model.suites = model.suites.concat(target.suites);
+        ["tests", "scenarios", "suiteCounts"].forEach(function (key) {
+          Object.keys(model[key]).forEach(function (status) {
+            model[key][status] = model[key][status] === null || target[key][status] === null ?
+              null : model[key][status] + target[key][status];
+          });
+        });
+        model.warnings = model.warnings.concat(target.warnings.map(function (warning) { return name + ": " + warning; }));
+        if (state === "failed" && !target.tests.failed && !target.scenarios.failed) {
+          model.warnings.push(name + ": execution failed (exit " + entry.getAttribute("data-exit-code") +
+            "). Available results are included; inspect the batch log for execution errors.");
+        }
+        var elapsed = target.duration.match(/^(\d+(?:\.\d+)?) s$/);
+        if (elapsed) { seconds += Number(elapsed[1]); } else { knownDuration = false; }
+      } catch (error) {
+        if (error.name === "AbortError") { throw error; }
+        incomplete = true;
+        model.warnings.push(name + ": " + error.message);
+      }
+    }
+    if (incomplete) {
+      ["tests", "scenarios", "suiteCounts"].forEach(function (key) { model[key] = counts(null, null, null, null); });
+      model.warnings.push("Batch results are incomplete. Available results are shown; combined totals remain unknown.");
+    }
+    model.duration = knownDuration && !incomplete ? seconds.toFixed(2) + " s" : "Not reported";
+    return model;
+  }
+
   function create(screen) {
     var model = null, snapshot = "", controller = null, sequence = 0, visible = false;
     var cache = new Map(), pending = new Map();
@@ -404,7 +503,9 @@
     var message = screen.querySelector("#report-message"), search = screen.querySelector("#report-search");
     var filter = screen.querySelector("#report-filter"), source = screen.querySelector("#report-original");
     var scenarioFilter = screen.querySelector("#report-scenario-filter");
+    var suiteFilter = screen.querySelector("#report-suite-filter");
     var failures = screen.querySelector("#report-failures");
+    var orderNote = screen.querySelector("#report-order-note");
     var refresh = screen.querySelector("#report-refresh");
     function selectedStatuses(group) {
       if (group.querySelector('[data-status="all"]').getAttribute("aria-pressed") === "true") { return outcomes; }
@@ -442,16 +543,19 @@
     }
     function renderResults() {
       if (!model) { return; }
-      var query = search.value.trim().toLowerCase(), shown = 0, statuses = selectedStatuses(filter);
+      var query = search.value.trim().toLowerCase(), shown = 0, shownSuites = 0, statuses = selectedStatuses(filter);
+      var suiteStatuses = selectedStatuses(suiteFilter);
       results.innerHTML = model.suites.map(function (suite) {
+        if (suiteStatuses.indexOf(suite.status) < 0) { return ""; }
         var tests = suite.tests.filter(function (test) {
           return statuses.indexOf(test.status) >= 0 &&
             (suite.name + " " + test.name).toLowerCase().indexOf(query) >= 0;
         });
         if (!tests.length) { return ""; }
+        shownSuites++;
         shown += tests.length;
         return '<section class="report-suite"><header><h2>' + escape(suite.name) +
-          '</h2><span>Reported suite status: ' + statusBadge(suite.status) + '</span><p class="field-help">Duration: ' +
+          '</h2><span>Suite status: ' + statusBadge(suite.status) + '</span><p class="field-help">Duration: ' +
           escape(suite.duration) + "</p></header>" + warningsHtml(suite.warnings) +
           tests.map(function (test) {
             return '<details class="report-test" data-report-test="' + escape(test.id) + '"><summary><span>' +
@@ -461,7 +565,7 @@
               warningsHtml(test.warnings) + '<div class="report-scenarios" aria-live="polite"></div></div></details>';
           }).join("") + "</section>";
       }).join("") || '<p class="empty">No test results match these filters.</p>';
-      screen.querySelector("#report-result-count").textContent = shown + " tests shown. Charts remain report-wide.";
+      screen.querySelector("#report-result-count").textContent = shownSuites + " suites and " + shown + " tests shown. Charts remain report-wide.";
       results.querySelectorAll("[data-report-test]").forEach(function (details) {
         details.addEventListener("toggle", function () { if (details.open) { loadDetails(details); } });
       });
@@ -476,6 +580,10 @@
       var request = (async function () {
         var check = await readHtml(selectedModel.url, signal, selectedModel.root);
         if (check.html !== selectedSnapshot) { throw new Error("Report changed since it was opened. Refresh before loading details."); }
+        if (test.overview) {
+          var original = await readHtml(test.overview.url, signal, selectedModel.root);
+          if (original.html !== test.overview.html) { throw new Error("Target report changed. Refresh before loading details."); }
+        }
         var rows = [], links = [], issue = test.warnings.slice();
         for (var link of test.links) {
           var page = await readHtml(link, signal, selectedModel.root);
@@ -566,21 +674,42 @@
       var current = ++sequence;
       model = null; cache.clear(); pending.clear(); summary.innerHTML = ""; results.innerHTML = "";
       failures.innerHTML = ""; failures.hidden = true; failures.open = false;
+      orderNote.textContent = ""; orderNote.className = "field-help";
       screen.querySelector("#report-result-count").textContent = "";
       message.className = "field-help"; message.textContent = "Loading existing report…";
       refresh.disabled = true; source.href = "/api/report";
       try {
         var page = await readHtml("/api/report", controller.signal);
-        var next = parseOverview(page.html, page.url);
+        var next = await readBatch(page, controller.signal) || parseOverview(page.html, page.url);
+        var orderingMessage, orderingFailed = false;
+        try {
+          if (next.batch) {
+            orderingMessage = "Combined report: targets and suites follow the test.xml order saved when the batch started. Repeated suites count once per execution.";
+          } else {
+            var ordering = await fetch("/api/report-suite-order", { signal: controller.signal, cache: "no-store" });
+            if (!ordering.ok) { throw new Error("Unable to read test.xml suite order (HTTP " + ordering.status + ")."); }
+            orderingMessage = orderSuites(next, await ordering.json());
+          }
+        } catch (error) {
+          if (error.name === "AbortError") { throw error; }
+          orderingFailed = true;
+          orderingMessage = error.message + " Original report order retained. Refresh to retry.";
+        }
         if (current !== sequence || !visible) { return; }
+        orderNote.textContent = orderingMessage;
+        orderNote.className = orderingFailed ? "inline-warning" : "field-help";
         model = next; snapshot = page.html;
         source.href = model.url;
         summary.innerHTML = '<div class="report-metadata"><p><strong>Report created:</strong> ' +
           escape(model.created) + " · <strong>Duration:</strong> " + escape(model.duration) +
+          (model.batch ? " · <strong>Batch environment:</strong> " + escape(model.environment) : "") +
           '</p><p class="field-help">Source: ' + escape(decodeURIComponent(new URL(model.url).pathname)) +
           '. These are saved results, not the current environment selection.</p></div>' +
+          (model.batch ? '<p class="field-help">' + model.targets.map(escape).join(" · ") + "</p>" : "") +
           warningsHtml(model.warnings) + '<div class="report-charts">' +
-          pieChart("Test results", model.tests) + pieChart("Scenario results", model.scenarios) + "</div>";
+          pieChart("Suite results", model.suiteCounts) +
+          pieChart("Test results", model.tests) + pieChart("Scenario results", model.scenarios) +
+          '</div><p class="field-help">Suite totals represent the TestNG XML suites in this saved report: failed if any test fails, skipped if all tests are skipped, otherwise passed. Empty suites retain their reported status.</p>';
         message.textContent = "Existing report loaded. Refresh after a run to read newly generated results.";
         renderResults();
         renderFailures();
@@ -592,6 +721,7 @@
     refresh.addEventListener("click", load);
     search.addEventListener("input", renderResults);
     bindStatusButtons(filter, renderResults);
+    bindStatusButtons(suiteFilter, renderResults);
     bindStatusButtons(scenarioFilter, function () {
       results.querySelectorAll(".report-scenarios").forEach(filterScenarios);
     });
@@ -601,5 +731,5 @@
     };
   }
   window.ChargingReport = { create: create, parseOverview: parseOverview, parseDetails: parseDetails,
-    pieChart: pieChart, safeLink: safeLink };
+    pieChart: pieChart, safeLink: safeLink, orderSuites: orderSuites, readBatch: readBatch };
 }());

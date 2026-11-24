@@ -60,6 +60,9 @@ public final class ConfigBackendTest {
             testSupportedKinds();
             testStagingFailure();
             testCommitRollback();
+            testReportSuiteOrder();
+            testBatchExecution();
+            testBatchAntInvocation();
             System.out.println("ConfigBackendTest passed");
         } finally {
             if (Files.exists(root)) {
@@ -70,6 +73,166 @@ public final class ConfigBackendTest {
                 for (Path path : paths) Files.delete(path);
             }
         }
+    }
+
+    private static void testReportSuiteOrder() throws Exception {
+        write("TEST/A/suite-order-10.xml", "<suite name=\"Tenth suite\"/>");
+        write("TEST/A/suite-order-2.xml", "<suite name=\"Second suite\"/>");
+        write("test.xml", "<project><target name=\"ordered\"><fileset dir=\"${basedir}/TEST/A\" id=\"orderedSuites\">"
+                + "<include name=\"suite-order-2.xml\"/><!-- <include name=\"ignored.xml\"/> -->"
+                + "<include name=\"suite-order-10.xml\"/></fileset>"
+                + "<runMultipleSuites pXmlFilesetRef=\"orderedSuites\"/></target></project>");
+        Method orderMethod = ChargingTestConsole.class.getDeclaredMethod("reportSuiteOrder");
+        orderMethod.setAccessible(true);
+        List<?> targets = (List<?>) orderMethod.invoke(console);
+        Map<?, ?> target = (Map<?, ?>) targets.get(0);
+        List<?> suites = (List<?>) target.get("suites");
+        check(targets.size() == 1 && "ordered".equals(target.get("target")), "report order target");
+        check(suites.size() == 2 && "Second suite".equals(((Map<?, ?>) suites.get(0)).get("name"))
+                && "TEST/A/suite-order-10.xml".equals(((Map<?, ?>) suites.get(1)).get("path")),
+                "report order follows explicit includes, ignoring comments and alphabetical ordering");
+    }
+
+    private static void testBatchExecution() throws Exception {
+        String project = "<project basedir=\".\"><import file=\"build.xml\"/>";
+        for (String name : Arrays.asList("first", "second")) {
+            project += "<target name=\"" + name + "\"><fileset dir=\"${basedir}/TEST/A\" id=\"suites\">"
+                    + "<include name=\"suite-order-2.xml\"/></fileset><runMultipleSuites pXmlFilesetRef=\"suites\">"
+                    + "<config><sysproperty key=\"ccLandscape\" value=\"OVERRIDE\"/></config></runMultipleSuites></target>";
+        }
+        project += "</project>";
+        write("test.xml", project);
+        write("build.xml", "<project><macrodef name=\"runMultipleSuites\"><sequential><testng/></sequential></macrodef></project>");
+        final byte[] saved = Files.readAllBytes(root.resolve("test.xml"));
+        final byte[] savedConfig = Files.readAllBytes(root.resolve("install-package-sap-cc-unit-testing-framework-0.8.3/config/config.properties"));
+        Method prepare = ChargingTestConsole.class.getDeclaredMethod("prepareBatch", Object.class);
+        prepare.setAccessible(true);
+        for (Object invalid : Arrays.asList("first", Arrays.asList(), Arrays.asList("first", "first"),
+                Arrays.asList("missing"), Arrays.asList(1), Arrays.asList("first", "missing"))) {
+            boolean rejected = false;
+            try { prepare.invoke(console, invalid); } catch (InvocationTargetException ex) {
+                rejected = ex.getCause().getMessage().contains("target") || ex.getCause().getMessage().contains("Target");
+            }
+            check(rejected, "Invalid batch selection rejected: " + invalid);
+        }
+        final Object batch = prepare.invoke(console, Arrays.asList("second", "first"));
+        final List<String> executed = new ArrayList<String>();
+        final List<Path> outputs = new ArrayList<Path>();
+        final Class<?> runnerType = Class.forName("ChargingTestConsole$BatchExecutor");
+        Object runner = java.lang.reflect.Proxy.newProxyInstance(runnerType.getClassLoader(), new Class<?>[] { runnerType },
+                new java.lang.reflect.InvocationHandler() {
+            public Object invoke(Object proxy, Method method, Object[] args) throws Exception {
+                String target = (String) args[1];
+                Path output = (Path) args[2];
+                String xml = new String(Files.readAllBytes((Path) args[0]), StandardCharsets.UTF_8);
+                check(xml.contains("value=\"RDEV\"") && !xml.contains("OVERRIDE"), "Batch snapshots replace explicit environment overrides");
+                check(xml.contains("app.batch.failed") && xml.contains(output.toString()), "Batch snapshots isolate report paths and detect test failures");
+                executed.add(target);
+                outputs.add(output);
+                Path report = output.resolve("user/Report.htm");
+                Files.createDirectories(report.getParent());
+                Files.write(report, ("<html>" + target + "</html>").getBytes(StandardCharsets.UTF_8));
+                if ("first".equals(target)) {
+                    write("install-package-sap-cc-unit-testing-framework-0.8.3/config/config.properties", "sap.cc.landscape=CHANGED\n");
+                    return 1;
+                }
+                return 0;
+            }
+        });
+        java.lang.reflect.Field current = ChargingTestConsole.class.getDeclaredField("runState");
+        current.setAccessible(true);
+        current.set(console, batch);
+        Method execute = ChargingTestConsole.class.getDeclaredMethod("executeBatch", batch.getClass(), runnerType);
+        execute.setAccessible(true);
+        execute.invoke(console, batch, runner);
+        Method statusMethod = ChargingTestConsole.class.getDeclaredMethod("runStatus");
+        statusMethod.setAccessible(true);
+        Map<?, ?> status = (Map<?, ?>) statusMethod.invoke(console);
+        check(executed.equals(Arrays.asList("first", "second")), "Batch follows test.xml order and continues after failure");
+        check(!outputs.get(0).equals(outputs.get(1)), "Repeated suite executions have isolated report directories");
+        check(Integer.valueOf(1).equals(status.get("exitCode")) && Integer.valueOf(2).equals(status.get("completed"))
+                && Boolean.FALSE.equals(status.get("running")), "Batch status aggregates failure and completed progress");
+        check("RDEV".equals(status.get("environment")), "Active environment is captured once for the whole batch");
+        check(Arrays.equals(saved, Files.readAllBytes(root.resolve("test.xml"))), "Saved target overrides remain byte-for-byte unchanged");
+        Files.write(root.resolve("install-package-sap-cc-unit-testing-framework-0.8.3/config/config.properties"), savedConfig);
+        Method find = ChargingTestConsole.class.getDeclaredMethod("findReport");
+        find.setAccessible(true);
+        Path merged = (Path) find.invoke(console);
+        String manifest = new String(Files.readAllBytes(merged), StandardCharsets.UTF_8);
+        check(manifest.contains("app-batch-report") && manifest.contains("targets/1/user/Report.htm")
+                && manifest.contains("targets/2/user/Report.htm") && manifest.contains("data-batch-suite"),
+                "Latest report persists both target sources and their saved suite order");
+        check(manifest.indexOf("data-batch-target=\"first\"") < manifest.indexOf("data-batch-target=\"second\""),
+                "Combined report retains batch execution order");
+        Object single = prepare.invoke(console, Arrays.asList("second"));
+        current.set(console, single);
+        Object noReport = java.lang.reflect.Proxy.newProxyInstance(runnerType.getClassLoader(), new Class<?>[] {runnerType},
+            new java.lang.reflect.InvocationHandler() {
+                public Object invoke(Object proxy, Method method, Object[] args) { return 0; }
+            });
+        execute.invoke(console, single, noReport);
+        status = (Map<?, ?>) statusMethod.invoke(console);
+        check(Integer.valueOf(1).equals(status.get("exitCode")) &&
+                ((Map<?, ?>) ((List<?>) status.get("batch")).get(0)).get("error").equals("No report was generated."),
+                "One-target batches expose missing reports as failures instead of success");
+    }
+
+    private static void testBatchAntInvocation() throws Exception {
+        write("BatchProbe.java", "public class BatchProbe { public static void main(String[] args) throws Exception {"
+                + "if (!\"RDEV\".equals(System.getProperty(\"ccLandscape\"))) throw new Exception(\"Wrong environment\");"
+                + "java.nio.file.Path report = java.nio.file.Paths.get(args[0], \"Report.htm\");"
+                + "java.nio.file.Files.createDirectories(report.getParent());"
+                + "java.nio.file.Files.write(report, \"<html>fixture</html>\".getBytes(\"UTF-8\"));"
+                + "System.exit(Integer.parseInt(args[1])); }}");
+        check(javax.tools.ToolProvider.getSystemJavaCompiler().run(null, null, null,
+                "-d", root.toString(), root.resolve("BatchProbe.java").toString()) == 0, "Compile harmless Ant process fixture");
+        write("build.xml", "<project><macrodef name=\"runMultipleSuites\">"
+                + "<attribute name=\"pXmlFilesetRef\"/><attribute name=\"pTestLogDir\"/><attribute name=\"pTestNgReportDir\"/>"
+                + "<element name=\"config\" optional=\"true\"/><sequential>"
+                + "<java classname=\"BatchProbe\" classpath=\"${basedir}\" fork=\"true\" failonerror=\"false\" resultproperty=\"probe.exit\">"
+                + "<config/><arg value=\"@{pTestNgReportDir}\"/><arg value=\"${probe.result}\"/></java>"
+                + "<condition property=\"app.batch.failed\"><not><equals arg1=\"${probe.exit}\" arg2=\"0\"/></not></condition>"
+                + "</sequential></macrodef></project>");
+        String xml = "<project basedir=\".\"><import file=\"build.xml\"/>";
+        for (String target : Arrays.asList("first", "second")) {
+            xml += "<target name=\"" + target + "\"><delete dir=\"${testng.report.dir}\"/>"
+                    + "<property name=\"probe.result\" value=\"" + ("first".equals(target) ? "1" : "0") + "\"/>"
+                    + "<fileset dir=\"${basedir}/TEST/A\" id=\"suites\"><include name=\"suite-order-2.xml\"/></fileset>"
+                    + "<runMultipleSuites pXmlFilesetRef=\"suites\"><config>"
+                    + "<sysproperty key=\"ccLandscape\" value=\"OVERRIDE\"/></config></runMultipleSuites></target>";
+        }
+        write("test.xml", xml + "</project>");
+        Method prepare = ChargingTestConsole.class.getDeclaredMethod("prepareBatch", Object.class);
+        prepare.setAccessible(true);
+        Object batch = prepare.invoke(console, Arrays.asList("first", "second"));
+        Class<?> runnerType = Class.forName("ChargingTestConsole$BatchExecutor");
+        final List<Integer> codes = new ArrayList<Integer>();
+        Object runner = java.lang.reflect.Proxy.newProxyInstance(runnerType.getClassLoader(), new Class<?>[] {runnerType},
+            new java.lang.reflect.InvocationHandler() {
+                @SuppressWarnings("unchecked")
+                public Object invoke(Object proxy, Method method, Object[] args) throws Exception {
+                    Method commandMethod = ChargingTestConsole.class.getDeclaredMethod("antCommand", String.class, String.class);
+                    commandMethod.setAccessible(true);
+                    List<String> command = (List<String>) commandMethod.invoke(null, args[0].toString(), args[1]);
+                    command.add("-Dtest.log.dir.path=" + args[2]);
+                    command.add("-Dtestng.report.dir=" + ((Path) args[2]).resolve(System.getProperty("user.name", "")));
+                    int code = new ProcessBuilder(command).directory(root.toFile()).redirectErrorStream(true)
+                            .redirectOutput(ProcessBuilder.Redirect.appendTo(((Path) args[3]).toFile())).start().waitFor();
+                    check(Files.isRegularFile(((Path) args[2]).resolve(System.getProperty("user.name", "")).resolve("Report.htm")),
+                            "Forked fixture receives the captured environment and generates an isolated report");
+                    codes.add(code);
+                    return code;
+                }
+            });
+        Method execute = ChargingTestConsole.class.getDeclaredMethod("executeBatch", batch.getClass(), runnerType);
+        execute.setAccessible(true);
+        execute.invoke(console, batch, runner);
+        if (!codes.equals(Arrays.asList(1, 0))) {
+            java.lang.reflect.Field log = batch.getClass().getDeclaredField("log");
+            log.setAccessible(true);
+            throw new AssertionError("Ant snapshot execution failed: " + new String(Files.readAllBytes((Path) log.get(batch)), StandardCharsets.UTF_8));
+        }
+        check(true, "Real Ant fixture passes fixed environment to forked JVMs, preserves basedir/imports and continues after failure");
     }
 
     private static void setup() throws Exception {

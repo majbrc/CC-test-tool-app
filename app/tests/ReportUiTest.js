@@ -60,12 +60,37 @@
   var frame = null, frameUrl = null;
   try {
     var report = ChargingReport.parseOverview(html, url);
+    var duplicateNames = { suites: [{name:"Same"}, {name:"Same"}] };
+    throws(function () { ChargingReport.orderSuites(duplicateNames, []); }, "Ambiguous duplicate suite names cannot be ordered by guessing");
+    var agreeingTargets = { suites: [{name:"Second"}, {name:"First"}] };
+    ChargingReport.orderSuites(agreeingTargets, [
+      {target:"one",suites:[{name:"First"},{name:"Second"}]},
+      {target:"two",suites:[{name:"First"},{name:"Second"},{name:"Not executed"}]}
+    ]);
+    check(agreeingTargets.suites[0].name === "First", "Agreeing targets and unexecuted includes preserve the same report order");
     check(report.tests.total === 2 && report.tests.failed === 1 && report.scenarios.passed === 1, "Extract test and scenario counts");
     check(report.suites[0].tests.length === 2, "Nested link rows are not tests");
     check(report.suites[0].name === "Suite & example", "Decode labels without markup");
-    check(report.suites[0].status === "passed" && report.warnings.length === 0 &&
+    check(report.suites[0].status === "failed" && report.suiteCounts.failed === 1 &&
+      report.suiteCounts.passed === 0 && report.warnings.length === 0 &&
       report.suites[0].warnings.length === 0,
-      "Preserve reported suite status without the suite classification warning");
+      "A passed suite containing a failed test counts as failed without a contradiction warning");
+    var skippedWithFailure = ChargingReport.parseOverview(html.replace("_SUITE-PASSED-1", "_SUITE-SKIPPED-1")
+      .replace('id="btn_passed_suites">1', 'id="btn_passed_suites">0')
+      .replace('id="btn_skipped_suites">0', 'id="btn_skipped_suites">1'), url);
+    check(skippedWithFailure.suites[0].status === "failed" && skippedWithFailure.suiteCounts.failed === 1,
+      "A skipped suite containing a failed test also counts as failed");
+    var allSkipped = ChargingReport.parseOverview(html.replace(/_TEST-(?:PASSED|FAILED)/g, "_TEST-SKIPPED"), url);
+    check(allSkipped.suites[0].status === "skipped" && allSkipped.suiteCounts.skipped === 1,
+      "A suite with every test skipped counts as skipped");
+    var mixedPassSkip = ChargingReport.parseOverview(html.replace(/_TEST-FAILED/g, "_TEST-SKIPPED"), url);
+    check(mixedPassSkip.suites[0].status === "passed" && mixedPassSkip.suiteCounts.passed === 1,
+      "Passed and skipped tests without failures count as a passed suite");
+    var mixedFailSkip = ChargingReport.parseOverview(html.replace(/_TEST-PASSED/g, "_TEST-SKIPPED"), url);
+    check(mixedFailSkip.suites[0].status === "failed", "A failed test takes precedence over skipped tests");
+    var emptySuite = ChargingReport.parseOverview(html.replace(/<tr id="_TEST-[\s\S]*<\/table>/, "</table>"), url);
+    check(emptySuite.suites[0].tests.length === 0 && emptySuite.suites[0].status === "passed",
+      "An empty suite is not classified as all-skipped");
     check(report.suites[0].tests[1].links[0] === location.origin + "/report/example/second.htm", "Resolve literal detail links");
     var rows = ChargingReport.parseDetails(detail);
     var flowRows = ChargingReport.parseDetails(detail, location.origin + "/report/example/second.htm");
@@ -140,18 +165,38 @@
       window.__snapshotHtml = null;
       window.__activeDetails = 0;
       window.__maxActiveDetails = 0;
+      window.__suiteOrder = [{ target: "example", suites: [{ name: "Suite & example", path: "TEST/example.xml" }] }];
+      window.__suiteOrderStatus = 200;
+      window.__run = {};
+      window.__runError = false;
+      window.__batchPages = {};
       var state = { selectedEnvironment: "A", environments: [
         { name: "A", properties: { host: "alpha.example.invalid" } },
         { name: "B", properties: { host: "beta.example.invalid" } },
         { name: "C", properties: { host: "gamma.example.invalid" } }
-      ], targets: [{name:"example",description:"Example target",environment:"Default",suites:[]}], suites: [], reportAvailable: true };
+      ], targets: [{name:"example",description:"Example target",environment:"Default",suites:[]},
+        {name:"second",description:"Second target",environment:"B",suites:[]}], suites: [], reportAvailable: true };
       window.fetch = async function (input, options) {
         var path = new URL(input, document.baseURI).pathname;
         var method = options && options.method || "GET", body = {}, status = 200, type = "application/json";
         window.__requests.push({ path: path, method: method, body: options && options.body });
         if (path === "/api/state") { body = state; }
+        else if (path === "/api/report-suite-order") { body = window.__suiteOrder; status = window.__suiteOrderStatus; }
         else if (path === "/api/config/year") { body = { mode: "automatic", files: [] }; }
-        else if (path === "/api/run/status") { body = {}; }
+        else if (path === "/api/run/status") { body = window.__run; }
+        else if (path === "/api/run") {
+          await new Promise(function (resolve) { setTimeout(resolve, 60); });
+          if (window.__runError) { status = 409; body = {error:"Synthetic batch rejection"}; }
+          else {
+            var payload = JSON.parse(options.body);
+            window.__run = {running:true, suite:"Selected targets", target:"example", environment:state.selectedEnvironment,
+              completed:0, batch:(payload.targets || [payload.target]).map(function (name) { return {target:name,status:"pending"}; })};
+            body = window.__run;
+          }
+        }
+        else if (Object.prototype.hasOwnProperty.call(window.__batchPages, path)) {
+          body = window.__batchPages[path]; type = "text/html";
+        }
         else if (path === "/api/environment") {
           await new Promise(function (resolve) { setTimeout(resolve, 40); });
           if (window.__rejectSelection) { status = 409; body = { error: "Synthetic selection failure" }; }
@@ -222,7 +267,7 @@
       '<div id="_TEST-PASSED-2"><p>Passed scenario</p><button id="log_btn_2" onclick="window.open(\'./scenario/930_43.htm\')">Log</button></div>' +
       '<div id="_TEST-SKIPPED-3"><p>Skipped scenario</p><button id="log_btn_3" onclick="window.open(\'./scenario/930_44.htm\')">Log</button></div>';
     d.getElementById("open-report").click();
-    await until(function () { return d.querySelectorAll(".report-chart svg").length === 2; }, "Report screen did not load");
+    await until(function () { return d.querySelectorAll(".report-chart svg").length === 3; }, "Report screen did not load");
     await until(function () { return !!d.querySelector(".report-failure-scenario"); }, "Automatic failure summary did not load");
     var failureSummary = d.getElementById("report-failures"), summaryContent = failureSummary.textContent;
     var flowLink = failureSummary.querySelector(".report-failure-scenario a");
@@ -252,6 +297,7 @@
       "Summary automatically reads failed tests only");
     check(d.title === "Test report · Automated Testing Tool" && d.getElementById("home-screen").hidden, "Report opens within application route");
     var filter = d.getElementById("report-filter");
+    var suiteFilter = d.getElementById("report-suite-filter");
     var scenarioFilter = d.getElementById("report-scenario-filter");
     function chooseStatuses(group, statuses) {
       group.querySelector('[data-status="all"]').click();
@@ -262,10 +308,17 @@
     var combinations = [["passed"], ["failed"], ["skipped"], ["passed", "failed"],
       ["passed", "skipped"], ["failed", "skipped"], ["passed", "failed", "skipped"]];
     check(!filter.querySelector("select") && !scenarioFilter.querySelector("select") &&
-      d.querySelectorAll('.report-status-filter button[aria-pressed="true"]').length === 2 &&
+      d.querySelectorAll('.report-status-filter button[aria-pressed="true"]').length === 3 &&
+      suiteFilter.querySelector('[data-status="all"]').getAttribute("aria-pressed") === "true" &&
       filter.querySelector('[data-status="all"]').getAttribute("aria-pressed") === "true" &&
       scenarioFilter.querySelector('[data-status="all"]').getAttribute("aria-pressed") === "true",
-      "Both outcome groups default to All");
+      "All three outcome groups default to All");
+    suiteFilter.querySelector('[data-status="failed"]').click();
+    check(d.querySelectorAll(".report-suite").length === 1 &&
+      d.querySelector(".report-suite > header .report-status--failed") &&
+      d.querySelector(".report-chart .report-legend").textContent.includes("Failed1"),
+      "Suite chart, badge and Failed filter agree for an originally passed suite with a failed test");
+    suiteFilter.querySelector('[data-status="all"]').click();
     filter.querySelector('[data-status="failed"]').click();
     check(d.querySelectorAll(".report-test").length === 1 &&
       d.querySelector(".report-test .report-status--failed"), "One click on Failed isolates failed tests from All");
@@ -287,7 +340,7 @@
     check(filter.querySelector('[data-status="all"]').getAttribute("aria-pressed") === "true" &&
       d.querySelectorAll(".report-test").length === 2, "Deselecting the last test status restores All");
     filter.querySelector('[data-status="failed"]').click();
-    check(d.querySelectorAll(".report-test").length === 1 && d.querySelector(".report-chart__total").textContent.indexOf("2") >= 0, "Filtering leaves charts report-wide");
+    check(d.querySelectorAll(".report-test").length === 1 && d.querySelectorAll(".report-chart__total")[1].textContent.indexOf("2") >= 0, "Filtering leaves charts report-wide");
     var beforeExpansion = w.__requests.length;
     chooseStatuses(scenarioFilter, ["failed"]);
     d.querySelector(".report-test summary").click();
@@ -334,7 +387,7 @@
         shown.every(function (row) { return statuses.indexOf(row.getAttribute("data-scenario-status")) >= 0; }),
         "Scenario buttons combine " + statuses.join(" and ") + " outcomes");
     });
-    check(w.__requests.length === requestsBeforeFilter && d.querySelector(".report-chart__total").textContent.indexOf("2") >= 0,
+    check(w.__requests.length === requestsBeforeFilter && d.querySelectorAll(".report-chart__total")[1].textContent.indexOf("2") >= 0,
       "Scenario filtering neither refetches nor changes report-wide charts");
     scenarioFilter.querySelector('[data-status="all"]').click();
     check(d.querySelectorAll(".report-scenario:not([hidden])").length === 3, "All restores every scenario");
@@ -417,7 +470,7 @@
     check(d.getElementById("report-message").textContent.indexOf("No report") >= 0, "Missing report has explicit empty/error message");
     w.__reportStatus = 200;
     d.getElementById("report-refresh").click();
-    await until(function () { return d.querySelectorAll(".report-chart svg").length === 2; }, "Report refresh did not recover");
+    await until(function () { return d.querySelectorAll(".report-chart svg").length === 3; }, "Report refresh did not recover");
     check(!d.getElementById("report-refresh").disabled, "Refresh recovers after missing report");
     await until(function () { return !!d.querySelector(".report-failure-scenario"); }, "Summary did not recover after missing report");
     async function refreshSummary() {
@@ -534,7 +587,172 @@
       frame.style.width = width + "px";
       check(d.documentElement.scrollWidth <= w.innerWidth, width + "px populated failure summary fits the viewport");
     });
+    var suiteTemplate = html.slice(html.indexOf('<div id="_SUITE-'));
+    var suiteOverview = html.slice(0, html.indexOf('<div id="_SUITE-'))
+      .replace(/(btn_all_suites">)1/, "$13")
+      .replace(/(btn_(?:failed|skipped)_suites">)0/g, "$11")
+      .replace(/(btn_all_(?:tests|scenarios)">)2/g, "$16")
+      .replace(/(btn_(?:passed|failed)_(?:tests|scenarios)">)1/g, "$13");
+    ["passed", "failed", "skipped"].forEach(function (status, index) {
+      var template = status === "failed" ? suiteTemplate : suiteTemplate.replace(/_TEST-FAILED/g, "_TEST-PASSED");
+      if (status === "skipped") { template = template.replace(/_TEST-PASSED/g, "_TEST-SKIPPED"); }
+      suiteOverview += template.replace("_SUITE-PASSED-1", "_SUITE-" + status.toUpperCase() + "-" + (index + 1))
+        .replace(/SUITE-1/g, "SUITE-" + (index + 1)).replace("Suite &amp; example", status + " suite");
+    });
+    w.__reportHtml = suiteOverview;
+    w.__suiteOrder = [{ target: "ordered", suites: [
+      { name: "skipped suite" }, { name: "passed suite" }, { name: "failed suite" }
+    ] }];
+    chooseStatuses(filter, ["passed", "failed", "skipped"]);
+    chooseStatuses(scenarioFilter, ["passed", "failed", "skipped"]);
+    await refreshSummary();
+    var suiteChart = d.querySelector(".report-chart");
+    check(Array.from(d.querySelectorAll(".report-suite > header h2")).map(function (h) { return h.textContent; }).join("|") ===
+      "skipped suite|passed suite|failed suite" && d.getElementById("report-order-note").textContent.includes("ordered"),
+      "Report suite display follows test.xml order rather than source report order");
+    check(Array.from(failureSummary.querySelectorAll(".report-failure-test > p")).map(function (p) {
+      return p.textContent.split(" · ")[0];
+    }).join("|") === "skipped suite|passed suite|failed suite", "Summary follows the same configured suite order");
+    check(suiteChart.querySelector("h2").textContent === "Suite results" &&
+      suiteChart.querySelector(".report-chart__total strong").textContent === "3" &&
+      suiteChart.querySelectorAll(".report-legend li").length === 3 &&
+      Array.from(suiteChart.querySelectorAll(".report-legend li")).every(function (li) { return li.textContent.includes("33.3%"); }),
+      "Suite chart displays passed, failed and skipped TestNG suite statistics");
+    var summaryBeforeSuiteFilter = failureSummary.textContent, suiteReads = w.__requests.length;
+    combinations.forEach(function (statuses) {
+      chooseStatuses(suiteFilter, statuses);
+      var names = Array.from(d.querySelectorAll(".report-suite > header h2")).map(function (heading) { return heading.textContent; });
+      check(names.length === statuses.length && names.every(function (name) {
+        return statuses.some(function (status) { return name === status + " suite"; });
+      }), "Suite outcome filter combines " + statuses.join(" and "));
+      check(names.join("|") === ["skipped suite", "passed suite", "failed suite"].filter(function (name) {
+        return statuses.includes(name.split(" ")[0]);
+      }).join("|"), "Suite filtering preserves configured order for " + statuses.join(" and "));
+    });
+    chooseStatuses(suiteFilter, ["failed"]);
+    chooseStatuses(filter, ["passed"]);
+    check(d.querySelectorAll(".report-suite").length === 1 && d.querySelectorAll(".report-test").length === 1 &&
+      d.querySelector(".report-test .report-status--passed") &&
+      d.getElementById("report-result-count").textContent.includes("1 suites and 1 tests"),
+      "Suite and test filters intersect using the effective suite classification");
+    search.value = "passed suite"; search.dispatchEvent(new w.Event("input"));
+    check(!d.querySelector(".report-suite"), "Suite filter combines with name search");
+    search.value = ""; search.dispatchEvent(new w.Event("input"));
+    suiteFilter.querySelector('[data-status="failed"]').click();
+    check(suiteFilter.querySelector('[data-status="all"]').getAttribute("aria-pressed") === "true" &&
+      d.querySelectorAll(".report-suite").length === 2,
+      "Clearing the last suite selection restores All while preserving the Passed test filter");
+    check(failureSummary.textContent === summaryBeforeSuiteFilter && w.__requests.length === suiteReads &&
+      suiteChart.querySelector(".report-chart__total strong").textContent === "3",
+      "Suite filtering leaves summary and statistics report-wide without fetching");
+    w.__reportHtml = suiteOverview.replace('id="btn_failed_suites">1', 'id="btn_failed_suites">?');
+    await refreshSummary();
+    check(!d.querySelector(".report-chart").querySelector("svg") && d.querySelector(".report-chart").textContent.includes("Unknown"),
+      "Missing suite totals remain unknown instead of producing a misleading pie");
+    [390, 1280].forEach(function (width) {
+      frame.style.width = width + "px";
+      check(d.documentElement.scrollWidth <= w.innerWidth, width + "px suite statistics and four filter panels fit the viewport");
+    });
+    chooseStatuses(filter, ["passed", "failed", "skipped"]);
+    w.__reportHtml = suiteOverview;
+    w.__suiteOrderStatus = 500;
+    await refreshSummary();
+    check(d.getElementById("report-order-note").textContent.includes("Original report order retained") &&
+      Array.from(d.querySelectorAll(".report-suite > header h2")).map(function (h) { return h.textContent; }).join("|") ===
+        "passed suite|failed suite|skipped suite", "Ordering API failure keeps results visible with an explicit warning");
+    w.__suiteOrderStatus = 200;
+    w.__suiteOrder.push({target: "conflicting", suites: [{name:"passed suite"}, {name:"failed suite"}, {name:"skipped suite"}]});
+    await refreshSummary();
+    check(d.getElementById("report-order-note").textContent.includes("different suite orders"),
+      "Conflicting target orders are not guessed");
+    w.__suiteOrder = [{target: "unmatched", suites: [{name:"Unknown suite"}]}];
+    await refreshSummary();
+    check(d.getElementById("report-order-note").textContent.includes("No target in test.xml"),
+      "Unmatched suite names retain source ordering with a visible explanation");
+    w.__suiteOrder = [{target:"configured",suites:[{name:"skipped suite"},{name:"failed suite"},{name:"passed suite"}]}];
+    await refreshSummary();
+    check(d.getElementById("report-order-note").className === "field-help" &&
+      d.querySelector(".report-suite > header h2").textContent === "skipped suite",
+      "Refresh reloads suite ordering and recovers from unavailable metadata");
     check(posts().length === 2, "Report reads and browsing introduce no mutations");
+
+    var batchHtml = '<ol id="app-batch-report" data-environment="A" data-created="2026-01-02">';
+    ["example", "second"].forEach(function (name, i) {
+      batchHtml += '<li data-batch-target="' + name + '" data-status="failed" data-exit-code="1">' +
+        '<a href="./target-' + i + '/Report.htm">Original</a><ul><li data-batch-suite>Suite &amp; example</li></ul></li>';
+      var prefix = "/report/example/target-" + i;
+      w.__batchPages[prefix + "/Report.htm"] = html;
+      w.__batchPages[prefix + "/second.htm"] = detail;
+      w.__batchPages[prefix + "/first.htm"] = detail.replace("_TEST-FAILED-1", "_TEST-PASSED-1");
+    });
+    batchHtml += "</ol>";
+    var combined = await w.ChargingReport.readBatch({html:batchHtml,url:url}, new w.AbortController().signal);
+    check(combined.tests.total === 4 && combined.scenarios.failed === 2 && combined.suiteCounts.failed === 2,
+      "Combined batch statistics sum all executions including repeated suites");
+    check(combined.suites[0].tests[0].id !== combined.suites[1].tests[0].id &&
+      combined.suites[0].tests[0].links[0].includes("/target-0/") &&
+      combined.suites[1].tests[0].links[0].includes("/target-1/"), "Repeated native IDs and details remain isolated by target");
+    check(combined.suites.map(function (suite) { return suite.name; }).join("|") ===
+      "example / Suite & example|second / Suite & example", "Combined report follows saved batch ordering with target labels");
+    w.__reportHtml = batchHtml;
+    await refreshSummary();
+    check(d.querySelectorAll(".report-suite").length === 2 &&
+      d.getElementById("report-summary").textContent.includes("Batch environment: A"),
+      "One report displays both targets and the saved environment");
+    await until(function () { return d.querySelectorAll(".report-failure-content .report-original").length === 2; },
+      "Combined failure details did not load");
+    check(Array.from(d.querySelectorAll(".report-failure-content .report-original")).every(function (link, i) {
+      return link.href.includes("/target-" + i + "/scenario/930_42.htm");
+    }), "Summary links retain the correct per-target scenario flow paths");
+    var partial = await w.ChargingReport.readBatch({html:batchHtml.replace('href="./target-1/Report.htm"', 'href="https://example.invalid/Report.htm"'),url:url},
+      new w.AbortController().signal);
+    check(partial.tests.total === null && partial.suites.length === 1 &&
+      partial.warnings.some(function (warning) { return warning.includes("outside"); }),
+      "Unsafe or unavailable target reports preserve partial results without inventing totals");
+    partial = await w.ChargingReport.readBatch({html:batchHtml.replace('data-status="failed"', 'data-status="pending"'),url:url},
+      new w.AbortController().signal);
+    check(partial.tests.total === null && partial.warnings.some(function (warning) { return warning.includes("pending"); }),
+      "Pending batch targets are disclosed and never counted as passed");
+
+    w.location.hash = "";
+    await until(function () { return !d.getElementById("home-screen").hidden; }, "Home screen did not open");
+    var runSelected = d.getElementById("run-selected-targets"), targetSearch = d.getElementById("suite-search");
+    check(runSelected.disabled && d.querySelectorAll("[data-select-target]").length === 2,
+      "Batch action starts disabled with accessible target checkboxes");
+    d.querySelector('[data-select-target="second"]').click();
+    targetSearch.value = "example"; targetSearch.dispatchEvent(new w.Event("input"));
+    check(d.getElementById("batch-selection-count").textContent === "1 targets selected" &&
+      !runSelected.disabled, "Filtering target cards preserves hidden selections");
+    d.querySelector('[data-select-target="example"]').click();
+    targetSearch.value = ""; targetSearch.dispatchEvent(new w.Event("input"));
+    check(d.querySelectorAll("[data-select-target]:checked").length === 2, "Rerender restores selected checkboxes");
+    w.confirm = function () { return true; };
+    var beforeRun = posts().length;
+    runSelected.click(); runSelected.click();
+    check(runSelected.disabled, "Batch submission disables the button immediately");
+    await until(function () { return w.__run.running && d.getElementById("run-title").textContent.includes("Batch"); }, "Batch did not start");
+    check(posts().length === beforeRun + 1 &&
+      JSON.stringify(JSON.parse(posts()[beforeRun].body)) === '{"targets":["example","second"]}',
+      "One submission sends selected targets in catalog order without environment overrides");
+    check(d.querySelector('[data-target="second"] [data-target-environment]').value === "B" &&
+      d.querySelectorAll("[data-select-target]:disabled").length === 2 &&
+      d.querySelectorAll("[data-action='run-target']:disabled").length === 2,
+      "Active batch prevents overlapping runs without changing saved target overrides");
+    w.__run.running = false; w.__run.completed = 2; w.__run.exitCode = 1;
+    w.__run.batch[0].status = "failed"; w.__run.batch[0].exitCode = 1;
+    w.__run.batch[1].status = "completed"; w.__run.batch[1].exitCode = 0;
+    await until(function () { return !runSelected.disabled; }, "Completed batch did not release controls");
+    check(d.getElementById("batch-run-results").textContent.includes("example: failed") &&
+      d.getElementById("batch-run-results").textContent.includes("second: completed"), "Final banner shows each target outcome");
+    d.getElementById("clear-target-selection").click();
+    check(runSelected.disabled && !d.querySelector("[data-select-target]:checked"), "Clear selection disables batch execution");
+    d.querySelector('[data-select-target="second"]').click();
+    w.__runError = true;
+    beforeRun = posts().length;
+    runSelected.click();
+    await until(function () { return !runSelected.disabled && posts().length === beforeRun + 1; }, "Rejected batch did not recover");
+    check(JSON.parse(posts()[beforeRun].body).targets.join() === "second" &&
+      d.querySelector('[data-select-target="second"]').checked, "Single-target batch rejection retains selection for retry");
   } catch (error) { failures.push(error.stack || String(error)); }
   finally {
     if (frame) { frame.remove(); }
